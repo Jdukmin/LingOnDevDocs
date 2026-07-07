@@ -1,0 +1,269 @@
+{
+  "generatedAt": "2026-07-06T13:03:24.962Z",
+  "docs": [
+    {
+      "app": "root",
+      "category": "",
+      "path": "README.md",
+      "title": "Development Documents"
+    },
+    {
+      "app": "backend",
+      "category": "",
+      "path": "backend/docs/DevelopmentGuide.md",
+      "title": "Backend Development Guide"
+    },
+    {
+      "app": "backend",
+      "category": "",
+      "path": "backend/docs/FeatureList.md",
+      "title": "Backend Feature List"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/apikey.md",
+      "title": "/v1/apikey/* — BYOK API key management"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/settings.md",
+      "title": "/v1/settings/* — per-user AI & UI settings"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/status.md",
+      "title": "GET /v1/status"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/users.md",
+      "title": "/v1/users/* — user profile"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/weather.md",
+      "title": "/v1/weather/*"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/ai_settings.md",
+      "title": "ai_settings (inferred — no migration file)"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/raw_logs.md",
+      "title": "raw_logs"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/README.md",
+      "title": "Database — implementation status"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/request_logs.md",
+      "title": "request_logs"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/ui_settings.md",
+      "title": "ui_settings (inferred — no migration file)"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/user_api_keys.md",
+      "title": "user_api_keys (inferred — no migration file)"
+    },
+    {
+      "app": "backend",
+      "category": "database",
+      "path": "backend/docs/database/users.md",
+      "title": "users (inferred — no migration file)"
+    },
+    {
+      "app": "backend",
+      "category": "deployment",
+      "path": "backend/docs/deployment/README.md",
+      "title": "Deployment"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/config-handler.md",
+      "title": "ConfigHandler (LingOnConfig/ConfigHandler.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/policy.md",
+      "title": "Policy (LingOnDataManage/Policy.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/README.md",
+      "title": "Plugins"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/repositories.md",
+      "title": "Repositories (LingOnDataManage/Repositories.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/request-context.md",
+      "title": "RequestContext (LingOnDataManage/RequestContext.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/request-log.md",
+      "title": "RequestLog (LingOnDataManage/RequestLog.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "routes",
+      "path": "backend/docs/routes/README.md",
+      "title": "Route registration mechanics"
+    },
+    {
+      "app": "backend",
+      "category": "services",
+      "path": "backend/docs/services/openweather.md",
+      "title": "OpenWeatherAPI"
+    },
+    {
+      "app": "backend",
+      "category": "services",
+      "path": "backend/docs/services/README.md",
+      "title": "Services (gateways)"
+    },
+    {
+      "app": "frontend",
+      "category": "",
+      "path": "frontend/docs/DevelopmentGuide.md",
+      "title": "Flutter Development Guide"
+    },
+    {
+      "app": "frontend",
+      "category": "",
+      "path": "frontend/docs/FeatureList.md",
+      "title": "Feature List"
+    },
+    {
+      "app": "frontend",
+      "category": "services",
+      "path": "frontend/docs/services/AuthService.md",
+      "title": "Auth Service"
+    },
+    {
+      "app": "frontend",
+      "category": "services",
+      "path": "frontend/docs/services/LlmService.md",
+      "title": "LLM Service"
+    },
+    {
+      "app": "frontend",
+      "category": "services",
+      "path": "frontend/docs/services/WeatherService.md",
+      "title": "Weather Service"
+    },
+    {
+      "app": "frontend",
+      "category": "state",
+      "path": "frontend/docs/state/Overview.md",
+      "title": "State Management Overview"
+    },
+    {
+      "app": "frontend",
+      "category": "theme",
+      "path": "frontend/docs/theme/ThemeGuide.md",
+      "title": "Theme Guide"
+    },
+    {
+      "app": "frontend",
+      "category": "ui",
+      "path": "frontend/docs/ui/AodDisplay.md",
+      "title": "AodDisplay"
+    },
+    {
+      "app": "frontend",
+      "category": "ui",
+      "path": "frontend/docs/ui/BootstrapScreen.md",
+      "title": "BootstrapScreen"
+    },
+    {
+      "app": "frontend",
+      "category": "ui",
+      "path": "frontend/docs/ui/DevScreen.md",
+      "title": "DevScreen"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/BriefCardWidget.md",
+      "title": "BriefCardWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/CalendarWidget.md",
+      "title": "CalendarWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/ChatWidget.md",
+      "title": "ChatWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/ClockWidget.md",
+      "title": "ClockWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/SidebarWidget.md",
+      "title": "SidebarWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/StatusWidget.md",
+      "title": "StatusWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/WeatherForecastWidget.md",
+      "title": "WeatherForecastWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/WeatherIconWidget.md",
+      "title": "WeatherIconWidget"
+    },
+    {
+      "app": "frontend",
+      "category": "widgets",
+      "path": "frontend/docs/widgets/WeatherNowWidget.md",
+      "title": "WeatherNowWidget"
+    }
+  ]
+}

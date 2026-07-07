@@ -1,5 +1,30 @@
 # Development Documents
 
+## 문서 포털 (검색 · 라우팅)
+
+`backend/docs`, `frontend/docs`의 모든 문서를 브라우저에서 검색하고 탐색할 수 있는
+정적 포털이 저장소 루트에 포함되어 있습니다. 기존 문서 파일은 전혀 수정하지 않고,
+`index.html`이 그 위에서 목차/검색/렌더링만 담당합니다.
+
+```bash
+node serve.js          # http://localhost:4321 (기본 포트) 에서 서버 실행
+# 포트를 바꾸려면: node serve.js 5000
+```
+
+브라우저에서 `file://`로 `index.html`을 직접 열면 각 문서를 fetch하지 못하므로
+(브라우저의 CORS 정책) 반드시 위 명령으로 로컬 서버를 띄운 뒤 접속해야 합니다.
+
+문서를 추가/삭제/이동한 뒤에는 검색 색인을 갱신하세요.
+
+```bash
+node scripts/build-manifest.js
+```
+
+구성 파일: [index.html](index.html), [assets/app.js](assets/app.js), [assets/style.css](assets/style.css),
+[assets/manifest.json](assets/manifest.json)(자동 생성), [scripts/build-manifest.js](scripts/build-manifest.js), [serve.js](serve.js)
+
+---
+
 이 디렉터리는 **프로젝트 구현(Implementation)에 대한 개발 문서**를 관리합니다.
 
 공통 설계 문서는 저장하지 않습니다.

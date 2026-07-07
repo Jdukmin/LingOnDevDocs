@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Docs Portal</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top">
+      <div class="brand" id="brand">📚 Docs Portal</div>
+      <div class="search-wrap">
+        <input id="search-input" type="search" placeholder="문서 검색 ( / 키로 포커스 )" autocomplete="off">
+      </div>
+      <div class="doc-count" id="doc-count"></div>
+    </header>
+    <nav class="sidebar" id="sidebar">
+      <div class="loading">불러오는 중…</div>
+    </nav>
+    <main class="content" id="content">
+      <div class="loading">불러오는 중…</div>
+    </main>
+  </div>
+
+  <script src="assets/vendor/mermaid.min.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
