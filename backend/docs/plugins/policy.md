@@ -9,11 +9,19 @@ both methods into Fastify hooks.
 
 ## `before` — `preHandler` hook
 
-Currently a **no-op** — ICD v0.0 specifies `Auth: None`. This is the single
-intended hook point for wiring authentication: validate a bearer token/API
-key, populate `req.ctx.userId` / `req.ctx.apiKeyId`, or throw
-`AppError('UNAUTHORIZED' | 'FORBIDDEN', 401 | 403)` to reject the request.
-See [../DevelopmentGuide.md](../DevelopmentGuide.md#authentication).
+Extracts and verifies the `Authorization: Bearer <token>` header. If present,
+calls `verifyAccessToken(token)` ([Jwt.ts](../../../src/core/utils/Jwt.ts)) and
+populates `req.ctx.userId` with the `sub` claim on success.
+
+- **No header**: no-op — public routes are unaffected.
+- **Malformed header** (`Authorization:` present but not `Bearer <token>`): throws
+  `AppError('UNAUTHORIZED', 401, 'Invalid authorization header')`.
+- **Invalid/expired token**: `verifyAccessToken` throws
+  `AppError('UNAUTHORIZED', 401, 'Invalid token')`.
+
+This is the single hook point for authentication — do not add ad hoc auth checks
+in route handlers. To protect a route, read `req.ctx.userId` and throw
+`AppError('UNAUTHORIZED', 401)` if it is `undefined`.
 
 ## `after` — `onResponse` hook
 

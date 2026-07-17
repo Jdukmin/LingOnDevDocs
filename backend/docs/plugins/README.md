@@ -13,11 +13,13 @@ alphabetically by directory, then by filename — see
 | Repositories | `LingOnDataManage/Repositories.ts` | `app.repos` | [repositories.md](repositories.md) |
 | RequestContext | `LingOnDataManage/RequestContext.ts` | `req.ctx` (via `onRequest` hook) | [request-context.md](request-context.md) |
 | RequestLog | `LingOnDataManage/RequestLog.ts` | (none — hooks only) | [request-log.md](request-log.md) |
+| GoogleOAuth | `LingOnOAuth/GoogleOAuth.ts` | `app.googleOAuth2?` (conditional) | [google-oauth.md](google-oauth.md) |
 
 ## Load order vs. hook execution order
 
 Autoload registers files alphabetically: `LingOnConfig/ConfigHandler` →
-`LingOnDataManage/Policy` → `Repositories` → `RequestContext` → `RequestLog`.
+`LingOnDataManage/Policy` → `Repositories` → `RequestContext` → `RequestLog` →
+`LingOnOAuth/GoogleOAuth`.
 Note that **file registration order is not what guarantees `req.ctx` is
 populated in time** — `Policy` and `RequestLog` are registered *before*
 `RequestContext` alphabetically. What actually guarantees correct ordering is
@@ -27,3 +29,7 @@ by `RequestContext`) runs before any `preHandler` hook (`Policy.before`) or
 file registered which hook. See [request-context.md](request-context.md) for
 detail. `@fastify/rate-limit` is registered in `app.ts` *after* the whole
 `plugins/` autoload block, so its `keyGenerator` can read `req.ctx.userId`.
+
+`LingOnOAuth/GoogleOAuth` requires `@fastify/cookie` to be registered first
+(for CSRF state cookie management) — `app.ts` registers `cookie` before the
+`plugins/` autoload block.

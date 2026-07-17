@@ -164,21 +164,37 @@ sequenceDiagram
 
 ## Authentication
 
-- **Not implemented yet.** `req.ctx.userId` and `req.ctx.apiKeyId` are always
-  `undefined` (see `FastifyDefinition.ts` and the CLAUDE.md TODO section).
-- `DefaultPolicy.before()` in [Policy.ts](../../src/plugins/LingOnDataManage/Policy.ts)
-  is currently a no-op per ICD v0.0 ("Auth: None"). When auth is added, wire
-  the check there — throw `AppError('UNAUTHORIZED'/'FORBIDDEN', 401/403, ...)`
-  to reject, and populate `req.ctx.userId` / `req.ctx.apiKeyId` on success.
-  This is the single hook point; do not add ad hoc auth checks elsewhere.
-- Routes that already assume a logged-in user (`LingOnUsers`, `LingOnSettings`,
-  `LingOnApiKey`) each read `req.ctx.userId` and throw `UNAUTHORIZED` (401) if
-  it is absent — today this means **every** request to those routes 401s
-  until authentication is wired up.
-- `google-auth-library` is a declared dependency and `users` table already has
-  `provider` / `provider_id` columns (see [database/users.md](database/users.md)),
-  but no OAuth route/callback exists yet — see
-  [FeatureList.md](FeatureList.md) for status.
+JWT-based authentication is implemented end-to-end.
+
+### How it works
+
+1. Client authenticates via one of the flows in [api/auth.md](api/auth.md)
+   and receives `access_token` (1-hour HMAC-SHA256 JWT) and `refresh_token`
+   (30-day JWT).
+2. Subsequent requests include `Authorization: Bearer <access_token>`.
+3. `DefaultPolicy.before()` in
+   [Policy.ts](../../src/plugins/LingOnDataManage/Policy.ts) extracts the
+   token, calls `verifyAccessToken(token)` from
+   [Jwt.ts](../../src/core/utils/Jwt.ts), and sets `req.ctx.userId` on success.
+4. Protected route handlers read `req.ctx.userId` and throw
+   `AppError('UNAUTHORIZED', 401)` if it is `undefined`.
+
+`Policy.before()` is the **single hook point** — do not add ad hoc auth checks
+in route handlers.
+
+### Extending auth
+
+- To protect a new route: read `req.ctx.userId` in the handler, throw if absent.
+- To add a new auth method (API key, etc.): add the check in `Policy.before()`,
+  then also populate `req.ctx.apiKeyId` (`req.ctx.apiKeyId` is currently always
+  `undefined` — the field is reserved but not wired from the JWT payload).
+- `JWT_SECRET` is separate from `MASTER_ENCRYPTION_KEY`; do not mix them.
+
+### What's not yet implemented
+
+- `POST /v1/auth/refresh` — refresh tokens are issued but no exchange endpoint exists.
+- `req.ctx.apiKeyId` — always `undefined`; not included in the JWT payload.
+- `POST /v1/auth/signout` — stateless JWT, no server-side revocation.
 
 ## Logging
 

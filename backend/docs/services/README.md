@@ -1,13 +1,17 @@
 # Services (gateways)
 
-"Service" in this codebase means a `BaseGateway` subclass under `src/gateway/`
-— an HTTP client for one external provider. Each gateway is instantiated once
-per route-plugin registration (not a singleton) and injected into its route
-group as `deps.gatewayService`.
+"Service" in this codebase means a subclass of `BaseGateway` or `BaseProvider`
+under `src/gateway/` — each is instantiated once per route-plugin registration
+(not a singleton) and injected into its route group as a dependency.
 
-| Service | Provider | Doc |
-|---|---|---|
-| `OpenWeatherAPI` | OpenWeather (openweathermap.org) | [openweather.md](openweather.md) |
+| Service | Base class | Provider | Doc |
+|---|---|---|---|
+| `OpenWeatherAPI` | `BaseGateway` | OpenWeather (openweathermap.org) | [openweather.md](openweather.md) |
+| `GoogleAuthAPI` | `BaseProvider` | Google OAuth2 (`google-auth-library`) | [google-auth.md](google-auth.md) |
+
+`BaseGateway` extends `BaseProvider`. Use `BaseGateway` for services that make
+outbound HTTP calls via `fetch`; use `BaseProvider` directly for services that
+use an SDK (e.g. `google-auth-library`) or another non-HTTP transport.
 
 ## Shared base: `BaseGateway`
 

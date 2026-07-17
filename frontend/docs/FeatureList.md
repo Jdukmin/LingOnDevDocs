@@ -10,7 +10,8 @@
 
 | 기능 | 파일 | 비고 |
 |------|------|------|
-| Google Sign-In (OAuth) | `auth/presentation/auth_controller.dart` | idToken → Fastify 백엔드 교환 |
+| Google Sign-In (ID Token, native) | `auth/presentation/auth_controller.dart` | idToken → `POST /v1/auth/google` → JWT 교환 |
+| Google Sign-In (Redirect, Web) | `auth/presentation/auth_controller.dart` | `GET /v1/auth/google` → 동의 화면 → `FRONTEND_CALLBACK_URL?token=...` |
 | 토큰 영속성 | `auth/domain/auth_repository.dart` | `flutter_secure_storage` |
 | 세션 복원 | `AuthController.restoreSession()` | 앱 시작 시 자동 실행 |
 | 로그아웃 | `AuthController.signOut()` | Google + 로컬 토큰 삭제 |
@@ -79,7 +80,7 @@
 | 계정 연동 (Home Assistant) | `SidebarWidget._buildAccountsSection` | HA REST API |
 | 상태 영속성 | 모든 모듈 | `shared_preferences` 패키지 추가됨, 미연결 |
 | LlmProvider 선택 UI | `auth/domain/llm_provider.dart` | enum 선언 완료, UI 미구현 |
-| Refresh Token 재발급 | `AuthRepository` | refresh_token 저장됨, 재발급 로직 없음 |
+| Refresh Token 재발급 | `AuthRepository` | refresh_token 저장됨, 재발급 로직 없음 (백엔드 `POST /v1/auth/refresh` 미구현) |
 
 ---
 
