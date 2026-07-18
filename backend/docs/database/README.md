@@ -19,7 +19,8 @@ hand-written SQL via `pool.query(...)`.
 |---|---|---|---|
 | `request_logs` | none (written directly by `AppLogger.saveRequestLog`) | yes | [request_logs.md](request_logs.md) |
 | `raw_logs` | none (written directly by `AppLogger.saveRawLog`) | yes | [raw_logs.md](raw_logs.md) |
-| `users` | [userRepository.ts](../../../src/db/userRepository.ts) | no — inferred from code | [users.md](users.md) |
+| `users` | [userRepository.ts](../../../src/db/userRepository.ts) | yes | [users.md](users.md) |
+| `refresh_tokens` | [refreshTokenRepository.ts](../../../src/db/refreshTokenRepository.ts) | yes | [refresh_tokens.md](refresh_tokens.md) |
 | `user_api_keys` | [apiKeyRepository.ts](../../../src/db/apiKeyRepository.ts) | no — inferred from code | [user_api_keys.md](user_api_keys.md) |
 | `ai_settings` | [settingsRepository.ts](../../../src/db/settingsRepository.ts) | no — inferred from code | [ai_settings.md](ai_settings.md) |
 | `ui_settings` | [settingsRepository.ts](../../../src/db/settingsRepository.ts) | no — inferred from code | [ui_settings.md](ui_settings.md) |

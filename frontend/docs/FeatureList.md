@@ -11,10 +11,12 @@
 | 기능 | 파일 | 비고 |
 |------|------|------|
 | Google Sign-In (ID Token, native) | `auth/presentation/auth_controller.dart` | idToken → `POST /v1/auth/google` → JWT 교환 |
-| Google Sign-In (Redirect, Web) | `auth/presentation/auth_controller.dart` | `GET /v1/auth/google` → 동의 화면 → `FRONTEND_CALLBACK_URL?token=...` |
+| Google Sign-In (Redirect, Web) | `auth/presentation/auth_controller.dart` | `GET /v1/auth/google` → 동의 화면 → `WEB_CALLBACK_URL#token=...` (fragment) |
 | 토큰 영속성 | `auth/domain/auth_repository.dart` | `flutter_secure_storage` |
-| 세션 복원 | `AuthController.restoreSession()` | 앱 시작 시 자동 실행 |
-| 로그아웃 | `AuthController.signOut()` | Google + 로컬 토큰 삭제 |
+| 세션 복원 | `AuthController.restoreSession()` | 앱 시작 시 자동 실행, 필요 시 refresh |
+| 로그아웃 | `AuthController.signOut()` | `POST /v1/auth/logout` (서버 revoke) + Google + 로컬 토큰 삭제 |
+| Refresh Token 갱신 | `AuthRepository.refreshToken()` | `POST /v1/auth/refresh` — rotation (tokenVersion+1) |
+| 현재 사용자 프로필 | `AuthApi` | `GET /v1/auth/me` — city 포함, provider_id 제외 |
 | 로그인 후 프리로드 | `AuthRepository._preloadUserData()` | /users/me, /settings/ai, /settings/ui, /apikey/status 병렬 |
 
 ### AOD 대시보드
@@ -80,7 +82,7 @@
 | 계정 연동 (Home Assistant) | `SidebarWidget._buildAccountsSection` | HA REST API |
 | 상태 영속성 | 모든 모듈 | `shared_preferences` 패키지 추가됨, 미연결 |
 | LlmProvider 선택 UI | `auth/domain/llm_provider.dart` | enum 선언 완료, UI 미구현 |
-| Refresh Token 재발급 | `AuthRepository` | refresh_token 저장됨, 재발급 로직 없음 (백엔드 `POST /v1/auth/refresh` 미구현) |
+| Refresh Token 재발급 UI 연동 | `AuthRepository` | 백엔드 `POST /v1/auth/refresh` 구현 완료 — 프론트 자동 갱신 로직 연결 필요 |
 
 ---
 
@@ -94,7 +96,7 @@
 | 캘린더 Google 동기화 | CalendarModule | High |
 | AI 스트리밍 응답 | ChatModule + LlmGateway | High (`stream()` 이미 선언됨) |
 | LLM 프로바이더 전환 UI | SidebarWidget | Medium |
-| Refresh Token 갱신 로직 | AuthRepository | High |
+| Refresh Token 자동 갱신 (인터셉터) | AuthRepository + ApiClient | High — 백엔드 완료, 프론트 401 인터셉터 + retry 필요 |
 | 다국어 지원 | — | Low |
 
 ---

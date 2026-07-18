@@ -11,8 +11,11 @@ removed, or changes status (see the Documentation Rule in
 |---|---|---|
 | Health/status check | `GET /v1/status` | Returns server name + `requestId`. See [api/status.md](api/status.md). |
 | Google login — ID Token | `POST /v1/auth/google` | Flutter native (Android/iOS). Verifies `id_token` via `google-auth-library`, upserts user, issues JWT pair. See [api/auth.md](api/auth.md). |
-| Google login — Redirect flow | `GET /v1/auth/google`, `GET /v1/auth/google/callback` | Web / Flutter Web. Requires `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `FRONTEND_CALLBACK_URL`. Disabled (501) when env vars absent. See [api/auth.md](api/auth.md). |
+| Google login — Redirect flow | `GET /v1/auth/google`, `GET /v1/auth/google/callback` | Web / Flutter Web. Requires `GOOGLE_CLIENT_SECRET`, `GOOGLE_CALLBACK_URL`, `WEB_CALLBACK_URL`. Platform detection via `X-Platform` header + cookie. Tokens delivered via URL `#fragment`. Disabled (501) when env vars absent. See [api/auth.md](api/auth.md). |
 | JWT authentication middleware | (`preHandler` hook, all routes) | `DefaultPolicy.before()` extracts `Authorization: Bearer <token>`, verifies HMAC-SHA256 JWT (`JWT_SECRET`), populates `req.ctx.userId`. See [plugins/policy.md](plugins/policy.md). |
+| Current user profile | `GET /v1/auth/me` | Returns `{ id, provider, email, nickname, profile_image, city, created_at }` — `provider_id` excluded. See [api/auth.md](api/auth.md). |
+| Token refresh | `POST /v1/auth/refresh` | Validates refresh token against DB hash, rotates (`tokenVersion + 1`), returns new pair. See [api/auth.md](api/auth.md). |
+| Logout | `POST /v1/auth/logout` | Revokes refresh token (SHA-256 hash in DB). Idempotent — returns 200 even for expired tokens. See [api/auth.md](api/auth.md). |
 | Current weather | `GET /v1/weather/current` | Proxies OpenWeather, normalizes to ICD shape. See [api/weather.md](api/weather.md). |
 | 5-day forecast | `GET /v1/weather/forecast5` | 3-hour interval entries, flattened. |
 | Forward geocoding | `GET /v1/weather/geo/direct` | City name → coordinates. |
@@ -22,7 +25,7 @@ removed, or changes status (see the Documentation Rule in
 | BYOK API key delete | `DELETE /v1/apikey/:provider` | 404 if not registered. |
 | AI settings get/save | `GET`/`PUT /v1/settings/ai` | Full-replacement upsert. See [api/settings.md](api/settings.md). |
 | UI settings get/save | `GET`/`PUT /v1/settings/ui` | Full-replacement upsert. |
-| User profile get/update | `GET`/`PATCH /v1/users/me` | Requires `req.ctx.userId`. See [api/users.md](api/users.md). |
+| User profile get/update | `GET`/`PATCH /v1/users/me` | Requires `req.ctx.userId`. PATCH supports `nickname`, `profile_image`, `city`. See [api/users.md](api/users.md). |
 | Request logging | (all routes) | `request_logs` row per HTTP response. See [database/request_logs.md](database/request_logs.md). |
 | Server lifecycle/error logging | (process-level) | `raw_logs` rows for startup/shutdown/exceptions/provider errors. See [database/raw_logs.md](database/raw_logs.md). |
 | Rate limiting | (all routes) | 30 req/min unauthenticated, 120 req/min authenticated (by `req.ctx.userId`). |
@@ -40,8 +43,8 @@ removed, or changes status (see the Documentation Rule in
 | Feature | Notes |
 |---|---|
 | `usage_logs` table | LLM token count / cost tracking. Referenced by TODO comments in `Logger.ts` and `RequestLog.ts`; no table, repository, or route exists yet. |
-| Token refresh endpoint | `POST /v1/auth/refresh` — refresh tokens are issued but no exchange endpoint exists. |
 | Additional LLM providers | `LingOnApiKey`'s allow-list (`openai`, `anthropic`, `gemini`, `openrouter`) implies planned gateways for these providers; none exist under `src/gateway/` yet besides OpenWeather. |
+| Refresh token cleanup job | Periodic `DELETE FROM refresh_tokens WHERE expires_at < NOW()` — expired rows are never pruned automatically. |
 
 ## Deprecated
 
