@@ -11,7 +11,7 @@ const path = require('path');
 const url = require('url');
 
 const ROOT = __dirname;
-const PORT = Number(process.argv[2]) || 4321;
+const PORT = Number(process.argv[2]) || 4446;
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
