@@ -17,8 +17,11 @@ Full-replacement (PUT/upsert) settings storage — there is no partial-update
 | GET | `/v1/settings/ui` | Required |
 | PUT | `/v1/settings/ui` | Required |
 
-> **Status note**: same as `/v1/apikey/*` — all four endpoints 401 until
-> authentication populates `req.ctx.userId`. See [FeatureList.md](../FeatureList.md).
+> **Status note (정정 2026-07-21)**: `/v1/apikey/*`와 동일한 오래된 안내가 있었다.
+> JWT 인증이 전역 `preHandler` 훅으로 구현되어 있어([plugins/policy.md](../plugins/policy.md)),
+> 유효한 `Authorization: Bearer <token>`이 있으면 위 네 엔드포인트 모두 정상
+> 동작한다. 근거: [api/auth.md](auth.md), `FeatureList.md`("Current (implemented)").
+> 토큰이 없거나 유효하지 않을 때만 `AppError('UNAUTHORIZED', 401)`이 발생한다.
 
 ## `GET /v1/settings/ai`
 

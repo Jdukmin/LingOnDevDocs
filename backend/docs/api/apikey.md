@@ -16,9 +16,13 @@ encrypted before being persisted and are **never** returned in any response.
 | PUT | `/v1/apikey/:provider` | Required |
 | DELETE | `/v1/apikey/:provider` | Required |
 
-> **Status note**: authentication is not implemented yet — every request to
-> these routes currently throws `AppError('UNAUTHORIZED', 401)` because
-> `req.ctx.userId` is always `undefined`. See [FeatureList.md](../FeatureList.md).
+> **Status note (정정 2026-07-21)**: 이전 버전의 이 안내는 오래된 내용이었다.
+> JWT 인증이 전역 `preHandler` 훅으로 구현되어 있어([plugins/policy.md](../plugins/policy.md)),
+> 유효한 `Authorization: Bearer <token>`이 있으면 `req.ctx.userId`가 정상적으로
+> 채워지고 위 세 라우트 모두 정상 동작한다. `auth.md`([api/auth.md](auth.md))와
+> `FeatureList.md`("Current (implemented)")가 이를 뒷받침한다. 토큰이 없거나
+> 유효하지 않으면 여전히 `AppError('UNAUTHORIZED', 401)`이 발생한다 — 이는
+> 버그가 아니라 인증이 필요한 라우트의 정상 동작이다.
 
 `/apikey/status` is registered before `/apikey/:provider` so the static path
 takes precedence over the dynamic param route (Fastify route-matching note,

@@ -4,6 +4,11 @@ Scope: this document covers **backend-only** conventions for the Lingon
 Fastify application. Cross-repo design (ICD, shared architecture) lives in
 `./docs` (LetMeKnow-Docs submodule) — do not duplicate it here.
 
+> **⚠ 2026-07-21 전략 검토**: 이 미러 저장소(`LingOnDevDocs`)에서 위 `./docs`는
+> 실제로 저장소 루트 [../../docs/](../../docs/)에 있다. Personal Action OS 전략
+> 전환에 따른 Action Layer ICD 제안은 [../../docs/icd/](../../docs/icd/)를 참조 —
+> 이 문서(백엔드 구현 컨벤션) 자체는 변경되지 않았다.
+
 For the authoritative source layout and command reference, see the repository
 [CLAUDE.md](../../CLAUDE.md). This guide explains *why* the conventions exist
 and *how* to extend them.

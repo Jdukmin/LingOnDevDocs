@@ -1,5 +1,10 @@
 # Services (gateways)
 
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: 아래 게이트웨이는 변경되지 않는다.
+> Action Layer 도입 후 이들은 Action Type의 내부 구현("Tool")으로 호출된다
+> (예: `OpenWeatherAPI` → `weather.get_current` Action) — 자세한 매핑은
+> [../../../docs/icd/api_comparison.md](../../../docs/icd/api_comparison.md) 참조.
+
 "Service" in this codebase means a subclass of `BaseGateway` or `BaseProvider`
 under `src/gateway/` — each is instantiated once per route-plugin registration
 (not a singleton) and injected into its route group as a dependency.

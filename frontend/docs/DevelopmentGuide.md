@@ -2,6 +2,11 @@
 
 > Flutter 구현 전용 가이드입니다.  
 > 시스템 아키텍처·API 명세·DB 스키마 등 공통 설계는 `./docs/` (Git Submodule)를 참조합니다.
+>
+> **⚠ 2026-07-21 전략 검토**: 이 미러 저장소에서 위 `./docs/`는 실제로 저장소 루트
+> [../../docs/](../../docs/)에 있다. Personal Action OS 전략 전환 및 Action Layer
+> ICD 제안은 [../../docs/icd/](../../docs/icd/) 참조 — 이 문서(Flutter 구현 컨벤션)
+> 자체는 변경되지 않았다.
 
 ---
 

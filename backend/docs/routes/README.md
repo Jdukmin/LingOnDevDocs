@@ -1,5 +1,11 @@
 # Route registration mechanics
 
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: Personal Action OS 전환에 따라 Action이
+> API의 중심이 되는 신규 진입점(`POST /v1/actions/execute` 등)이 제안되었다.
+> 아래 라우트는 전부 유효하며 변경되지 않는다 — 각 라우트가 Action Layer 도입 후
+> Keep/Wrap 중 무엇이 되는지는 [../../../docs/icd/api_comparison.md](../../../docs/icd/api_comparison.md),
+> 신규 API 설계는 [../../../docs/icd/action_layer_api.md](../../../docs/icd/action_layer_api.md) 참조.
+
 This document covers *how* routes get registered — for per-endpoint request/
 reply/validation details, see [../api/](../api/).
 

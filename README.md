@@ -1,5 +1,31 @@
 # Development Documents
 
+## 제품 전략 (Why)
+
+[docs/](docs/)는 **구현(How)이 아니라 왜(Why)**를 기록하는 최상위 전략 문서다
+(`strategy/`, `roadmap/`, `decisions/`, `development_rules.md`). 모든 신규 기능은
+이 디렉터리의 우선순위("Dashboard가 아니라 Action Layer가 제품이다")를 먼저
+따른 뒤 [requirements/](requirements/)에서 Requirement로 구체화한다.
+시작점: [docs/strategy/product.md](docs/strategy/product.md), [docs/development_rules.md](docs/development_rules.md).
+Action Layer 중심으로 재검토된 신규 ICD 제안은 [docs/icd/README.md](docs/icd/README.md)에 있다
+(기존 `backend/docs`, `frontend/docs`의 API/인터페이스 문서는 삭제·변경 없이 유지된다).
+
+```
+docs/strategy/            → 왜 (제품 전략)
+requirements/domain_icd/  → 무엇의 계약을 지켜야 하는가 (Domain ICD)
+requirements/*_requirements.md → 무엇을 (Requirement, RDD)
+docs/icd/, backend/docs, frontend/docs → 어떻게 (API/구현)
+```
+
+## Requirements (RDD) & Domain ICD
+
+[requirements/](requirements/)에 시스템 전체 Requirement(System/Layer Requirement,
+Status/Progress 규칙, Traceability)를 관리한다. 새 기능은 반드시 이 디렉터리의
+Requirement를 먼저 확인/작성한 뒤 구현한다. 시작점: [requirements/README.md](requirements/README.md).
+API/State/DB보다 상위에서 도메인 간 계약을 정의하는 **Domain ICD**는
+[requirements/domain_icd/README.md](requirements/domain_icd/README.md)에 있다 — Backend/Frontend는
+API가 아니라 이 계약을 기준으로 구현한다.
+
 ## 문서 포털 (검색 · 라우팅)
 
 `backend/docs`, `frontend/docs`의 모든 문서를 브라우저에서 검색하고 탐색할 수 있는

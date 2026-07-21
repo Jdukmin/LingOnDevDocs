@@ -4,6 +4,14 @@
 
 ---
 
+> **⚠ 2026-07-21 전략 검토 (Action Layer) — 화면 흐름 재검토 대상**: Personal
+> Action OS 전략에서 Dashboard는 항상 마지막 화면이어야 한다
+> ([../../../docs/strategy/product.md](../../../docs/strategy/product.md) Core
+> Philosophy). 이 화면(`AodDisplay`)이 현재 앱의 유일한 메인 화면이라는 구조는
+> 그 전략과 어긋난다 — 위젯/레이아웃 자체는 변경하지 않으며, 진입 순서(Chat →
+> Intent Parsing → Action Result → History → Dashboard) 제안은
+> [../../../docs/icd/frontend_interaction_flow.md](../../../docs/icd/frontend_interaction_flow.md) 참조.
+
 ## 목적
 
 앱의 메인 AOD(Always-On Display) 화면입니다. 모든 기능 모듈의 생명주기를 소유하고, 3컬럼 태블릿 레이아웃에 위젯을 배치합니다.

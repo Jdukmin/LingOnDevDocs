@@ -4,6 +4,16 @@
 
 ---
 
+> **🔶 Deprecated (대체 예정) — 2026-07-21 전략 검토 (Action Layer)**: 아래 구조
+> (클라이언트가 OpenAI를 직접 호출)는 지금 당장 변경되지 않으며 계속 동작한다.
+> 다만 Architecture상 LLM Gateway는 **백엔드** 책임이다
+> ([requirements/system_requirements.md](../../../requirements/system_requirements.md) SYS-010).
+> Action Layer 도입 이후에는 `POST /v1/actions/execute { type: "llm.chat_complete" }`
+> 경유로 대체될 예정이다 — 비교: [../../../docs/icd/api_comparison.md](../../../docs/icd/api_comparison.md),
+> 신규 API: [../../../docs/icd/action_layer_api.md](../../../docs/icd/action_layer_api.md).
+
+---
+
 ## 역할
 
 AI 채팅 응답을 생성합니다. `LlmGateway` 추상 인터페이스를 통해 프로바이더를 교체 가능하게 설계되어 있습니다.

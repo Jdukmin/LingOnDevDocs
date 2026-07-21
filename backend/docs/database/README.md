@@ -1,5 +1,10 @@
 # Database — implementation status
 
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: 아래 테이블은 변경되지 않는다. Action
+> Layer 도입 시 `action_executions`, `workflows`, `workflow_executions` 테이블이
+> 신규로 필요할 것으로 제안된다(스키마 초안: [../../../docs/icd/action_layer_api.md](../../../docs/icd/action_layer_api.md) State 섹션,
+> 갭 분석: [../../../docs/icd/gap_analysis.md](../../../docs/icd/gap_analysis.md)).
+
 > No migration files or `.sql` schema definitions exist in this repository —
 > every table below is inferred from the columns referenced in
 > `src/db/*.ts`. This is an **implementation status** snapshot, not a

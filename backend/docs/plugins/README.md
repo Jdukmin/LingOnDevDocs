@@ -1,5 +1,11 @@
 # Plugins
 
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: 아래 플러그인 목록은 변경되지 않는다.
+> Action Layer 도입 시 이 목록에 `ActionDispatcher`(Action Type 라우팅) 플러그인이
+> 추가될 것으로 제안된다 — 설계는 아직 미확정. 참조:
+> [../../../docs/icd/gap_analysis.md](../../../docs/icd/gap_analysis.md) "누락된 Interface",
+> [../../../docs/icd/action_layer_api.md](../../../docs/icd/action_layer_api.md).
+
 All Fastify plugins live under `src/plugins/`, wrapped in `fastify-plugin`
 (`fp`) so decorations propagate to the root app rather than being scoped to a
 child context. `@fastify/autoload` registers every file in this tree

@@ -10,6 +10,8 @@ const ROOT = path.resolve(__dirname, '..');
 const OUT_FILE = path.join(ROOT, 'assets', 'manifest.json');
 
 const SOURCES = [
+  { app: 'docs', label: 'Strategy', dir: path.join(ROOT, 'docs') },
+  { app: 'requirements', label: 'Requirements', dir: path.join(ROOT, 'requirements') },
   { app: 'backend', label: 'Backend', dir: path.join(ROOT, 'backend', 'docs') },
   { app: 'frontend', label: 'Frontend', dir: path.join(ROOT, 'frontend', 'docs') },
 ];
@@ -70,7 +72,7 @@ function build() {
   }
 
   entries.sort((a, b) => {
-    const appOrder = { root: 0, backend: 1, frontend: 2 };
+    const appOrder = { root: 0, docs: 1, requirements: 2, backend: 3, frontend: 4 };
     if (appOrder[a.app] !== appOrder[b.app]) return appOrder[a.app] - appOrder[b.app];
     if (a.category !== b.category) return a.category.localeCompare(b.category);
     return a.path.localeCompare(b.path);
