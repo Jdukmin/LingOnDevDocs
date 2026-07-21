@@ -16,6 +16,8 @@ removed, or changes status (see the Documentation Rule in
 | Current user profile | `GET /v1/auth/me` | Returns `{ id, provider, email, nickname, profile_image, city, created_at }` — `provider_id` excluded. See [api/auth.md](api/auth.md). |
 | Token refresh | `POST /v1/auth/refresh` | Validates refresh token against DB hash, rotates (`tokenVersion + 1`), returns new pair. See [api/auth.md](api/auth.md). |
 | Logout | `POST /v1/auth/logout` | Revokes refresh token (SHA-256 hash in DB). Idempotent — returns 200 even for expired tokens. See [api/auth.md](api/auth.md). |
+| Google Calendar consent flow | `GET /v1/auth/google/calendar`, `GET /v1/auth/google/calendar/callback` | Independent OAuth2 client (`app.googleCalendarOAuth2`), `calendar.readonly` scope only — never shares scope/consent with login. Requires an authenticated LingOn user. Stores Google access/refresh token pair encrypted on `users`. Disabled (501) when `GOOGLE_CALENDAR_CALLBACK_URL` absent. See [api/auth.md](api/auth.md). |
+| Google Calendar events | `GET /v1/calendar/events` | JWT required. Auto-refreshes the Google access token via `GoogleTokenService` when expired. Returns upcoming events (today onward) from the user's primary calendar. See [api/calendar.md](api/calendar.md). |
 | Current weather | `GET /v1/weather/current` | Proxies OpenWeather, normalizes to ICD shape. See [api/weather.md](api/weather.md). |
 | 5-day forecast | `GET /v1/weather/forecast5` | 3-hour interval entries, flattened. |
 | Forward geocoding | `GET /v1/weather/geo/direct` | City name → coordinates. |

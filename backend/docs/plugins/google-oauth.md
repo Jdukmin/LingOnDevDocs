@@ -2,14 +2,24 @@
 
 Source: [src/plugins/LingOnOAuth/GoogleOAuth.ts](../../../src/plugins/LingOnOAuth/GoogleOAuth.ts)
 
-Conditionally registers `@fastify/oauth2` for the Authorization Code redirect
-flow. Decorates `app.googleOAuth2` (typed as `OAuth2Namespace?` in
-[FastifyDefinition.ts](../../../src/config/FastifyDefinition.ts)) when active.
+Conditionally registers **two independent** `@fastify/oauth2` namespaces for
+Authorization Code flows — login and Google Calendar consent — via a shared
+`registerGoogleOAuth2Client()` helper so both stay in sync on credentials and
+endpoint config. They never share scope, consent state, or a namespace:
 
-## Activation condition
+| Namespace | Scope | Purpose |
+|---|---|---|
+| `app.googleOAuth2` | `openid email profile` | Login (Flow 2 in [api/auth.md](../api/auth.md)) |
+| `app.googleCalendarOAuth2` | `calendar.readonly` | Calendar consent (Flow 3 in [api/auth.md](../api/auth.md)) |
 
-The plugin registers `@fastify/oauth2` only when **all three** of the following
-env vars are non-empty:
+Both are typed as `OAuth2Namespace?` in
+[FastifyDefinition.ts](../../../src/config/FastifyDefinition.ts).
+
+## Activation conditions
+
+### Login (`app.googleOAuth2`)
+
+Registers only when **all three** of the following env vars are non-empty:
 
 | Env var | Purpose |
 |---|---|
@@ -17,21 +27,33 @@ env vars are non-empty:
 | `GOOGLE_CLIENT_SECRET` | OAuth2 client secret |
 | `GOOGLE_CALLBACK_URL` | Backend callback URL, e.g. `https://api.example.com/v1/auth/google/callback` |
 
-If any is absent, the plugin logs a warning and returns early. In that case
-`app.googleOAuth2` is `undefined` and the redirect routes (`GET /v1/auth/google`,
-`GET /v1/auth/google/callback`) return `501 NOT_IMPLEMENTED`.
+If any is absent, the plugin logs a warning and skips this namespace only. In
+that case `app.googleOAuth2` is `undefined` and the redirect routes
+(`GET /v1/auth/google`, `GET /v1/auth/google/callback`) return `501 NOT_IMPLEMENTED`.
 
 The ID Token flow (`POST /v1/auth/google`) is **unaffected** — it does not use
 this plugin.
 
+### Calendar (`app.googleCalendarOAuth2`)
+
+Registers only when `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and
+`GOOGLE_CALENDAR_CALLBACK_URL` are all non-empty — independently of the login
+condition above (a deployment can have login enabled and Calendar disabled,
+or vice versa). Registered with `callbackUriParams: { access_type: 'offline',
+prompt: 'consent' }` so Google always returns a `refresh_token`.
+
+If absent, `app.googleCalendarOAuth2` is `undefined` and
+`GET /v1/auth/google/calendar` (+ its callback) return `501 NOT_IMPLEMENTED`.
+
 ## Decoration
 
-When active, `app.googleOAuth2` (an `OAuth2Namespace`) exposes:
+Each active namespace (`app.googleOAuth2` / `app.googleCalendarOAuth2`, both
+`OAuth2Namespace`) exposes:
 
 | Method | Called by |
 |---|---|
-| `generateAuthorizationUri(req, reply)` | `GET /v1/auth/google` — builds consent URL, sets state cookie |
-| `getAccessTokenFromAuthorizationCodeFlow(req, reply)` | `GET /v1/auth/google/callback` — validates state, exchanges code for tokens |
+| `generateAuthorizationUri(req, reply)` | `GET /v1/auth/google` or `GET /v1/auth/google/calendar` — builds consent URL, sets state cookie |
+| `getAccessTokenFromAuthorizationCodeFlow(req, reply)` | The matching `.../callback` route — validates state, exchanges code for tokens |
 
 ## Load order requirement
 

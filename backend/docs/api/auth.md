@@ -1,12 +1,14 @@
 # `/v1/auth/*` — authentication & session management
 
 Sources:
-- OAuth login: [src/route/LingOnAuth.ts](../../../src/route/LingOnAuth.ts)
+- OAuth login + Calendar consent: [src/route/LingOnAuth.ts](../../../src/route/LingOnAuth.ts)
 - Session (me / refresh / logout): [src/route/LingOnSession.ts](../../../src/route/LingOnSession.ts)
 
 Gateway: [src/gateway/GoogleAuthAPI.ts](../../../src/gateway/GoogleAuthAPI.ts)  
-Repositories: [src/db/userRepository.ts](../../../src/db/userRepository.ts) · [src/db/refreshTokenRepository.ts](../../../src/db/refreshTokenRepository.ts)  
+Repositories: [src/db/userRepository.ts](../../../src/db/userRepository.ts) · [src/db/refreshTokenRepository.ts](../../../src/db/refreshTokenRepository.ts) · [src/db/googleTokenRepository.ts](../../../src/db/googleTokenRepository.ts)  
 JWT utils: [src/core/utils/Jwt.ts](../../../src/core/utils/Jwt.ts)
+
+For the Calendar data endpoint itself (`GET /v1/calendar/events`), see [api/calendar.md](calendar.md).
 
 ---
 
@@ -20,6 +22,8 @@ JWT utils: [src/core/utils/Jwt.ts](../../../src/core/utils/Jwt.ts)
 | GET | `/v1/auth/me` | Required | Current user profile |
 | POST | `/v1/auth/refresh` | None | Rotate refresh token → new token pair |
 | POST | `/v1/auth/logout` | None | Revoke refresh token |
+| GET | `/v1/auth/google/calendar` | Required (Bearer or `?access_token=`) | Calendar consent initiation — independent of login |
+| GET | `/v1/auth/google/calendar/callback` | None (LingOn user carried via cookie) | Calendar consent callback |
 
 ---
 
@@ -143,6 +147,73 @@ GET /v1/auth/google/callback?code=<auth-code>&state=<csrf-token>
 | 401 | `UNAUTHORIZED` | User denied consent (`?error=` from Google) |
 | 500 | `INTERNAL` | `WEB_CALLBACK_URL` not configured, or `id_token` absent from token response, or refresh token DB insert failed |
 | 501 | `NOT_IMPLEMENTED` | Redirect flow env vars not configured |
+
+---
+
+## Flow 3 — Calendar consent (`GET /v1/auth/google/calendar`, callback)
+
+Independent of the login flow (1/2): separate `@fastify/oauth2` namespace
+(`app.googleCalendarOAuth2`), separate scope (`calendar.readonly` only —
+never `openid`/`email`/`profile`, never merged into the login scope), and
+separate consent screen. Connecting or disconnecting Calendar never touches
+`app.googleOAuth2`, the login scope, or any LingOn JWT/session.
+
+Registered with `access_type=offline&prompt=consent` so Google always returns
+a `refresh_token` on every consent — by default Google only issues one on a
+user's very first authorization, which would otherwise silently break
+re-connection.
+
+### Initiation — `GET /v1/auth/google/calendar`
+
+Requires an already-authenticated LingOn user. Since this is a top-level
+browser navigation (not a `fetch`), it cannot carry an `Authorization` header
+the way JSON API calls do, so the endpoint accepts the LingOn access token
+either way:
+
+```
+GET /v1/auth/google/calendar
+Authorization: Bearer <access_token>        (preferred — same as any other route)
+```
+```
+GET /v1/auth/google/calendar?access_token=<access_token>   (fallback for <a href> / window.location navigation)
+```
+
+The resolved user ID is stored in a short-lived `x_calendar_user_id` cookie
+(httpOnly, 10 min TTL — mirrors `x_auth_platform`) so the callback step knows
+which `users` row to update. Returns `501` if `GOOGLE_CALENDAR_CALLBACK_URL`
+(or `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET`) is not configured.
+
+### Callback — `GET /v1/auth/google/calendar/callback`
+
+```
+GET /v1/auth/google/calendar/callback?code=<auth-code>&state=<csrf-token>
+```
+
+```
+GoogleOAuth2.getAccessTokenFromAuthorizationCodeFlow(req, reply)
+  → { access_token, refresh_token, expires_at }
+  → googleTokenRepo.saveTokens(userId, access_token, refresh_token, expires_at)
+      → AES-256-GCM encrypt both tokens (src/db/encrypt.ts) before UPDATE users
+  → 302 redirect (no secrets in the URL — just a status flag)
+```
+
+### Response
+
+`302 Found` — redirects to platform-specific client URL:
+
+```
+<WEB_CALLBACK_URL>#calendar=connected      (web)
+<ANDROID_CALLBACK_URL>#calendar=connected  (android)
+```
+
+### Error responses
+
+| Status | `error.code` | Condition |
+|---|---|---|
+| 400 | `BAD_REQUEST` | `x_calendar_user_id` cookie missing/expired, or state mismatch / expired code |
+| 401 | `UNAUTHORIZED` | Missing/invalid access token at initiation, or user denied consent (`?error=`) |
+| 500 | `INTERNAL` | Callback URL not configured, or `access_token` absent from Google's token response |
+| 501 | `NOT_IMPLEMENTED` | Calendar OAuth env vars not configured |
 
 ---
 
@@ -319,3 +390,10 @@ Signed with HMAC-SHA256 using `JWT_SECRET`.
 - `upsertByProvider` is atomic (`INSERT ... ON CONFLICT`) — no race condition under concurrent logins.
 - Callback destination URLs come exclusively from server-side env vars (`WEB_CALLBACK_URL`, `ANDROID_CALLBACK_URL`) — no user-supplied redirect URLs are accepted.
 - Tokens are delivered via URL fragment (`#`) not query string (`?`) to avoid server/proxy log exposure.
+- The Calendar consent flow (Flow 3) never shares scope, consent state, or a
+  Google OAuth2 namespace with login — `calendar.readonly` is requested on a
+  fully separate client registration.
+- Google Calendar access/refresh tokens are AES-256-GCM encrypted at rest
+  (`src/db/encrypt.ts`, same scheme as `user_api_keys`) and are never returned
+  in any HTTP response — `GET`/`PATCH /v1/users/me` explicitly whitelist
+  response fields for this reason (see [database/users.md](../database/users.md)).

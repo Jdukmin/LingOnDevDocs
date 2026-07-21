@@ -1,10 +1,11 @@
 # `users`
 
-Repository: [src/db/userRepository.ts](../../../src/db/userRepository.ts).
+Repository: [src/db/userRepository.ts](../../../src/db/userRepository.ts) (profile fields) · [src/db/googleTokenRepository.ts](../../../src/db/googleTokenRepository.ts) (Google Calendar tokens).
 
 Migrations:
 - [migrations/001_rename_provider_sub_to_provider_id.sql](../../../migrations/001_rename_provider_sub_to_provider_id.sql)
 - [migrations/002_users_city_and_refresh_tokens.sql](../../../migrations/002_users_city_and_refresh_tokens.sql)
+- [migrations/003_google_calendar_tokens.sql](../../../migrations/003_google_calendar_tokens.sql)
 
 ## Columns
 
@@ -17,8 +18,24 @@ Migrations:
 | `nickname` | varchar(100) | mapped from Google payload `name` field |
 | `profile_image` | text, nullable | mapped from Google payload `picture` field |
 | `city` | varchar(100), nullable | user-set city via `PATCH /v1/users/me`; not populated by OAuth login |
+| `google_access_token` | text, nullable | AES-256-GCM encrypted Google Calendar access token. Set by `GET /v1/auth/google/calendar/callback`, refreshed by `GoogleTokenService`. **Never returned in HTTP responses.** |
+| `google_refresh_token` | text, nullable | AES-256-GCM encrypted Google Calendar refresh token. **Never returned in HTTP responses.** |
+| `google_token_expire` | timestamptz, nullable | absolute expiry of `google_access_token`; `GoogleTokenService` refreshes ~60s ahead of this |
 | `created_at` | timestamptz | set at INSERT |
-| `updated_at` | timestamptz | set to `NOW()` on `upsertByProvider` / `update()` |
+| `updated_at` | timestamptz | set to `NOW()` on `upsertByProvider` / `update()` / Google token save |
+
+`google_access_token`, `google_refresh_token`, and `google_token_expire` are
+entirely independent of the OAuth login columns above (`provider`,
+`provider_id`) — they are populated by the separate Calendar consent flow
+(see [api/auth.md — Flow 3](../api/auth.md#flow-3--calendar-consent-get-v1authgooglecalendar-callback))
+and never touched by login.
+
+**Response safety**: `userRepository.findById`/`update` use `SELECT *` /
+`RETURNING *` internally (unchanged, relied on by internal callers), so
+`LingOnUsers.ts` (`GET`/`PATCH /v1/users/me`) explicitly whitelists response
+fields via `toPublicUser()` rather than returning the raw row — this is what
+actually keeps `provider_id` and the Google token columns out of client
+responses, not the query shape.
 
 ## Constraints
 
@@ -54,6 +71,7 @@ Migrations:
 
 ## Consumers
 
-- [LingOnAuth.ts](../../../src/route/LingOnAuth.ts) — `POST /v1/auth/google`, `GET /v1/auth/google/callback` → `upsertByProvider`
+- [LingOnAuth.ts](../../../src/route/LingOnAuth.ts) — `POST /v1/auth/google`, `GET /v1/auth/google/callback` → `upsertByProvider`; `GET /v1/auth/google/calendar/callback` → `googleTokenRepo.saveTokens`
 - [LingOnSession.ts](../../../src/route/LingOnSession.ts) — `GET /v1/auth/me` → `findById` (returns without `provider_id`)
-- [LingOnUsers.ts](../../../src/route/LingOnUsers.ts) — `GET`/`PATCH /v1/users/me`
+- [LingOnUsers.ts](../../../src/route/LingOnUsers.ts) — `GET`/`PATCH /v1/users/me` → `toPublicUser()` (excludes `provider_id` + Google token columns)
+- [GoogleTokenService.ts](../../../src/gateway/GoogleTokenService.ts) — `GET /v1/calendar/events` (via `GoogleCalendarAPI`) → `googleTokenRepo.getTokens` / `saveTokens` on refresh

@@ -47,16 +47,17 @@ per-file edit.
 
 See [../FeatureList.md](../FeatureList.md) for the full current endpoint
 inventory, and [../api/](../api/) for one doc per group:
-[auth](../api/auth.md), [status](../api/status.md), [weather](../api/weather.md),
-[apikey](../api/apikey.md), [settings](../api/settings.md),
-[users](../api/users.md).
+[auth](../api/auth.md), [calendar](../api/calendar.md), [status](../api/status.md),
+[weather](../api/weather.md), [apikey](../api/apikey.md),
+[settings](../api/settings.md), [users](../api/users.md).
 
 Route files and their primary endpoints:
 
 | File | Endpoints |
 |---|---|
-| `LingOnAuth.ts` | `POST /v1/auth/google`, `GET /v1/auth/google`, `GET /v1/auth/google/callback` |
+| `LingOnAuth.ts` | `POST /v1/auth/google`, `GET /v1/auth/google`, `GET /v1/auth/google/callback`, `GET /v1/auth/google/calendar`, `GET /v1/auth/google/calendar/callback` |
 | `LingOnSession.ts` | `GET /v1/auth/me`, `POST /v1/auth/refresh`, `POST /v1/auth/logout` |
+| `LingOnCalendar.ts` | `GET /v1/calendar/events` |
 | `LingOnStatus.ts` | `GET /v1/status` |
 | `LingOnWeather.ts` | `GET /v1/weather/*` |
 | `LingOnUsers.ts` | `GET /v1/users/me`, `PATCH /v1/users/me` |

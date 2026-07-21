@@ -8,6 +8,13 @@ under `src/gateway/` — each is instantiated once per route-plugin registration
 |---|---|---|---|
 | `OpenWeatherAPI` | `BaseGateway` | OpenWeather (openweathermap.org) | [openweather.md](openweather.md) |
 | `GoogleAuthAPI` | `BaseProvider` | Google OAuth2 (`google-auth-library`) | [google-auth.md](google-auth.md) |
+| `GoogleCalendarAPI` | `BaseProvider` | Google Calendar (`googleapis`) | [google-calendar.md](google-calendar.md) |
+
+`GoogleTokenService` ([src/gateway/GoogleTokenService.ts](../../../src/gateway/GoogleTokenService.ts))
+is not itself a `BaseProvider`/`BaseGateway` — it's a plain helper class that
+`GoogleCalendarAPI` depends on to resolve a valid (auto-refreshed) Google
+access token per call. Documented alongside it in
+[google-calendar.md](google-calendar.md).
 
 `BaseGateway` extends `BaseProvider`. Use `BaseGateway` for services that make
 outbound HTTP calls via `fetch`; use `BaseProvider` directly for services that
