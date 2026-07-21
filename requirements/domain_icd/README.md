@@ -18,6 +18,11 @@ Dashboard Application이 아니라 **Personal Action OS**로 개발되는 이상
 - **정의한다**: 각 도메인의 존재 이유, 핵심 개념(Entity), 책임(하는 일/하지
   않는 일), 상태, 이벤트, 입출력, 다른 도메인과의 관계.
 
+> **Backend/Frontend를 분리된 프롬프트 세션으로 구현할 때**: 이 폴더의 문서
+> 단독으로는 구현할 수 없다(의도적으로 REST/State/DB를 적지 않았기 때문).
+> 어떤 문서를 함께 넣어야 하는지, 어떤 순서로 진행해야 하는지는
+> [docs/icd/prompt_playbook.md](../../docs/icd/prompt_playbook.md)를 먼저 본다.
+
 Backend와 Frontend는 **API가 아니라 이 Domain ICD를 기준으로** 구현한다 —
 API는 Domain ICD를 구현하는 수단일 뿐이다.
 

@@ -8,6 +8,18 @@
 `backend/docs/routes`, `backend/docs/plugins`에 별도로 작성한다 — 이 문서에는
 구현 코드를 적지 않는다.
 
+## 버전/호환성 (2026-07-21 추가)
+
+- 아래 모든 응답은 기존 백엔드가 이미 쓰고 있는 **ICD v0.0** 봉투
+  (`{success, data, error}`, [backend/docs/DevelopmentGuide.md](../../backend/docs/DevelopmentGuide.md))를
+  그대로 사용한다 — Action Layer가 새 봉투 포맷을 도입하지 않는다.
+- `type`(Action Type)별 `input`/`result` 스키마는 이후 필드를 **추가**할 수는
+  있어도, 기존 필드의 이름/타입을 변경하거나 제거하지 않는다(하위 호환).
+  스키마를 깨는 변경이 꼭 필요하면 새 Action Type(`calendar.list_events.v2`
+  형태)으로 추가하고 기존 것은 [api_comparison.md](api_comparison.md)에
+  Deprecated로 표시한다 — 기존 값을 그 자리에서 바꾸지 않는다.
+- State 이름의 단일 기준은 [requirements/domain_icd/action.md](../../requirements/domain_icd/action.md)이다(아래 State 섹션 참고).
+
 ---
 
 ## 핵심 개념
@@ -255,6 +267,12 @@ Workflow 실행 상태 폴링(Action의 `GET /v1/actions/:id`에 대응).
 
 ### ActionExecution 상태 머신
 
+> **정정 2026-07-21**: 이 상태값의 단일 기준(canonical)은
+> [requirements/domain_icd/action.md](../../requirements/domain_icd/action.md) State
+> 섹션이다 — 이전 버전은 `cancelled`가 빠져 있어 Domain ICD와 어긋났다. 아래는
+> 그 기준을 그대로 반영한 것이며, 두 문서가 다시 벌어지면 항상 domain_icd/action.md를
+> 우선한다.
+
 ```mermaid
 stateDiagram-v2
     [*] --> pending
@@ -262,9 +280,11 @@ stateDiagram-v2
     running --> succeeded
     running --> failed
     running --> timed_out
+    running --> cancelled
     failed --> rolled_back : rollback 지원 Action인 경우
+    timed_out --> rolled_back : rollback 지원 Action인 경우
     succeeded --> [*]
-    timed_out --> [*]
+    cancelled --> [*]
     rolled_back --> [*]
 ```
 
@@ -272,7 +292,7 @@ stateDiagram-v2
 |---|---|---|
 | `action_id` | string | 고유 ID |
 | `type` | string | Action Type |
-| `status` | `pending\|running\|succeeded\|failed\|timed_out\|rolled_back` | 현재 상태 |
+| `status` | `pending\|running\|succeeded\|failed\|timed_out\|cancelled\|rolled_back` | 현재 상태 |
 | `input` | object | 요청 입력(재현/재시도용으로 저장) |
 | `result` | object \| null | 성공 시 결과 |
 | `error` | `{code, message}` \| null | 실패 시 에러 |

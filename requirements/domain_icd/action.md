@@ -7,6 +7,10 @@ Flutter State, DB Schema는 이 문서의 범위가 아니다(구현 수단:
 [docs/icd/action_layer_api.md](../../docs/icd/action_layer_api.md), Requirement:
 [requirements/action_requirements.md](../action_requirements.md)).
 
+> Backend/Frontend를 분리된 프롬프트 세션으로 구현할 때는 이 문서 단독으로
+> 넣지 말 것 — 위 API 문서를 반드시 함께 넣는다. 필수 동반 문서 매트릭스와
+> 실행 순서는 [docs/icd/prompt_playbook.md](../../docs/icd/prompt_playbook.md) 참고.
+
 ---
 
 # Purpose
@@ -84,27 +88,38 @@ Natural Language
 
 # State
 
+> **정정 2026-07-21 — 이 표가 State 이름의 단일 기준(canonical)이다.**
+> 이전 버전은 여기(PascalCase, `Cancelled`만 있고 `timed_out` 없음)와
+> [docs/icd/action_layer_api.md](../../docs/icd/action_layer_api.md)(소문자,
+> `timed_out`만 있고 `cancelled` 없음)가 서로 다른 이름을 쓰고 있었다 — front/back을
+> 분리해 각각 프롬프트로 구현을 맡길 경우 이런 불일치는 그대로 서로 다른 구현으로
+> 굳어진다. 아래가 두 문서 공통의 최종 값이며, `action_layer_api.md`는 이 표를
+> 그대로 인용한다. 실제 코드의 상태값도 아래 소문자 snake_case를 그대로 사용한다.
+
 ```mermaid
 stateDiagram-v2
-    [*] --> Pending
-    Pending --> Running
-    Running --> Success
-    Running --> Failed
-    Running --> Cancelled
-    Failed --> RolledBack : 보상 가능한 Action인 경우
-    Success --> [*]
-    Cancelled --> [*]
-    RolledBack --> [*]
+    [*] --> pending
+    pending --> running
+    running --> succeeded
+    running --> failed
+    running --> timed_out
+    running --> cancelled
+    failed --> rolled_back : 보상 가능한 Action인 경우
+    timed_out --> rolled_back : 보상 가능한 Action인 경우
+    succeeded --> [*]
+    cancelled --> [*]
+    rolled_back --> [*]
 ```
 
 | State | 의미 |
 |---|---|
-| `Pending` | Validation 통과, 실행 대기 |
-| `Running` | Tool에 실행 요청을 보낸 상태 |
-| `Success` | ExecutionResult 정상 수신 |
-| `Failed` | Tool 실행 실패 또는 타임아웃 |
-| `Cancelled` | 사용자 취소 또는 Intent가 Superseded됨 |
-| `RolledBack` | 실패 후 보상 로직으로 원복(모든 Action이 지원하지는 않음) |
+| `pending` | Validation 통과, 실행 대기 |
+| `running` | Tool에 실행 요청을 보낸 상태 |
+| `succeeded` | ExecutionResult 정상 수신 |
+| `failed` | Tool 실행 오류(타임아웃 제외) |
+| `timed_out` | 지정된 시간 내 응답 없음 — `failed`와 별개 상태로 구분한다(원인 분석과 재시도 정책이 다르기 때문) |
+| `cancelled` | 사용자 취소 또는 Intent가 Superseded됨 |
+| `rolled_back` | 실패(`failed`/`timed_out`) 후 보상 로직으로 원복(모든 Action이 지원하지는 않음) |
 
 # Events
 

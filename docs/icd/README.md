@@ -31,6 +31,7 @@
 | [frontend_interaction_flow.md](frontend_interaction_flow.md) | Chat → Intent Parsing → Action Result → History → Dashboard 화면 흐름 |
 | [api_comparison.md](api_comparison.md) | 기존 API 대비 추가 / 변경 / Deprecated 비교표 |
 | [gap_analysis.md](gap_analysis.md) | Frontend ↔ Backend 누락 Interface/API/Event/State/Error Code 분석 |
+| [prompt_playbook.md](prompt_playbook.md) | Front/Back 분리 프롬프트 운영 절차 — 필수 동반 문서, 실행 순서, Progress 갱신 규칙, 버전 정책 |
 
 ## 검토 대상과 매핑
 
