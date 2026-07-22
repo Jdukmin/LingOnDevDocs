@@ -173,6 +173,13 @@ AI Decision Layer([../strategy/architecture.md](../strategy/architecture.md) Lay
 사용 가능한 Action Type 카탈로그(확장성의 핵심 — 신규 커넥터는 여기 항목만
 추가하면 된다).
 
+> **정정 2026-07-22**: 이전 버전은 `connected: boolean`만 반환해
+> [requirements/domain_icd/tool.md](../../requirements/domain_icd/tool.md)의
+> `ToolConnection` 5-state(`not_connected/connecting/connected/expired/revoked`)를
+> 표현할 수 없었다(예: `Expired`인지 `NotConnected`인지 API로 구분 불가). 아래처럼
+> `connection_status`(5-state 원본)를 반환하고, `connected`는 그로부터 파생된
+> 편의 필드(`connection_status === 'connected'`)로 유지한다.
+
 ```jsonc
 {
   "success": true,
@@ -182,13 +189,15 @@ AI Decision Layer([../strategy/architecture.md](../strategy/architecture.md) Lay
         "type": "calendar.list_events",
         "domain": "calendar",
         "connector": "google_calendar",
-        "connected": true,               // 사용자가 해당 커넥터를 연결했는지
+        "connection_status": "connected", // tool.md ToolConnection 5-state
+        "connected": true,                // connection_status === 'connected' 파생값
         "input_schema": { "range_days": "number?" }
       },
       {
         "type": "home_assistant.toggle_entity",
         "domain": "home_assistant",
         "connector": "home_assistant",
+        "connection_status": "not_connected",
         "connected": false,
         "input_schema": { "entity_id": "string", "state": "'on' | 'off'" }
       }

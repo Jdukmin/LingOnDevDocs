@@ -45,18 +45,25 @@ Workflow는 하나의 Intent가 여러 Action의 조합으로만 달성될 수 �
 
 # State
 
+> **정정 2026-07-22 — 이 표가 State 이름의 단일 기준(canonical)이다.**
+> 이전 버전은 PascalCase(`Pending/Succeeded/RolledBack`)를 썼고
+> [docs/icd/action_layer_api.md](../../docs/icd/action_layer_api.md)의 Workflow
+> 설명은 소문자였으며 `rolled_back`이 짧은 설명에서 누락돼 있었다 —
+> [action.md](action.md) State를 정정할 때 발견된 것과 동일한 패턴의 불일치다.
+> Action과 동일하게 소문자 snake_case로 통일한다.
+
 ```
-Pending → Running → (Succeeded | PartiallyFailed | Failed) → (RolledBack)?
+pending → running → (succeeded | partially_failed | failed) → (rolled_back)?
 ```
 
 | State | 의미 |
 |---|---|
-| `Pending` | 실행 대기 |
-| `Running` | 하나 이상의 Step이 진행 중 |
-| `Succeeded` | 모든 필수 Step 성공 |
-| `PartiallyFailed` | 일부 Step 실패했지만 `on_failure: skip` 정책으로 계속 진행되어 종료됨 |
-| `Failed` | 필수 Step 실패로 전체 중단 |
-| `RolledBack` | 실패 후 완료된 Step들을 보상 처리함 |
+| `pending` | 실행 대기 |
+| `running` | 하나 이상의 Step이 진행 중 |
+| `succeeded` | 모든 필수 Step 성공 |
+| `partially_failed` | 일부 Step 실패했지만 `on_failure: skip` 정책으로 계속 진행되어 종료됨 |
+| `failed` | 필수 Step 실패로 전체 중단 |
+| `rolled_back` | 실패(`failed`/`partially_failed`) 후 완료된 Step들을 보상 처리함 |
 
 개별 Step은 Action Domain의 Execution State([action.md](action.md))를 그대로 따른다.
 

@@ -1,6 +1,9 @@
 # Domain ICD
 
-> **Status**: Proposed · **Progress**: 0% (통합 계약 기준 — 개별 Domain Progress는 각 문서 참조) · **Last Updated**: 2026-07-21 · **Owner**: Product/Architecture · **Version**: 0.1.0-draft
+> **Status**: Proposed · **Progress**: 0% (통합 계약 기준 — 개별 Domain Progress는 각 문서 참조) · **Last Updated**: 2026-07-22 · **Owner**: Product/Architecture · **Version**: 0.1.0-draft
+
+> **2026-07-22**: 이 폴더를 포함한 전체 개발 절차(SOP)는 [../../docs/workflow.md](../../docs/workflow.md)를
+> 본다 — Step 0(Domain Freeze)이 이 폴더를 가장 먼저 확인하도록 정의되어 있다.
 
 ## 이 폴더가 정의하는 것 / 정의하지 않는 것
 
@@ -41,6 +44,16 @@ API는 Domain ICD를 구현하는 수단일 뿐이다.
 | HomeAssistant | [homeassistant.md](homeassistant.md) | Integrations/IoT | 0% |
 | NAS | [nas.md](nas.md) | Integrations/Infrastructure | 0% |
 | User | [user.md](user.md) | Platform/Identity | 75% |
+| Weather | [weather.md](weather.md) | Integrations/Productivity | 75% |
+| Todo | [todo.md](todo.md) | Integrations/Productivity | 0% |
+| Settings | [settings.md](settings.md) | Platform/Identity | 50% |
+
+Weather/Todo/Settings는 2026-07-22에 추가됐다 — 최초 11개 Domain에서 누락이
+지적된 항목([domain_analysis.md](domain_analysis.md) "누락된 Domain")과,
+User Domain의 `Preference`를 분리한 것(Settings)이다. OAuth/Google
+Login/Google Calendar는 별도 Domain을 만들지 않고 각각 User Domain([user.md](user.md) —
+인증/세션/권한)과 Tool Domain·Calendar Domain([tool.md](tool.md), [calendar.md](calendar.md) —
+실제 Google 연동)에 흡수했다.
 
 추가 분석(누락/중복/불필요 Domain, MVP/Phase2/Phase3 우선순위)은
 [domain_analysis.md](domain_analysis.md)를 본다.

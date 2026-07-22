@@ -51,15 +51,20 @@ Tool은 "실제로 무언가를 실행하는" 유일한 계층이다. Action이 
 
 # State
 
-`ToolConnection` 기준(개별 `ToolInvocation`은 Action Domain의 Execution State를 따름 — [action.md](action.md)):
+`ToolConnection` 기준(개별 `ToolInvocation`은 Action Domain의 Execution State를 따름 — [action.md](action.md)).
+
+> **정정 2026-07-22**: [action.md](action.md)/[workflow.md](workflow.md) State를
+> 소문자 snake_case로 통일한 것과 동일하게, 이 표도 통일한다 — API 응답
+> 예시([docs/icd/action_layer_api.md](../../docs/icd/action_layer_api.md)의
+> `GET /v1/actions/types` `connection_status`)가 이 값을 그대로 쓴다.
 
 | State | 의미 |
 |---|---|
-| `NotConnected` | 사용자가 이 Tool을 연결하지 않음 |
-| `Connecting` | 인증/연결 절차 진행 중 |
-| `Connected` | 정상 연결됨, 실행 가능 |
-| `Expired` | 인증이 만료됨(재인증 필요) |
-| `Revoked` | 사용자 또는 외부 시스템에 의해 연결 해제됨 |
+| `not_connected` | 사용자가 이 Tool을 연결하지 않음 |
+| `connecting` | 인증/연결 절차 진행 중 |
+| `connected` | 정상 연결됨, 실행 가능 |
+| `expired` | 인증이 만료됨(재인증 필요) |
+| `revoked` | 사용자 또는 외부 시스템에 의해 연결 해제됨 |
 
 # Events
 

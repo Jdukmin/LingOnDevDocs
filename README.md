@@ -1,5 +1,15 @@
 # Development Documents
 
+## 개발 SOP
+
+[docs/workflow.md](docs/workflow.md) — **LingOn AI Development Workflow**.
+모든 기능 개발이 따라야 할 표준 절차(Step 0~6: Domain Freeze → Backend
+개발/검증 → Frontend 개발/검증 → 통합 검증 → 문서 갱신), MVP Phase 순서,
+출시 전 체크리스트, AI 조직 운영 구조를 정의한다. **새 기능을 시작하기 전
+가장 먼저 읽는 문서.** 출시 전 체크리스트의 세부 정책/절차는
+[docs/policies/](docs/policies/)(Error/Logging/Security/Privacy)와
+[docs/ops/](docs/ops/)(Deployment/Data SOP, Monitoring)에 있다.
+
 ## 제품 전략 (Why)
 
 [docs/](docs/)는 **구현(How)이 아니라 왜(Why)**를 기록하는 최상위 전략 문서다

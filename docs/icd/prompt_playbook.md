@@ -1,6 +1,12 @@
 # Front/Back 분리 프롬프트 운영 Playbook
 
-> **Status**: Proposed · **Progress**: 0% (운영 절차 문서 — 구현 대상 아님) · **Last Updated**: 2026-07-21 · **Next Milestone**: Phase 0(Refresh Token 인터셉터) 프롬프트 착수 시 이 문서 기준으로 진행
+> **Status**: Proposed · **Progress**: 0% (운영 절차 문서 — 구현 대상 아님) · **Last Updated**: 2026-07-22 · **Next Milestone**: Phase 0(Refresh Token 인터셉터) 프롬프트 착수 시 이 문서 기준으로 진행
+
+> **2026-07-22 갱신**: 이 문서의 상위 SOP는 [../workflow.md](../workflow.md)
+> (LingOn AI Development Workflow)다 — Phase 0~10 순서의 정식 명칭과 Step
+> 0~6(Domain Freeze → ... → Documentation Update) 전체 절차는 그쪽이
+> canonical이다. 이 문서는 그중 "Front/Back을 분리된 프롬프트 세션으로
+> 운영할 때"의 세부 규칙(필수 동반 문서 매트릭스, Progress 상한)에 집중한다.
 
 Backend와 Frontend를 **서로 다른 프롬프트 세션(예: 별도 Claude Code 세션)**에
 순차적으로 넣어 구현을 맡길 때 지켜야 할 절차다. [README.md](README.md),

@@ -29,7 +29,10 @@ Domain이 "특정 User에 귀속된 무언가"를 다루므로, User Domain은 �
 | **User** | LetMeKnow 사용자 계정(신원, 표시 이름, 프로필). |
 | **Session** | 로그인된 상태의 사용자 활동 단위(액세스/리프레시 토큰 생명주기로 표현되지만, 이 Domain에서는 개념만 다룸). |
 | **Permission** | 특정 Tool/Action Type에 대해 사용자가 부여한 권한(Intent Domain의 `RequiredPermission`이 참조하는 대상). |
-| **Preference** | 사용자별 설정(AI 설정, UI 설정 등 — 기존 `ai_settings`/`ui_settings`의 비즈니스 개념). |
+
+> **2026-07-22**: `Preference`(AI/UI 설정)는 별도 Domain으로 분리했다 —
+> [settings.md](settings.md) 참고. User Domain은 "이 설정이 어떤 User에
+> 귀속되는가"까지만 책임지고, 설정 스키마 자체는 Settings Domain이 정의한다.
 
 # Responsibilities
 

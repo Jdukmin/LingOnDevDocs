@@ -39,8 +39,13 @@ Unknown routes throw `AppError('OP_NOT_SUPPORTED', 400)`.
 | `name` | `payload.name` |
 | `picture` | `payload.picture` |
 
-> The route layer renames `picture` → `avatar_url` before the DB upsert and
-> ICD v0.0 response. `picture` never appears in any HTTP response.
+> **정정 2026-07-22**: 이 문구는 오래된 내용이었다 — 실제 필드명은
+> `avatar_url`이 아니라 **`profile_image`**다. 근거: [api/auth.md](../api/auth.md),
+> [api/users.md](../api/users.md), [database/users.md](../database/users.md)
+> (DB 컬럼명도 `profile_image`), [frontend/docs/services/AuthService.md](../../../frontend/docs/services/AuthService.md)의
+> API 필드명 변경 안내(`avatar_url` → `profile_image`)가 전부 일치한다. route
+> 계층은 `picture` → `profile_image`로 rename한다. `picture`는 어떤 HTTP
+> 응답에도 노출되지 않는다.
 
 ## Security
 

@@ -1,19 +1,27 @@
 # Domain Analysis — Gaps, Overlaps, Priority
 
-> **Status**: Complete (분석 완료, 신규 Domain 문서 작성은 미착수) · **Progress**: N/A(분석 문서) · **Last Updated**: 2026-07-21 · **Owner**: Product/Architecture · **Version**: 0.1.0-draft
+> **Status**: Complete (분석 완료, Weather/Todo/Settings는 2026-07-22에 실제 작성됨) · **Progress**: N/A(분석 문서) · **Last Updated**: 2026-07-22 · **Owner**: Product/Architecture · **Version**: 0.2.0-draft
 
-[README.md](README.md)의 11개 Domain을 현재 `backend/docs`(API), `frontend/docs`(Service/State),
-`backend/docs/database`(DB)와 비교해 분석한다. 여기서 "제안"이라고 표시한
-것은 **문서를 만들지 않았다** — 실제 작성은 별도 승인/후속 작업으로 남긴다.
+[README.md](README.md)의 Domain을 현재 `backend/docs`(API), `frontend/docs`(Service/State),
+`backend/docs/database`(DB)와 비교해 분석한다. 이하 "제안"이라고 표시한
+것 중 **Weather/Todo/Settings는 2026-07-22에 실제로 문서가 작성되어 더 이상
+제안 상태가 아니다**([weather.md](weather.md), [todo.md](todo.md), [settings.md](settings.md)) —
+나머지(Memory/Context 등)는 여전히 작성하지 않은 제안이다.
 
 ---
 
-## 1. 누락된 Domain (신규 제안)
+## 1. 누락됐던 Domain — 2026-07-22 작성 완료
+
+| Domain | 근거 | 상태 |
+|---|---|---|
+| **Weather** | 백엔드 `GET /v1/weather/*`(4개 엔드포인트, 완성), 프론트 `WeatherNowWidget`/`WeatherForecastWidget` — [backend/docs/api/weather.md](../../backend/docs/api/weather.md) | ✅ [weather.md](weather.md) 작성 완료 |
+| **Todo** | [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-004, [docs/roadmap/mvp.md](../../docs/roadmap/mvp.md) Tier 1("Calendar, Todo, Reminder") | ✅ [todo.md](todo.md) 작성 완료 |
+| **Settings**(신규 지적) | User Domain의 `Preference`가 AI/UI 설정을 뭉뚱그려 다루고 있었음 | ✅ [settings.md](settings.md) 작성 완료(User Domain에서 분리) |
+
+## 2. 여전히 미작성인 제안
 
 | 제안 Domain | 근거 | 왜 필요한가 |
 |---|---|---|
-| **Weather** | 백엔드 `GET /v1/weather/*`(4개 엔드포인트, 완성), 프론트 `WeatherNowWidget`/`WeatherForecastWidget` — [backend/docs/api/weather.md](../../backend/docs/api/weather.md) | 이미 완전히 구현된 기능인데도 대응하는 비즈니스 Domain 계약이 없다. Calendar Domain과 동일한 이유로 "현재 날씨/예보"라는 개념을 Tool(OpenWeather) 구현으로부터 분리해야 Brief/Workflow가 참조할 수 있다. |
-| **Todo** | [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-004, [docs/roadmap/mvp.md](../../docs/roadmap/mvp.md) Tier 1("Calendar, Todo, Reminder") | 요청된 11개 Domain에 Reminder는 있지만 Todo가 빠져 있다. Todo(완료 여부가 있는 작업 항목)는 Reminder(시간 트리거 알림)와 개념이 다르다 — Tier 1 로드맵과 일치시키려면 별도 Domain이 필요하다. |
 | **Memory/Context (RAG)** | [requirements/memory_requirements.md](../memory_requirements.md), [docs/strategy/architecture.md](../../docs/strategy/architecture.md) Layer 2(AI Decision) | Intent Domain의 Confidence 판단, Action Domain의 추천(Suggestion)이 결국 과거 맥락(캘린더 이력, 반복 패턴)에 의존하게 될 것이다. 지금은 근거가 전혀 없어(0%) 우선순위는 낮지만, Layer 2가 의미를 가지려면 결국 필요하다. |
 
 ## 2. 검토했지만 신규 Domain으로 제안하지 않는 것
@@ -57,8 +65,9 @@ Domain은 예외적으로 각주에 설명을 붙였다.
 | **MVP** | User | 이미 75% 구현(인증/세션) — Permission 계약만 정식화하면 됨 |
 | **MVP** | Calendar | Tier 1. 이미 25%(백엔드 완료) |
 | **MVP** | Reminder | Tier 1. 0%지만 로드맵상 최우선 |
-| **MVP**(제안) | Todo | Tier 1. 0%, Reminder와 함께 착수 |
-| **MVP**(제안) | Weather | 이미 75% 구현 — 계약 정식화 비용이 거의 없음 |
+| **MVP** | Todo | Tier 1. 0%, Reminder와 함께 착수([todo.md](todo.md) 작성 완료) |
+| **MVP** | Weather | 이미 75% 구현 — 계약 정식화 비용이 거의 없음([weather.md](weather.md) 작성 완료) |
+| **MVP** | Settings | 이미 50% 구현, User/Dashboard 등 다른 MVP Domain이 참조([settings.md](settings.md) 작성 완료) |
 | **Phase 2** | Notification | Tier 2 이후 — 백그라운드/비동기 Action이 늘어날 때 가치가 커짐 |
 | **Phase 2** | HomeAssistant | Tier 2 |
 | **Phase 3** | Workflow | Tier 4 — 여러 Tool이 갖춰진 뒤에야 의미 있음 |

@@ -57,7 +57,7 @@ sequenceDiagram
     Client->>Fastify: HTTP request
     Fastify->>Fastify: onRequest — RequestContext sets req.ctx
     Fastify->>Policy: preHandler — policy.before(req)
-    Policy->>Handler: (no-op until auth is implemented)
+    Policy->>Handler: verifies Bearer JWT, sets req.ctx.userId (정정 2026-07-22 — "Authentication" 절 참고)
     Handler->>Handler: sets req.ctx.provider / operation
     Handler->>Gateway: gatewayService.execute(...)
     Gateway->>DB: (optional) resolve encrypted key
@@ -197,9 +197,17 @@ in route handlers.
 
 ### What's not yet implemented
 
-- `POST /v1/auth/refresh` — refresh tokens are issued but no exchange endpoint exists.
-- `req.ctx.apiKeyId` — always `undefined`; not included in the JWT payload.
-- `POST /v1/auth/signout` — stateless JWT, no server-side revocation.
+> **정정 2026-07-22 (Docs Revision / SSOT 정리)**: 이 절은 오래된 내용이었다.
+> `POST /v1/auth/refresh`와 로그아웃(현재 이름은 `POST /v1/auth/logout`,
+> `signout` 아님)은 이미 완전히 구현되어 있다 — 근거:
+> [api/auth.md](api/auth.md)(두 엔드포인트의 전체 Request/Response/Error
+> 명세), [database/refresh_tokens.md](database/refresh_tokens.md)(rotation/revoke
+> 구현), `FeatureList.md`("Token refresh", "Logout" — Current (implemented)),
+> [frontend/docs/services/AuthService.md](../../frontend/docs/services/AuthService.md)(양쪽
+> 모두 사용 중). 아래 `req.ctx.apiKeyId` 항목만 여전히 유효하다.
+
+- `req.ctx.apiKeyId` — always `undefined`; not included in the JWT payload
+  (API Key 기반 인증 자체가 아직 없음 — Bearer JWT만 지원).
 
 ## Logging
 

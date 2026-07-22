@@ -2,6 +2,9 @@
 
 > **Status**: Proposed (미구현, 설계 확정 대기) · **Progress**: 0% · **Last Updated**: 2026-07-21 · **Next Milestone**: Tier 0 백엔드 스캐폴딩 — `POST /v1/actions/execute` 최소 구현([action_layer_api.md](action_layer_api.md))
 
+> **2026-07-22**: 이 폴더가 속한 상위 SOP는 [../workflow.md](../workflow.md)다 —
+> 모든 기능 개발이 따라야 할 Step 0~6 절차와 Phase 0~10 순서가 정의되어 있다.
+
 ## 왜 이 폴더가 필요한가
 
 전략이 바뀌었다: LetMeKnow는 Dashboard 제품이 아니라 **Personal Action OS**다

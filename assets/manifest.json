@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-21T14:22:22.618Z",
+  "generatedAt": "2026-07-22T00:47:51.916Z",
   "docs": [
     {
       "app": "root",
@@ -12,6 +12,12 @@
       "category": "",
       "path": "docs/development_rules.md",
       "title": "Development Rules"
+    },
+    {
+      "app": "docs",
+      "category": "",
+      "path": "docs/workflow.md",
+      "title": "LingOn AI Development Workflow (MVP)"
     },
     {
       "app": "docs",
@@ -54,6 +60,48 @@
       "category": "icd",
       "path": "docs/icd/README.md",
       "title": "ICD — Action Layer 전환"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/data_sop.md",
+      "title": "Data SOP — Migration / Backup / Restore"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/deployment_sop.md",
+      "title": "Deployment SOP — Release / Deployment / Rollback / Versioning"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/monitoring.md",
+      "title": "Monitoring"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/error_policy.md",
+      "title": "Error Policy"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/logging_policy.md",
+      "title": "Logging Policy"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/privacy_policy.md",
+      "title": "Privacy & Legal Requirements"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/security_policy.md",
+      "title": "Security Policy"
     },
     {
       "app": "docs",
@@ -226,6 +274,18 @@
     {
       "app": "requirements",
       "category": "domain_icd",
+      "path": "requirements/domain_icd/settings.md",
+      "title": "Settings Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/todo.md",
+      "title": "Todo Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
       "path": "requirements/domain_icd/tool.md",
       "title": "Tool Domain"
     },
@@ -234,6 +294,12 @@
       "category": "domain_icd",
       "path": "requirements/domain_icd/user.md",
       "title": "User Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/weather.md",
+      "title": "Weather Domain"
     },
     {
       "app": "requirements",
