@@ -1,6 +1,12 @@
 {
-  "generatedAt": "2026-07-22T00:47:51.916Z",
+  "generatedAt": "2026-07-23T16:45:27.008Z",
   "docs": [
+    {
+      "app": "root",
+      "category": "",
+      "path": "CLAUDE.md",
+      "title": "CLAUDE.md"
+    },
     {
       "app": "root",
       "category": "",
@@ -600,6 +606,42 @@
       "category": "widgets",
       "path": "frontend/docs/widgets/WeatherNowWidget.md",
       "title": "WeatherNowWidget"
+    },
+    {
+      "app": "verification",
+      "category": "",
+      "path": "verification/README.md",
+      "title": "Verification Reports"
+    },
+    {
+      "app": "verification",
+      "category": "backend",
+      "path": "verification/backend/README.md",
+      "title": "Backend Verification Reports"
+    },
+    {
+      "app": "verification",
+      "category": "frontend",
+      "path": "verification/frontend/README.md",
+      "title": "Frontend Verification Reports"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/backend.md",
+      "title": "Backend ChangeLog"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/frontend.md",
+      "title": "Frontend ChangeLog"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/system.md",
+      "title": "System ChangeLog"
     }
   ]
 }
