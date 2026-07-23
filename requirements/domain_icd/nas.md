@@ -43,15 +43,20 @@ Layer가 조회/제어할 수 있게 한다. [docs/strategy/positioning.md](../.
 
 # State
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md) 등이 정한
+> 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase). `BackupJob`
+> 상태값도 아래처럼 Action Domain의 실제 canonical 값(`succeeded`, `failed` 등)과
+> 철자를 맞춘다 — 이전 버전은 `Success`를 썼으나 action.md의 값은 `succeeded`다.
+
 | State | 의미 |
 |---|---|
-| `Unknown` | 아직 상태를 조회하지 않음 |
-| `Healthy` | 모든 지표가 정상 범위 |
-| `Degraded` | 일부 지표가 경고 수준(예: Storage 90% 이상) |
-| `Unreachable` | NAS/서버에 접근할 수 없음 |
+| `unknown` | 아직 상태를 조회하지 않음 |
+| `healthy` | 모든 지표가 정상 범위 |
+| `degraded` | 일부 지표가 경고 수준(예: Storage 90% 이상) |
+| `unreachable` | NAS/서버에 접근할 수 없음 |
 
-`BackupJob`은 Action Domain의 Execution State([action.md](action.md))를 따른다
-(`Pending/Running/Success/Failed`).
+`BackupJob`은 Action Domain의 Execution State([action.md](action.md))를 그대로
+따른다(`pending`/`running`/`succeeded`/`failed`, 필요 시 `timed_out`/`cancelled`/`rolled_back`도 동일하게 적용).
 
 # Events
 

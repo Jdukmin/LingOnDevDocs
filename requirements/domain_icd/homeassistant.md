@@ -48,11 +48,14 @@ Layer가 제어할 수 있게 하는 IoT 접점이다. [docs/strategy/positionin
 `ToolConnection` 상태([tool.md](tool.md))를 그대로 따르며, 추가로 개별
 Entity 상태 캐시를 가질 수 있다:
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md)/[tool.md](tool.md) 등이
+> 정한 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase).
+
 | State | 의미 |
 |---|---|
-| `Unknown` | 아직 상태를 조회하지 않음 |
-| `Synced` | 최근 상태를 성공적으로 조회함 |
-| `Stale` | 마지막 조회 이후 갱신 실패 |
+| `unknown` | 아직 상태를 조회하지 않음 |
+| `synced` | 최근 상태를 성공적으로 조회함 |
+| `stale` | 마지막 조회 이후 갱신 실패 |
 
 # Events
 

@@ -2,8 +2,8 @@
 
 Updated from analysis of `src/` as of commit `b0ccc21` (`V_0.0.8`).
 Update this file whenever a route, gateway, or DB-backed feature is added,
-removed, or changes status (see the Documentation Rule in
-[../../CLAUDE.md](../../CLAUDE.md)).
+removed, or changes status (see the Documentation Rule in the backend source
+repository's `CLAUDE.md` — not mirrored into this docs-only repository).
 
 ## Current (implemented)
 

@@ -51,7 +51,10 @@ Expired rows are never automatically deleted. A periodic job should run:
 DELETE FROM refresh_tokens WHERE expires_at < NOW();
 ```
 
-(See TODO in [CLAUDE.md](../../../CLAUDE.md))
+(See TODO in the backend source repository's `CLAUDE.md` — not mirrored into
+this docs-only repository. Tracked here as [docs/ops/data_sop.md](../../../docs/ops/data_sop.md)
+"Migration" and the [docs/workflow.md](../../../docs/workflow.md) 출시 전
+체크리스트 "Background Job" 항목.)
 
 ## Consumers
 

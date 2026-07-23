@@ -8,10 +8,11 @@
 > No migration files or `.sql` schema definitions exist in this repository —
 > every table below is inferred from the columns referenced in
 > `src/db/*.ts`. This is an **implementation status** snapshot, not a
-> schema authority. If `./docs` (LetMeKnow-Docs) defines a canonical schema
-> that differs from what's below, **do not edit either side** — flag it per
-> the Documentation Rule in [../../CLAUDE.md](../../CLAUDE.md) ("LetMeKnow-Docs
-> Repository 수정 필요").
+> schema authority. If `../../../docs/` (LetMeKnow-Docs, mirrored at the
+> repository root here) defines a canonical schema that differs from what's
+> below, **do not edit either side** — flag it per the Documentation Rule in
+> the backend source repository's `CLAUDE.md` ("LetMeKnow-Docs Repository
+> 수정 필요") — that file is not mirrored into this docs-only repository.
 
 All access goes through the single `pool` singleton in
 [src/db/pool.ts](../../../src/db/pool.ts) (`pg.Pool`, max 10 connections,
@@ -20,7 +21,7 @@ hand-written SQL via `pool.query(...)`.
 
 ## Tables
 
-| Table | Repository | Defined in CLAUDE.md | Doc |
+| Table | Repository | Defined in source repo's `CLAUDE.md` | Doc |
 |---|---|---|---|
 | `request_logs` | none (written directly by `AppLogger.saveRequestLog`) | yes | [request_logs.md](request_logs.md) |
 | `raw_logs` | none (written directly by `AppLogger.saveRawLog`) | yes | [raw_logs.md](raw_logs.md) |

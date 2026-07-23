@@ -38,17 +38,20 @@ Calendar와 달리 외부 캘린더 시스템에 근거하지 않는, LetMeKnow 
 
 # State
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md) 등이 정한
+> 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase).
+
 ```
-Scheduled → Triggered → (Acknowledged | Snoozed | Dismissed)
+scheduled → triggered → (acknowledged | snoozed | dismissed)
 ```
 
 | State | 의미 |
 |---|---|
-| `Scheduled` | 등록됨, 발화 대기 |
-| `Triggered` | 알림 시점 도달, Notification Domain에 전달됨 |
-| `Acknowledged` | 사용자가 확인함 |
-| `Snoozed` | 사용자가 나중에 다시 알림을 요청함(재스케줄) |
-| `Dismissed` | 사용자가 취소/삭제함 |
+| `scheduled` | 등록됨, 발화 대기 |
+| `triggered` | 알림 시점 도달, Notification Domain에 전달됨 |
+| `acknowledged` | 사용자가 확인함 |
+| `snoozed` | 사용자가 나중에 다시 알림을 요청함(재스케줄) |
+| `dismissed` | 사용자가 취소/삭제함 |
 
 # Events
 

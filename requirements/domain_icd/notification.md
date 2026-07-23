@@ -41,12 +41,15 @@ Notification은 "Action Domain이 만든 결과를 사용자가 실제로 인지
 
 # State
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md) 등이 정한
+> 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase).
+
 | State | 의미 |
 |---|---|
-| `Pending` | 발행됨, 전달 대기 |
-| `Delivered` | 하나 이상의 채널로 전달됨 |
-| `Read` | 사용자가 확인함 |
-| `Suppressed` | `NotificationPreference`에 의해 전달이 억제됨 |
+| `pending` | 발행됨, 전달 대기 |
+| `delivered` | 하나 이상의 채널로 전달됨 |
+| `read` | 사용자가 확인함 |
+| `suppressed` | `NotificationPreference`에 의해 전달이 억제됨 |
 
 # Events
 

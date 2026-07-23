@@ -52,12 +52,17 @@ Domain이 "특정 User에 귀속된 무언가"를 다루므로, User Domain은 �
 
 # State
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md) 등이 정한
+> 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase). Event 이름은
+> 다른 Domain과 동일하게 PascalCase를 유지한다(State 값과는 다른 네이밍
+> 컨벤션 — Event는 고유명사적 이름, State는 값이기 때문).
+
 | State | 의미 |
 |---|---|
-| `Anonymous` | 로그인하지 않음(게스트) |
-| `Authenticated` | 로그인됨, `Session` 유효 |
-| `SessionExpired` | `Session` 만료, 재인증 필요 |
-| `Suspended` | (향후) 관리 목적의 계정 정지 |
+| `anonymous` | 로그인하지 않음(게스트) |
+| `authenticated` | 로그인됨, `Session` 유효 |
+| `session_expired` | `Session` 만료, 재인증 필요 |
+| `suspended` | (향후) 관리 목적의 계정 정지 |
 
 # Events
 

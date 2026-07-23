@@ -52,11 +52,14 @@ Layer를 시각화하는 인터페이스일 뿐이다" — 를 그대로 이 Dom
 
 Dashboard 자체는 비즈니스 State를 갖지 않는다. 오직 **UI 상태**만 갖는다:
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: [action.md](action.md) 등이 정한
+> 소문자 snake_case 표기로 통일한다(이전 버전은 PascalCase).
+
 | State | 의미 |
 |---|---|
-| `Idle` | 기본 표시 상태 |
-| `Loading` | 구독 중인 Domain의 데이터를 기다리는 중(예: 날씨 API 호출 중) |
-| `Stale` | 마지막으로 받은 데이터가 오래됨(갱신 실패 등) |
+| `idle` | 기본 표시 상태 |
+| `loading` | 구독 중인 Domain의 데이터를 기다리는 중(예: 날씨 API 호출 중) |
+| `stale` | 마지막으로 받은 데이터가 오래됨(갱신 실패 등) |
 
 # Events
 

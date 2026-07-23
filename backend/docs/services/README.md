@@ -71,6 +71,7 @@ gateways that read a DB-stored provider key instead of `.env`.
 
 ## Adding a new service
 
-See "Adding a new provider" in [../../CLAUDE.md](../../CLAUDE.md) — create
+See "Adding a new provider" in the backend source repository's `CLAUDE.md`
+(not mirrored into this docs-only repository) — create
 `src/gateway/<Name>API.ts` extending `BaseGateway`, add a matching route file,
 and a doc here.

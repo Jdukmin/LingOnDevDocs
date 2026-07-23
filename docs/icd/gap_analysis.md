@@ -58,9 +58,13 @@ Backend 사이의 누락 항목이다. 여기 적힌 것은 전부 **현재 문�
 
 이번 검토 중 Action Layer와 직접 관련은 없지만 눈에 띈 기존 문서 불일치:
 
-- [backend/docs/api/apikey.md](../../backend/docs/api/apikey.md)의 "인증이 구현되지 않음(401 unconditionally)" 안내는
+- ~~[backend/docs/api/apikey.md](../../backend/docs/api/apikey.md)의 "인증이 구현되지 않음(401 unconditionally)" 안내는
   [backend/docs/api/auth.md](../../backend/docs/api/auth.md)(JWT 미들웨어 구현 완료)와 모순되는 **오래된 문구**로 보인다.
-  기존 문서라 이번에도 수정하지 않았다 — 별도 확인/갱신 필요.
+  기존 문서라 이번에도 수정하지 않았다 — 별도 확인/갱신 필요.~~ **해결됨(2026-07-21
+  Docs Revision)**: `apikey.md`, `settings.md`, `DevelopmentGuide.md` 모두 이
+  문구를 정정했다 — JWT 인증은 전역 `preHandler` 훅으로 구현되어 있다. 같은
+  패턴의 마지막 잔여 사례(`backend/docs/database/request_logs.md`의 `user_id`
+  컬럼 설명)는 2026-07-23 DevDocs SSOT 정리에서 정정했다.
 
 ---
 

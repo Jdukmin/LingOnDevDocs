@@ -125,7 +125,7 @@ AuthController (presentation)
 | GET | `/v1/settings/ui` | 공통 | 로그인 후 프리로드 |
 | GET | `/v1/apikey/status` | 공통 | 로그인 후 프리로드 |
 
-API 상세 명세: [../../backend/docs/api/auth.md](../../backend/docs/api/auth.md)
+API 상세 명세: [../../../backend/docs/api/auth.md](../../../backend/docs/api/auth.md)
 
 ---
 

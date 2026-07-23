@@ -47,12 +47,16 @@ Domain이 없으면 자연어는 그저 텍스트일 뿐, 어떤 Action도 시�
 Intent 자체는 실행 상태를 갖지 않는다(순간적인 산출물). 다만 하류(Action) 처리
 결과에 따라 아래처럼 재분류될 수 있다.
 
+> **정정 2026-07-23 (DevDocs SSOT 정리)**: 이전 버전은 PascalCase(`Created`
+> 등)를 썼다 — [action.md](action.md)/[workflow.md](workflow.md)/[tool.md](tool.md)가
+> 이미 소문자 snake_case로 통일한 것과 어긋났다. 아래처럼 소문자로 통일한다.
+
 | State | 의미 |
 |---|---|
-| `Created` | Intent가 생성된 직후 |
-| `Validated` | Action Domain이 실행 가능하다고 확인함 |
-| `Rejected` | Confidence 부족, 또는 필요한 권한 없음 등으로 실행 불가 판정 |
-| `Superseded` | 사용자가 후속 메시지로 의도를 정정/취소함 |
+| `created` | Intent가 생성된 직후 |
+| `validated` | Action Domain이 실행 가능하다고 확인함 |
+| `rejected` | Confidence 부족, 또는 필요한 권한 없음 등으로 실행 불가 판정 |
+| `superseded` | 사용자가 후속 메시지로 의도를 정정/취소함 |
 
 # Events
 

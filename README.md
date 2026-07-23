@@ -1,5 +1,9 @@
 # Development Documents
 
+> **DevDocs SSOT Verification Report**: [DEVDOCS_SSOT_VERIFICATION_REPORT.md](DEVDOCS_SSOT_VERIFICATION_REPORT.md) —
+> 2026-07-23 전체 DevDocs 감사 결과(수정 문서, 해결된 충돌, Backend/Frontend
+> 영향, 우선순위별 잔여 TODO).
+
 ## 개발 SOP
 
 [docs/workflow.md](docs/workflow.md) — **LingOn AI Development Workflow**.
@@ -61,99 +65,44 @@ node scripts/build-manifest.js
 
 ---
 
-이 디렉터리는 **프로젝트 구현(Implementation)에 대한 개발 문서**를 관리합니다.
-
-공통 설계 문서는 저장하지 않습니다.
-
-공통 설계, 아키텍처, ICD, 개발 컨셉은 Repository 루트의 **`docs/`**(Git Submodule: LetMeKnow-Docs)에서 관리합니다.
-
----
-
-## 목적
-
-이 문서는 현재 Repository의 구현 내용을 기록하기 위한 것입니다.
-
-예를 들어 다음과 같은 내용을 포함합니다.
-
-* UI 구현 구조
-* Widget 설계
-* 화면(Screen) 설명
-* State Management
-* Service 구조
-* Route 구현
-* Plugin 구현
-* 구현 세부사항
-* 개발 진행 현황
-
----
-
-## 문서 작성 원칙
-
-### 이곳(devdocs)에 작성하는 내용
-
-* 현재 Repository에서만 사용하는 구현 내용
-* 코드 구조
-* 화면 구성
-* 클래스 설명
-* 구현 방식
-* TODO
-* 개발 메모
-
-### `docs/`(공통 문서)에 작성하는 내용
-
-* 시스템 아키텍처
-* API Gateway ICD
-* Database ICD
-* 개발 컨셉
-* Connector 설계
-* ADR(Architecture Decision Record)
-* AI 구조
-* 공통 Sequence Diagram
-* 공통 Mermaid Diagram
-
----
-
 ## Claude Code 규칙
 
 Claude는 작업 전에 다음 순서로 문서를 참고합니다.
 
-1. `docs/CLAUDE.md`
-2. Repository 루트의 `CLAUDE.md`
-3. `devdocs/FeatureList.md`
-4. `devdocs/DevelopmentGuide.md`
+1. `docs/workflow.md` — 모든 기능 개발이 따라야 할 SOP(Step 0~6)
+2. `requirements/README.md` — Requirement 작성/추적 규칙(RDD)
+3. `backend/docs/FeatureList.md`, `frontend/docs/FeatureList.md` — 각 구현체의 현재 상태(단일 출처)
+4. `backend/docs/DevelopmentGuide.md`, `frontend/docs/DevelopmentGuide.md` — 구현 컨벤션
 
-필요한 경우에만 `docs/`의 세부 문서를 추가로 참조합니다.
+> **참고**: 일부 오래된 문서가 `CLAUDE.md`(루트 또는 `docs/`)를 참조하지만, 이
+> 파일은 이 문서 미러 저장소(`LingOnDevDocs`)에는 포함되어 있지 않다 — 실제
+> 소스 저장소(backend/frontend)의 루트에 존재하는 파일이다. 필요한 경우에만
+> `docs/`의 세부 문서를 추가로 참조한다.
 
 ---
 
-## 디렉터리 예시
+## 저장소 구조
+
+이 저장소(`LingOnDevDocs`)는 backend/frontend 소스 저장소와 공통 설계
+저장소(`LetMeKnow-Docs`)의 **문서만** 한곳에 모은 미러다 — 소스 코드는
+포함하지 않는다([requirements/README.md](requirements/README.md) 참고).
 
 ```text
-devdocs/
-├── README.md
-├── DevelopmentGuide.md
-├── FeatureList.md
-├── ui/
-├── widgets/
-├── screens/
-├── state/
-├── services/
-├── routes/
-├── database/
-└── deployment/
+requirements/       → Requirement(RDD) + Domain ICD — "무엇을/무엇의 계약을"
+docs/                → 제품 전략/로드맵/정책/운영 SOP + Action Layer ICD 제안 — "왜/어떻게(신규)"
+backend/docs/        → Backend 구현 문서(API, DB, Plugin, Service, Route) — "어떻게(기존)"
+frontend/docs/       → Frontend 구현 문서(UI, Widget, State, Service, Theme) — "어떻게(기존)"
+README.md, index.html, assets/, scripts/, serve.js → 이 문서 포털 자체
 ```
-
-프로젝트 특성에 따라 하위 디렉터리는 자유롭게 추가하거나 제거할 수 있습니다.
-
----
 
 ## 유지보수 규칙
 
-새로운 기능을 개발하거나 기존 기능을 변경한 경우 다음 순서를 따릅니다.
-
-1. 코드 수정
-2. 관련 `devdocs` 문서 업데이트
-3. 공통 설계 변경 여부 확인
-4. 공통 설계 변경이 필요한 경우 `LetMeKnow-Docs` 저장소(`docs/`)를 수정
+새로운 기능을 개발하거나 기존 기능을 변경한 경우 [docs/workflow.md](docs/workflow.md)의
+Step 0~6을 따릅니다(요약: Domain Freeze → Backend 개발/검증 → Frontend
+개발/검증 → 통합 검증 → 문서 갱신). 공통 설계(Domain ICD, API ICD, 정책)
+변경이 필요한 경우 [requirements/domain_icd/](requirements/domain_icd/),
+[docs/icd/](docs/icd/), [docs/policies/](docs/policies/)를 먼저 갱신한 뒤에만
+구현을 시작합니다 — 구현에 맞춰 문서를 조용히 고치지 않습니다
+([docs/workflow.md](docs/workflow.md) "ICD 변경 관리 규칙").
 
 항상 **구현 문서와 코드가 동일한 상태**를 유지하는 것을 원칙으로 합니다.

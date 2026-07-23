@@ -24,7 +24,7 @@
 |---|---|---|
 | **Memory/Context (RAG)** | [requirements/memory_requirements.md](../memory_requirements.md), [docs/strategy/architecture.md](../../docs/strategy/architecture.md) Layer 2(AI Decision) | Intent Domain의 Confidence 판단, Action Domain의 추천(Suggestion)이 결국 과거 맥락(캘린더 이력, 반복 패턴)에 의존하게 될 것이다. 지금은 근거가 전혀 없어(0%) 우선순위는 낮지만, Layer 2가 의미를 가지려면 결국 필요하다. |
 
-## 2. 검토했지만 신규 Domain으로 제안하지 않는 것
+## 3. 검토했지만 신규 Domain으로 제안하지 않는 것
 
 | 후보 | 결론 | 이유 |
 |---|---|---|
@@ -34,7 +34,7 @@
 | **Chat(대화 UI)** | Domain 아님(의도적 제외) | Chat은 비즈니스 개념이 아니라 Intent Domain의 입력 채널(Frontend UI)이다 — [intent.md](intent.md) Inputs, [dashboard.md](dashboard.md) 참고. 별도 Domain 계약을 만들면 Intent와 경계가 모호해진다. |
 | **History / Execution** | 별도 Domain 아님(Action Domain 하위 개념) | 사용자가 요청한 11개 문서 목록에 없었고, Action Lifecycle의 일부이므로 [action.md](action.md) 안에 Entity로 정의했다 — [README.md](README.md) "핵심 실행 모델"의 주의 사항 참고. 향후 History가 자체적으로 복잡해지면(예: 분석/내보내기 기능) 그때 분리한다. |
 
-## 3. 중복 Domain
+## 4. 중복 Domain
 
 없음. 11개 Domain 간 겹치는 책임은 발견되지 않았다 — 경계가 모호해 보일 수
 있는 두 쌍은 각 문서의 "하지 않는다" 절에서 명시적으로 분리했다:
@@ -44,14 +44,14 @@
 - **Reminder vs Calendar**: Reminder는 LetMeKnow 자체 소유의 시간 트리거,
   Calendar는 외부 캘린더 동기화 — [reminder.md](reminder.md) Relationships.
 
-## 4. 불필요한 Domain
+## 5. 불필요한 Domain
 
 없음. 요청받은 11개 Domain 전부 현재 전략([docs/strategy/product.md](../../docs/strategy/product.md))과
 로드맵([docs/roadmap/roadmap.md](../../docs/roadmap/roadmap.md))에서 근거를 찾을 수 있었다.
 
 ---
 
-## 5. 구현 우선순위 — MVP / Phase 2 / Phase 3
+## 6. 구현 우선순위 — MVP / Phase 2 / Phase 3
 
 [docs/roadmap/mvp.md](../../docs/roadmap/mvp.md)의 Tier 체계를 3단계로 압축했다.
 "우선순위"는 **신규 투자 우선순위**를 뜻하며, Dashboard처럼 이미 구현된
