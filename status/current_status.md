@@ -1,94 +1,106 @@
 # Current Status
 
-> **자동 생성 기준**: 이 문서는 [requirements/system_requirements.md](../requirements/system_requirements.md)의
-> SYS-001~SYS-010 Status/Progress와 각 Layer Requirement의 근거 노트,
-> `backend/docs/FeatureList.md`/`frontend/docs/FeatureList.md`, `docs/workflow.md`
-> 출시 전 체크리스트를 근거로 작성됐다 — 이 문서 자체가 새로운 판단을 하지
-> 않는다. 최신 상태 문서이므로 Requirement가 갱신되면 이 문서도 함께
-> 덮어쓴다([status/README.md](README.md) §3.4).
+> **자동 생성 기준**: `FRONTEND_VERIFICATION_REPORT.md`,
+> `BACKEND_VERIFICATION_REPORT.md`(2026-07-24),
+> `FRONTEND_SCHEMA_VERIFICATION_REPORT.md`,
+> `BACKEND_SCHEMA_VERIFICATION_REPORT.md`(2026-07-23, 각 소스 저장소 루트)
+> + `requirements/system_requirements.md` + 양쪽 `FeatureList.md`. 이
+> 문서는 새 판단을 하지 않는다 — 근거 보고서를 요약·연결할 뿐이다.
 >
-> **Last synced**: 2026-07-28 (`requirements/` 기준 최신 근거 노트 반영)
+> **Last synced**: 2026-07-29 (`V_0.1.0` Baseline 선언 시점)
 
 ---
 
-## 1. 현재 구현된 기능 (Done / 75%+)
+## Executive Summary
 
-| Requirement | 기능 | Progress | 근거 |
-|---|---|---|---|
-| SYS-008 (User Authentication) | Google Sign-In(ID Token + Redirect), JWT 발급/회전, 로그아웃, 세션 복원 | 75% (Done) | [requirements/system_requirements.md](../requirements/system_requirements.md), [backend/docs/api/auth.md](../backend/docs/api/auth.md), [frontend/docs/FeatureList.md](../frontend/docs/FeatureList.md) "✅ 구현 완료 > 인증" |
-| CON-006 (OAuth Management) | Google OAuth 동의/콜백/토큰 저장·갱신(로그인 + Calendar 별도 client) | 75% | [connector_requirements.md](../requirements/connector_requirements.md) |
-| DSH-001 (Time Display) | 1초 갱신 실시간 시계 | 75% | [dashboard_requirements.md](../requirements/dashboard_requirements.md) |
-| DSH-002 (Weather Widget) | 현재 날씨 + 5일 예보, Backend 프록시 연동 완료 | 75% | [dashboard_requirements.md](../requirements/dashboard_requirements.md), [weather.md](../requirements/domain_icd/weather.md) |
-| DSH-003 (Calendar Widget) | 위젯 자체는 동작(단, 로컬 캘린더 — Google 연동 아님, 아래 "진행 중" 참고) | 75%(위젯) / 25%(Google 연동은 CON-001) | [dashboard_requirements.md](../requirements/dashboard_requirements.md) |
-| DSH-005 (Widget Layout) | 3컬럼 태블릿 레이아웃 | 75% | [dashboard_requirements.md](../requirements/dashboard_requirements.md) |
-| ACT-004 (Execution Logging) | `request_logs`/`raw_logs` 전역 로깅 | 75% | [action_requirements.md](../requirements/action_requirements.md) |
-| ACT-005 (Execution Result) | ICD v0.0 공통 응답 envelope | 75% | [action_requirements.md](../requirements/action_requirements.md) |
+Backend/Frontend 모두 **Application 계층은 Release 후보 수준으로 검증됨**:
+19개 문서화 API 전부(Backend) + 7개 도메인(Frontend) 계약이 실제 서버
+실행/정적 코드 대조로 확인됐다. 이번 감사에서 **P0 결함 2건**이
+발견·수정(Backend: Calendar 필드명/DB drift) 또는 **미수정 발견**
+(Frontend: Weather 에러 메시지 노출)됐다. **Operational 계층**(DB
+마이그레이션 재현성, CORS, HTTPS)은 Medium~High 리스크로 확인되어
+`V_1.0.0` 이전 반드시 해결이 필요하다. Intent/Memory/Planner/Action
+Router/Workflow(Phase 6~11)는 설계 문서만 있고 코드가 전혀 없다 — 이는
+결함이 아니라 **의도된 범위 밖**(SSOT가 이 6개 Domain을 `Status: Proposed,
+Progress: 0%`로 명시).
 
-## 2. 현재 진행 중 (In Progress, 25%~50%)
+## 1. 현재 구현 완료 기능
 
-| Requirement | 상태 | 근거 |
+| 기능 | Progress | 근거 |
 |---|---|---|
-| SYS-001 (Dashboard Management) | 25% — 위젯 대부분 구현되었으나 Todo Widget/Widget Visibility/AI 레이아웃 없음 | [system_requirements.md](../requirements/system_requirements.md) |
-| SYS-002 (Natural Language Interaction) | 25% — Chat UI 동작하나 백엔드 미경유(클라이언트가 OpenAI 직접 호출), 스트리밍/음성/마크다운 없음 | [chat_requirements.md](../requirements/chat_requirements.md) |
-| SYS-003 (AI Briefing) | 25% — `BriefCardWidget`이 날씨+캘린더로 브리핑 생성하나 서버측 Briefing 서비스 없음 | [system_requirements.md](../requirements/system_requirements.md) |
-| SYS-006 (Action Execution) | 25% — 라우트 단위 CRUD/검증/로깅은 있으나 공용 Action Dispatcher 없음 | [action_requirements.md](../requirements/action_requirements.md) |
-| SYS-007 (Connector Management) | 25% — Google Calendar는 Backend만 완료, Frontend 미연동. HA는 UI 스텁만 | [connector_requirements.md](../requirements/connector_requirements.md) |
-| CON-001 (Google Calendar Connector) | 25% — Backend 완료, Frontend는 로컬 캘린더만 표시 | [connector_requirements.md](../requirements/connector_requirements.md) |
-| LLM-001 (Multi Provider Support) | 25% — BYOK 키 저장소는 4개 provider 지원하나 실제 호출은 OpenAI 단일 | [llm_gateway_requirements.md](../requirements/llm_gateway_requirements.md) |
-| Settings Domain | 50% — API 완전 구현, Frontend 프리로드까지 확인, 실제 변경 화면 연동은 미확인 | [settings.md](../requirements/domain_icd/settings.md) |
+| User Auth(ID Token + Redirect, Session, Refresh rotation, Logout) | 75% | Backend Schema Verification Report §3, §7(실서버 검증) — Redirect의 대화형 동의 완료만 사람 확인 필요 |
+| Google Calendar 연동(OAuth 동의 + 조회) | 75% | Backend/Frontend 양쪽 Verification Report — 실계정 happy-path만 미검증 |
+| Weather(현재/예보) | 75%(P0 결함 있음) | Backend: 실 OpenWeather API로 검증. Frontend: 모델 파싱 일치하나 에러 UX 결함 |
+| Dashboard 핵심 위젯(Clock/Weather/Calendar/Brief/Chat/Sidebar/Status) | 75% | Frontend Schema Verification Report §6 |
+| Settings(AI/UI) GET | 75%(PUT은 Dead Code) | Frontend Schema Verification Report §3, Issue #6 |
+| BYOK API Key 저장(암호화) | 75%(Frontend UI 없음) | Backend: DB drift 수정 후 실동작 확인. Frontend: Route는 있으나 UI 미연결 |
+| ICD v0.0 공통 응답 envelope, Rate Limiting(30/120), 로깅(`request_logs`/`raw_logs`) | 100% | Backend Schema Verification Report §4, §7 — 실 429/로그 확인 |
 
-## 3. 다음 작업 (Next — Phase 1 우선순위, [roadmap.md](roadmap.md) 기준)
+## 2. 현재 개발 중 / 미완결
 
-1. **Intent Tier 0**: `INT-001` Intent Classification 최초 설계 착수 —
-   Phase 1의 선행 조건([roadmap.md](roadmap.md) Phase 1).
-2. **Google Calendar Frontend 연동**: `CalendarModule`이 `GET /v1/calendar/events`를
-   호출하도록 전환(Backend는 이미 완료, Frontend 단독 착수 가능 —
-   [docs/icd/prompt_playbook.md](../docs/icd/prompt_playbook.md) 착수 순서 3번).
-3. **Refresh Token 자동 갱신 인터셉터**(Frontend 단독, Backend 완료) —
-   [docs/icd/prompt_playbook.md](../docs/icd/prompt_playbook.md) 착수 순서 1번,
-   가장 비용 대비 가치가 높은 항목으로 지목됨.
-4. **Todo/Reminder Requirement 구체화 및 최초 구현** —
-   [requirements/domain_icd/todo.md](../requirements/domain_icd/todo.md),
-   [reminder.md](../requirements/domain_icd/reminder.md)는 정의됐으나 대응
-   구현이 전혀 없음(0%).
-
-## 4. Risk
-
-| Risk | 심각도 | 근거 |
+| 기능 | 상태 | 근거 |
 |---|---|---|
-| HTTPS/CORS/Cookie `Secure`/`SameSite` 속성 미문서화 — 토큰이 URL fragment/Bearer 헤더로 오가는 구조상 HTTPS는 사실상 필수 전제인데 정책 문서가 없음 | P0 | [docs/policies/security_policy.md](../docs/policies/security_policy.md) |
-| DB Migration 파일이 실제 코드 저장소에 없음(스키마가 코드에서 역추론됨) — 스키마 변경 시 회귀 위험 | P0 | [backend/docs/database/README.md](../backend/docs/database/README.md), [docs/ops/data_sop.md](../docs/ops/data_sop.md) |
-| Google OAuth Verification(민감 스코프 `calendar.readonly`) 미착수 — 일반 공개 전 Google 심사 필요 | P0 | [docs/policies/privacy_policy.md](../docs/policies/privacy_policy.md) |
-| Backend/Flutter 자동 테스트 전무 — 모든 Progress 판단이 "실제 실행 확인"을 요구하는데 회귀를 자동으로 잡을 수단이 없음 | P1 | [docs/workflow.md](../docs/workflow.md) 출시 전 체크리스트 "Testing" |
-| Refresh Token 정리 Job 없음 — 만료 행이 영구 누적 | P1 | [backend/docs/database/refresh_tokens.md](../backend/docs/database/refresh_tokens.md) |
-| Secret 관리가 `.env` 전용 — KMS/rotation 없음 | P3 | [docs/policies/security_policy.md](../docs/policies/security_policy.md) |
+| Weather 에러 메시지 매핑 | **Blocked(P0)** | `WeatherModule`에 `error.code`→메시지 매핑 없음 — 원시 예외 노출 |
+| DB 마이그레이션 재현성 | **Blocked(High)** | 7개 테이블 중 5개(`users` 기본 테이블 포함)에 `CREATE TABLE` 마이그레이션 없음 |
+| CORS 정책 | **Blocked(Medium)** | `origin: true` — 전체 Origin 반사, allow-list 없음 |
+| HTTPS/HSTS | **Blocked(Medium)** | 코드 레벨 강제 없음, 문서화되지 않은 리버스 프록시에 전적으로 의존 |
+| Settings/API Key 관리 UI | Not Started | Route/모델은 완성되었으나 호출하는 화면이 없음(Dead Code) |
+| Todo Widget(DSH-004), Widget Visibility(DSH-006) | Not Started | 두 저장소 어디에도 근거 없음 |
+| Intent/Memory/Planner/Action Router/Automation(확장 Connector 포함) | Not Started(설계만) | Phase 6~11, [roadmap.md](roadmap.md) |
 
-## 5. TODO
+## 3. Blocker
 
-출처별로 정리(중복 제거, 각 출처 문서가 여전히 단일 출처):
+1. **[P0]** Weather 에러 발생 시 사용자에게 원시 Dart 예외 문자열이 노출됨
+   — `docs/policies/error_policy.md` 직접 위반. `V_0.1.x`에서 최우선 수정 대상.
+2. **[High]** DB 스키마가 `migrations/`만으로 재현 불가능 — 새 환경(스테이징,
+   재해 복구, 신규 개발자)을 표준 절차로 구성할 수 없음.
 
-**Backend** ([backend/docs/FeatureList.md](../backend/docs/FeatureList.md) TODO 절)
-- [ ] `usage_logs` 테이블(LLM 토큰/비용 추적) 추가
-- [ ] `app.providers` 레지스트리 실제 구현(현재 타입만 존재)
-- [ ] Provider Key Admin API 이후 `ConfigHandler` DB 연동
-- [ ] Refresh Token 정리 Job
+## 4. Known Issues
 
-**Frontend** ([frontend/docs/FeatureList.md](../frontend/docs/FeatureList.md) TODO 절)
-- [ ] Deprecated 파일 삭제 및 영향 확인
-- [ ] `shared_preferences`로 `SidebarModule` 상태 영속화
-- [ ] Refresh Token 재발급 로직 구현(§3 "다음 작업" 2번과 동일 항목)
-- [ ] Release APK 서명 키 설정, iOS `GoogleService-Info.plist` 등록
-- [ ] `flutter analyze` CI 통합
+| Issue | Priority | 출처 |
+|---|---|---|
+| `LingonUsersRoute.patchMe`의 `city`가 명시적 `null`을 보낼 수 없음(clear 불가) | P2 | Frontend Verification/Schema Report(2건 모두, 반복 확인됨) |
+| `LingonSettingsRoute`/`LingonApiKeyRoute` 쓰기 경로가 Dead Code | P2 | Frontend Schema Verification Report Issue #6 |
+| CORS 전체 개방 | P2(Medium) | Backend Schema Verification Report Issue #2 |
+| HTTPS/HSTS 미확정 | P2(Medium) | Backend Schema Verification Report Issue #3 |
+| `backend/docs/api/users.md`가 `provider_id` 포함을 잘못 문서화(실제로는 제외됨 — 코드가 문서보다 안전한 방향으로 다름) | P3 | Backend Schema Verification Report Issue(Low) |
+| `backend/docs/api/weather.md`에 error.code 표 없음 | P3 | Backend Schema Verification Report Issue(Low), [docs/icd/gap_analysis.md](../docs/icd/gap_analysis.md) §5와 동일 항목 |
+| `frontend/docs/FeatureList.md`가 Calendar를 "로컬 캘린더(완료)/Google 동기화(예정)"로 오기 — 실제로는 V0.0.12부터 Google 전용으로 완전 전환됨 | P1 | Frontend Schema Verification Report Finding D-1 |
+| `docs/policies/error_policy.md` 401 행 + `frontend/docs/FeatureList.md`가 401 자동 재시도 인터셉터를 "미연결"로 오기 — 실제로는 V0.0.11부터 구현됨 | P1 | Frontend Schema Verification Report Finding D-2 |
+| `frontend/docs/DevelopmentGuide.md`의 `lib/auth/` 트리 문서가 실제 `lib/modules/auth/` 구조와 다름 | P3 | Frontend Schema Verification Report Finding D-3 |
+| 루트 `ICD.md`(Frontend 저장소, v2.0)가 SSOT(`backend/docs/api/weather.md`)와 다른 Weather 스키마를 문서화 — orphaned, 코드는 SSOT를 정확히 따름 | P3 | Frontend Schema Verification Report Finding D-4 |
+| `usage_logs` 테이블이 라이브 DB에 존재하나 어떤 코드도 쓰지 않음 | P3 | Backend Verification Report §12 |
 
-**출시 전 필수** ([docs/workflow.md](../docs/workflow.md) 출시 전 체크리스트 — 전체 목록은 [roadmap.md](roadmap.md) Phase 6 참고)
-- [ ] Infrastructure: Home Network 접근 구조, VPN/Tunnel, Worker Queue, Background Job, Circuit Breaker
-- [ ] Database: Migration, Backup, Restore, Rollback
-- [ ] Security: Privacy Policy/Terms 법률 검토, Google Verification, OAuth Scope 재검토
-- [ ] Testing: Backend/Flutter 자동 테스트, Integration/Regression Test
-- [ ] Reliability: Offline Mode, Retry/Timeout/Recovery 실제 구현, Notification 정책
+## 5. 다음 작업 (Priority 순)
+
+1. **(P0)** `WeatherModule`에 `error.code`→사용자 메시지 매퍼 추가(Calendar/Auth와 동일 패턴).
+2. **(P1)** Flutter SDK가 설치된 환경에서 `flutter analyze`/`test`/`build`를
+   실행해 Frontend Schema Verification Report §7의 공백을 메운다.
+3. **(P1)** 사람이 실제 Google 계정으로 로그인 → Calendar 연결 → 이벤트
+   렌더링까지 1회 수동 확인(양쪽 Verification Report 공통 권고).
+4. **(P1)** `FeatureList.md`(Calendar 상태), `error_policy.md`(401
+   인터셉터 상태) 문서 정정(Finding D-1, D-2 — 이번 패스는 `status/`만
+   갱신했고 `frontend/docs/`/`docs/policies/` 원본은 아직 수정하지 않음).
+5. **(High)** DB 베이스라인 마이그레이션(`000_baseline_schema.sql`) 작성.
+6. **(Medium)** CORS allow-list 확정, HTTPS/HSTS 리버스 프록시 설정 문서화.
+7. Phase 6(Intent Engine) 착수 — `V_0.2.0` 목표.
+
+## 6. Release Readiness — `V_0.1.0` Baseline
+
+| 카테고리 | 판정 | 근거 |
+|---|---|---|
+| A. Documentation Compliance | Good(90%) | Backend Schema Verification Report §9 |
+| B. API Contract Stability | Excellent(95%) | 동일 §9 — 19개 API 전수 실서버 검증 |
+| C. Database Reliability | **Needs Work(65%)** | 마이그레이션 재현성 부족 |
+| D. Security Readiness | Fair(75%) | CORS/HTTPS 미확정, 그 외(암호화/redaction/쿠키)는 전부 Strong |
+| E. Production Deployment Readiness | **Needs Work(65%)** | 자동 테스트 0건, 마이그레이션 이슈와 동일 원인 |
+| Frontend Release Readiness | **Not Ready** | Weather P0 결함이 blocking(Frontend Schema Verification Report §9) |
+
+**결론**: `V_0.1.0`은 "Baseline"이지 "Release Candidate"가 아니다 — 위 P0/High
+항목이 해소되기 전까지 `V_1.0.0`으로 진행하지 않는다.
 
 ## 관련 문서
 
 - [roadmap.md](roadmap.md), [phase_status.md](phase_status.md)
-- [../requirements/system_requirements.md](../requirements/system_requirements.md) — 이 문서의 1차 근거
-- [../requirements/requirements_traceability.md](../requirements/requirements_traceability.md) — Business Goal → System → Layer → 구현 파일 전체 추적
+- [../requirements/system_requirements.md](../requirements/system_requirements.md)
+- [../requirements/requirements_traceability.md](../requirements/requirements_traceability.md)

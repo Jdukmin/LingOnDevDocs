@@ -1,7 +1,10 @@
 {
   "component": "frontend",
   "version": "0.1.0",
-  "last_updated": "2026-07-23",
+  "last_updated": "2026-07-29",
   "changelog": "changelog/frontend.md",
-  "note": "Seed value. This repository has no access to the real frontend source repository's pubspec.yaml or release tags — reconcile this value against the actual frontend repo before trusting it as ground truth."
+  "source_repo": "jdukmin/letmeknow",
+  "source_commit": "28f8bb2",
+  "known_discrepancy": "jdukmin/letmeknow's own pubspec.yaml still says \"version: 1.0.0+1\" as of commit 28f8bb2 — a placeholder/default Flutter version, not tracking this DevDocs-side baseline (and numerically ahead of it, which would be misleading if read in isolation). This 0.1.0 value is the DevDocs SSOT's authoritative version per CLAUDE.md's Version 관리 rule; pubspec.yaml should be reconciled in a future frontend-repo pass (out of scope here — DevDocs makes no source-code changes).",
+  "note": "V_0.1.0 Baseline Release, confirmed real via FRONTEND_VERIFICATION_REPORT.md + FRONTEND_SCHEMA_VERIFICATION_REPORT.md (source repo root) — reconciled against jdukmin/letmeknow commit 28f8bb2. Real commit history through V_0.0.17 plus the schema verification pass is what this baseline covers — see status/frontend/V0.1.0.md."
 }

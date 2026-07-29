@@ -1,34 +1,51 @@
 # Phase Status
 
-> Status/Progress 값은 [roadmap.md](roadmap.md)에 옮겨 적은 것과 동일하며,
-> 원본은 [docs/roadmap/roadmap.md](../docs/roadmap/roadmap.md)와
-> [docs/roadmap/mvp.md](../docs/roadmap/mvp.md)다. 이 문서는 그 값에 "관련
-> Version"(실제 Commit 이력)을 추가로 연결한 것이다. Status/Progress 값
-> 정의는 [../requirements/README.md](../requirements/README.md)를 따른다
-> ([status/README.md](README.md) §3.2 참고).
+> Status/Progress 값 산정 근거는 [roadmap.md](roadmap.md)의 각 Phase
+> "완료 조건" 절과, 실제 저장소의 `FRONTEND_VERIFICATION_REPORT.md`,
+> `BACKEND_VERIFICATION_REPORT.md`, `FRONTEND_SCHEMA_VERIFICATION_REPORT.md`,
+> `BACKEND_SCHEMA_VERIFICATION_REPORT.md`(각 저장소 루트)다. 값 정의는
+> [../requirements/README.md](../requirements/README.md)를 따른다.
 
 | Phase | Name | Status | Progress | 관련 Requirement | 관련 Version |
 |---|---|---|---|---|---|
-| 1 | Action Pipeline & Core Integrations (Calendar/Todo/Reminder) | In Progress | 25% | INT-001~005, CON-001, DSH-003/004 | [backend/V0.0.12](backend/V0.0.12.md)(Calendar 백엔드), [backend/V0.0.16](backend/V0.0.16.md)·[frontend/V0.0.16](frontend/V0.0.16.md)(Todo/Weather/Calendar Domain ICD, Calendar MVP 범위 축소) |
-| 2 | Home Assistant (IoT) | Planned | 0% | CON-002 | 없음 — 착수 전 |
-| 3 | NAS / Server Monitoring (Infrastructure) | Planned | 0% | CON-004, CON-005 | 없음 — 착수 전 |
-| 4 | Workflow / Multi-Action (Automation) | Planned | 0% | PLN-001~005 | 없음 — 착수 전(Domain ICD만 [backend/V0.0.14](backend/V0.0.14.md) 시점에 정의됨) |
-| 5 | Always-On Dashboard (UI Polish) | In Progress | 25%(신규 투자 기준, 개별 위젯은 다수 75%) | DSH-004~008 | [backend/V0.0.7](backend/V0.0.7.md)·[frontend/V0.0.7](frontend/V0.0.7.md)(최초 위젯 세트 전체) |
-| 6 | V1.0 Release Readiness | Not Started | 0% | 없음(체크리스트 관리) | [backend/V0.0.16](backend/V0.0.16.md)(Policies/Ops SOP 최초 작성 — 체크리스트 자체의 기반 문서) |
+| 1 | Foundation | Done | 100% | (RDD 이전) | [backend/V0.0.4](backend/V0.0.4.md), [frontend/V0.0.4](frontend/V0.0.4.md) |
+| 2 | Authentication | Done | 75% | SYS-008, CON-006 | [backend/V0.0.{7~11}](backend/), [frontend/V0.0.{7,8,10,11}](frontend/) |
+| 3 | Dashboard | In Progress | 75%(DSH-004/006은 0%) | DSH-001~008 | [backend/V0.0.4](backend/V0.0.4.md), [frontend/V0.0.{4,5}](frontend/) |
+| 4 | Calendar | Done | 75% | CON-001 | [backend/V0.0.{13,15,17}](backend/), [frontend/V0.0.{12,13,15,17}](frontend/) |
+| 5 | Weather | Done*(P0 결함) | 75% | DSH-002 | [backend/V0.0.4](backend/V0.0.4.md), [frontend/V0.0.6](frontend/V0.0.6.md) |
+| 6 | Intent Engine | Planned | 0% | INT-001~005 | 없음 |
+| 7 | Memory (RAG) | Planned | 0% | MEM-001~005 | 없음 |
+| 8 | Planner | Planned | 0% | PLN-001~005 | 없음 |
+| 9 | Action Router | Planned | 0%(공용 Dispatcher 기준) | ACT-001~005 | 없음 |
+| 10 | Connector (확장) | Planned | 0% | CON-002/003/004/005 | 없음 |
+| 11 | Automation (Workflow) | Planned | 0% | 없음(domain_icd/workflow.md) | 없음 |
+| 12 | V1.0 Release | In Progress | 25% | 없음(체크리스트) | [backend/V0.1.0](backend/V0.1.0.md), [frontend/V0.1.0](frontend/V0.1.0.md) |
 
-## Cross-Phase / Foundational Version 연결
+\* Phase 5(Weather)의 "Done"은 정상 조회 경로에 한한다 — 에러 처리 경로에
+사용자에게 원시 예외를 노출하는 P0 결함이 열려 있다
+([current_status.md](current_status.md) §Risks 참고).
 
-아래 버전들은 특정 Phase 하나에 속하지 않는 **기반(Platform) 작업**이거나,
-Phase 1~6 자체를 정의한 **거버넌스 작업**이다 — 위 표에서 억지로 하나의
-Phase에 배정하지 않고 별도로 기록한다.
+## Baseline 이후(V_0.1.0) 남은 Phase 간 의존 관계
 
-| Version | 성격 | 근거 |
-|---|---|---|
-| [backend/V0.0.9](backend/V0.0.9.md), [backend/V0.0.11](backend/V0.0.11.md) + 대응 [frontend/V0.0.9](frontend/V0.0.9.md), [frontend/V0.0.11](frontend/V0.0.11.md) | User Domain(인증/세션) — 모든 Phase가 의존하는 기반. 특정 Phase의 "완료 조건"이 아니라 전제 조건 | [requirements/system_requirements.md](../requirements/system_requirements.md) SYS-008 |
-| [backend/V0.0.14](backend/V0.0.14.md) + [frontend/V0.0.14](frontend/V0.0.14.md) | Personal Action OS 전략 전환 — `docs/strategy/`, `docs/roadmap/`, `requirements/domain_icd/`(11개 Domain), `docs/icd/`(Action Layer API 제안) 최초 작성. **이 로드맵(Phase 1~6) 자체가 이 버전에서 만들어진 문서를 근거로 한다** | [docs/decisions/architecture_decisions.md](../docs/decisions/architecture_decisions.md) DEC-001~003 |
+```
+Phase 1(Foundation) → Phase 2(Auth) → Phase 4(Calendar), Phase 5(Weather) → [V_0.1.0 Baseline, 현재]
+                                                                                    ↓
+                                                                        Phase 6(Intent Engine) → V_0.2.0
+                                                                                    ↓
+                                                Phase 7(Memory), Phase 8(Planner), Phase 9(Action Router), Phase 10(Connector) → V_0.5.0
+                                                                                    ↓
+                                                                        Phase 11(Automation) → V_1.0.0
+                                                                                    ↓
+                                                              Phase 12(V1.0 Release Readiness, Phase 1~11과 병행 진행 가능)
+```
+
+Phase 3(Dashboard)은 신규 투자 우선순위상 후순위이나 완전히 멈춘 것은
+아니다 — DSH-004(Todo)/DSH-006(Visibility)는 여유가 있을 때 채운다
+([docs/development_rules.md](../docs/development_rules.md) 규칙 9,
+Action Layer 우선순위).
 
 ## 관련 문서
 
 - [roadmap.md](roadmap.md) — Phase별 목표/완료 조건 상세
-- [current_status.md](current_status.md) — Requirement 단위 상세 현황
+- [current_status.md](current_status.md) — Requirement 단위 상세 현황, Risk, TODO
 - [backend/](backend/), [frontend/](frontend/) — 버전별 상세 변경 이력
