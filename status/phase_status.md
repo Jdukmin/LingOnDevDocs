@@ -49,3 +49,7 @@ Action Layer 우선순위).
 - [roadmap.md](roadmap.md) — Phase별 목표/완료 조건 상세
 - [current_status.md](current_status.md) — Requirement 단위 상세 현황, Risk, TODO
 - [backend/](backend/), [frontend/](frontend/) — 버전별 상세 변경 이력
+- [BETA_RELEASE_STATUS_REPORT.md](BETA_RELEASE_STATUS_REPORT.md) — 이 표를
+  "주요 기능"·"예상 Risk" 열을 추가해 Beta Release 관점으로 재정리한 종합 보고서
+- [required_human_resource.md](required_human_resource.md) — Phase 10(Connector),
+  Phase 12(V1.0 Release)와 연결된, AI가 대신할 수 없는 작업 목록

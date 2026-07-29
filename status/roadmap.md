@@ -15,7 +15,7 @@
 
 | 목표 버전 | 의미 |
 |---|---|
-| **V_0.1.0**(현재) | Baseline — Foundation/Auth/Dashboard/Calendar/Weather 검증 완료, Verification Report 2건씩(Backend/Frontend) 확보 |
+| **V_0.1.0**(현재) | Baseline — Foundation/Auth/Dashboard/Calendar/Weather 검증 완료, Verification Report 2건씩(Backend/Frontend) 확보. 사람이 "Beta Release"라고 부르는 대상은 새 버전 번호가 아니라 **이 Baseline이 [BETA_RELEASE_STATUS_REPORT.md](BETA_RELEASE_STATUS_REPORT.md)의 Release Blocker를 해소하고 공개 배포 가능해진 상태**(`V_0.1.x`)를 가리킨다 |
 | **V_0.1.x** | Baseline에서 발견된 P0/P1 수정(Weather 에러 노출, DB 마이그레이션 재현성, CORS/HTTPS) |
 | **V_0.2.0** | Phase 6(Intent Engine) 착수 — 자연어 → 구조화 Intent 파이프라인 최초 구현 |
 | **V_0.5.0** | Phase 7~10(Memory/Planner/Action Router/Connector 확장) 상당 부분 완료 — Action Layer 실사용 가능 |
@@ -159,4 +159,6 @@
 
 - [phase_status.md](phase_status.md) — Phase별 Status/Progress 표 + Version 연결
 - [current_status.md](current_status.md) — Executive Summary, Risk, TODO
+- [BETA_RELEASE_STATUS_REPORT.md](BETA_RELEASE_STATUS_REPORT.md) — Beta Release Checklist, Release Blockers
+- [required_human_resource.md](required_human_resource.md) — AI가 수행할 수 없는 작업 목록
 - [../requirements/domain_icd/domain_analysis.md](../requirements/domain_icd/domain_analysis.md) — Domain별 MVP 우선순위 원본 분석

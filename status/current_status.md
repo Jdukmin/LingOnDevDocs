@@ -99,8 +99,18 @@ Progress: 0%`로 명시).
 **결론**: `V_0.1.0`은 "Baseline"이지 "Release Candidate"가 아니다 — 위 P0/High
 항목이 해소되기 전까지 `V_1.0.0`으로 진행하지 않는다.
 
+## 7. Beta Release 종합 보고서
+
+이 문서(Requirement 단위 상세)와 [phase_status.md](phase_status.md)(Phase
+단위), [roadmap.md](roadmap.md)(장기 계획)를 하나로 엮어 Beta Release
+관점(Remaining Development, Required Human Resource, Risks, Release
+Blockers, Checklist)으로 재정리한 문서: [BETA_RELEASE_STATUS_REPORT.md](BETA_RELEASE_STATUS_REPORT.md).
+AI가 수행할 수 없는 작업(Store 등록, OAuth Verification, 법률 문서, 실기기
+테스트 등)만 별도로: [required_human_resource.md](required_human_resource.md).
+
 ## 관련 문서
 
 - [roadmap.md](roadmap.md), [phase_status.md](phase_status.md)
+- [BETA_RELEASE_STATUS_REPORT.md](BETA_RELEASE_STATUS_REPORT.md), [required_human_resource.md](required_human_resource.md)
 - [../requirements/system_requirements.md](../requirements/system_requirements.md)
 - [../requirements/requirements_traceability.md](../requirements/requirements_traceability.md)
