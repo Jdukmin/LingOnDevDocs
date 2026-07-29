@@ -16,8 +16,8 @@ Backend 사이의 누락 항목이다. 여기 적힌 것은 전부 **현재 문�
 |---|---|---|
 | Action / Workflow 추상화 | 백엔드는 라우트별 REST만 있고 공용 Action Dispatcher가 없다 | [requirements/action_requirements.md](../../requirements/action_requirements.md) ACT-001, [backend/docs/routes/README.md](../../backend/docs/routes/README.md) |
 | Intent 처리 인터페이스 | Chat이 원문 메시지를 그대로 LLM에 전달 — 분류/슬롯 추출 단계 없음 | [requirements/intent_requirements.md](../../requirements/intent_requirements.md) |
-| Refresh Token 자동 갱신 인터셉터 | 백엔드 `POST /v1/auth/refresh`는 구현 완료, 프론트 `ApiClient`의 401 인터셉터+retry는 미연결 | [frontend/docs/FeatureList.md](../../frontend/docs/FeatureList.md) 스텁 섹션, [requirements/system_requirements.md](../../requirements/system_requirements.md) SYS-008 근거 노트 |
-| Google Calendar 연동 인터페이스 | 백엔드 `GET /v1/calendar/events`는 완성, 프론트 `CalendarModule`은 로컬 캘린더만 호출 — 연결 코드가 없음 | [requirements/connector_requirements.md](../../requirements/connector_requirements.md) CON-001 |
+| ~~Refresh Token 자동 갱신 인터셉터~~ | **해결됨(정정 2026-07-29)** — 이 문서 작성(2026-07-21) 이전인 V0.0.11(2026-07-18)부터 `ApiClient._withRetry`가 이미 구현되어 있었다. 근거: `FRONTEND_VERSION_HISTORY_REPORT.md` V0.0.11(Frontend 저장소 루트), [status/frontend/V0.0.11.md](../../status/frontend/V0.0.11.md) | — |
+| ~~Google Calendar 연동 인터페이스~~ | **해결됨(정정 2026-07-29)** — V0.0.12(2026-07-21)부터 `GoogleCalendarDataSource`가 로컬 캘린더를 완전히 대체했다. 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` §3, [status/frontend/V0.0.12.md](../../status/frontend/V0.0.12.md) | — |
 
 ## 2. 누락된 API
 
@@ -73,8 +73,8 @@ Backend 사이의 누락 항목이다. 여기 적힌 것은 전부 **현재 문�
 [../roadmap/mvp.md](../roadmap/mvp.md) Tier를 따른다:
 
 1. `POST /v1/actions/execute` 최소 스캐폴딩 (Tier 0) — Action Type 1개(`weather.get_current`)만 Wrap해서 파이프라인 검증
-2. Refresh Token 자동 갱신 인터셉터 연결 (이미 backend 완료, frontend만 필요 — 비용 대비 가치 높음)
-3. Google Calendar 연동 인터페이스 연결 (backend 완료, frontend만 필요)
+2. ~~Refresh Token 자동 갱신 인터셉터 연결~~ **완료됨(V0.0.11) — 위 §1 정정 참고**
+3. ~~Google Calendar 연동 인터페이스 연결~~ **완료됨(V0.0.12/17) — 위 §1 정정 참고**
 4. Todo/Reminder Requirement 정의 후 API 설계 (Tier 1)
 5. 스트리밍 전송 수단(SSE) 도입 — Chat 스트리밍 + Action progress 이벤트 공용 기반
 
