@@ -14,6 +14,8 @@ const SOURCES = [
   { app: 'requirements', label: 'Requirements', dir: path.join(ROOT, 'requirements') },
   { app: 'backend', label: 'Backend', dir: path.join(ROOT, 'backend', 'docs') },
   { app: 'frontend', label: 'Frontend', dir: path.join(ROOT, 'frontend', 'docs') },
+  { app: 'changelog', label: 'ChangeLog', dir: path.join(ROOT, 'changelog') },
+  { app: 'verification', label: 'Verification', dir: path.join(ROOT, 'verification') },
 ];
 
 function toPosix(p) {
@@ -66,13 +68,24 @@ function build() {
     });
   }
 
+  const rootClaude = path.join(ROOT, 'CLAUDE.md');
+  if (fs.existsSync(rootClaude)) {
+    const content = fs.readFileSync(rootClaude, 'utf8');
+    entries.push({
+      app: 'root',
+      category: '',
+      path: 'CLAUDE.md',
+      title: extractTitle(content, 'CLAUDE.md'),
+    });
+  }
+
   for (const source of SOURCES) {
     if (!fs.existsSync(source.dir)) continue;
     walk(source.dir, source.dir, source.app, entries);
   }
 
   entries.sort((a, b) => {
-    const appOrder = { root: 0, docs: 1, requirements: 2, backend: 3, frontend: 4 };
+    const appOrder = { root: 0, docs: 1, requirements: 2, backend: 3, frontend: 4, verification: 5, changelog: 6 };
     if (appOrder[a.app] !== appOrder[b.app]) return appOrder[a.app] - appOrder[b.app];
     if (a.category !== b.category) return a.category.localeCompare(b.category);
     return a.path.localeCompare(b.path);

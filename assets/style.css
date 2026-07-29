@@ -13,6 +13,8 @@
   --tag-root: #6b5bd2;
   --tag-requirements: #c0392b;
   --tag-docs: #1d7a8c;
+  --tag-verification: #7a5c1d;
+  --tag-changelog: #4a5a1d;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,6 +33,8 @@
     --tag-root: #a596f0;
     --tag-requirements: #e8746a;
     --tag-docs: #5fc3d6;
+    --tag-verification: #d6b25f;
+    --tag-changelog: #a3c15f;
   }
 }
 
@@ -199,6 +203,8 @@ main.content {
 .tag.root { background: color-mix(in srgb, var(--tag-root) 18%, transparent); color: var(--tag-root); }
 .tag.requirements { background: color-mix(in srgb, var(--tag-requirements) 18%, transparent); color: var(--tag-requirements); }
 .tag.docs { background: color-mix(in srgb, var(--tag-docs) 18%, transparent); color: var(--tag-docs); }
+.tag.verification { background: color-mix(in srgb, var(--tag-verification) 18%, transparent); color: var(--tag-verification); }
+.tag.changelog { background: color-mix(in srgb, var(--tag-changelog) 18%, transparent); color: var(--tag-changelog); }
 
 .doc-body {
   max-width: 860px;

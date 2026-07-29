@@ -1,0 +1,7 @@
+{
+  "component": "frontend",
+  "version": "0.1.0",
+  "last_updated": "2026-07-23",
+  "changelog": "changelog/frontend.md",
+  "note": "Seed value. This repository has no access to the real frontend source repository's pubspec.yaml or release tags — reconcile this value against the actual frontend repo before trusting it as ground truth."
+}

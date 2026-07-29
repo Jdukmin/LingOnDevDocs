@@ -1,0 +1,7 @@
+{
+  "component": "backend",
+  "version": "0.1.0",
+  "last_updated": "2026-07-23",
+  "changelog": "changelog/backend.md",
+  "note": "Seed value. This repository has no access to the real backend source repository's package.json or release tags — reconcile this value against the actual backend repo before trusting it as ground truth."
+}

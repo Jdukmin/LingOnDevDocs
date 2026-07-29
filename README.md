@@ -1,5 +1,10 @@
 # Development Documents
 
+> **Claude 작업 지침**: [CLAUDE.md](CLAUDE.md) — Claude Code/Claude Web이 이
+> 저장소에서 작업할 때 따르는 실행 지침(Context Loading, ICD Rule,
+> Verification Report, Version/ChangeLog, Commit 규칙). 사람이 아니라
+> Claude를 위한 문서다.
+
 > **DevDocs SSOT Verification Report**: [DEVDOCS_SSOT_VERIFICATION_REPORT.md](DEVDOCS_SSOT_VERIFICATION_REPORT.md) —
 > 2026-07-23 전체 DevDocs 감사 결과(수정 문서, 해결된 충돌, Backend/Frontend
 > 영향, 우선순위별 잔여 TODO).

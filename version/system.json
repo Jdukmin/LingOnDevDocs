@@ -1,0 +1,11 @@
+{
+  "system": "LingOn",
+  "version": "0.1.0",
+  "components": {
+    "backend": "0.1.0",
+    "frontend": "0.1.0"
+  },
+  "last_updated": "2026-07-23",
+  "changelog": "changelog/system.md",
+  "note": "Seed value marking the introduction of the version/changelog SSOT system in this repository (see CLAUDE.md). Does not assert a real release has shipped at this version — reconcile against actual backend/frontend repositories."
+}
