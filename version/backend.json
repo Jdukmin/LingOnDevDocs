@@ -1,7 +1,10 @@
 {
   "component": "backend",
   "version": "0.1.0",
-  "last_updated": "2026-07-23",
+  "last_updated": "2026-07-29",
   "changelog": "changelog/backend.md",
-  "note": "Seed value. This repository has no access to the real backend source repository's package.json or release tags — reconcile this value against the actual backend repo before trusting it as ground truth."
+  "source_repo": "jdukmin/lingon",
+  "source_commit": "0e6928b",
+  "known_discrepancy": "jdukmin/lingon's own package.json still says \"version\": \"0.0.1\" as of commit 0e6928b — it has not been bumped to track this DevDocs-side baseline. This 0.1.0 value is the DevDocs SSOT's authoritative version per CLAUDE.md's Version 관리 rule; package.json should be updated to match in a future backend-repo pass (out of scope here — DevDocs makes no source-code changes).",
+  "note": "V_0.1.0 Baseline Release, confirmed real via BACKEND_VERIFICATION_REPORT.md + BACKEND_SCHEMA_VERIFICATION_REPORT.md (source repo root) — reconciled against jdukmin/lingon commit 0e6928b. Real commit history through V_0.0.17 plus the schema verification pass is what this baseline covers — see status/backend/V0.1.0.md."
 }
