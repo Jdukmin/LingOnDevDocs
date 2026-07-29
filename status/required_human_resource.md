@@ -21,8 +21,20 @@
 |---|---|---|---|
 | Google Play Console 개발자 계정 등록($25 1회) 및 앱 등록 | Critical | Beta(내부 테스트 트랙)는 V_0.1.x부터 가능, 공개 배포는 V_1.0.0 직전 | 미완료 — `android/app/build.gradle.kts`에 release 서명 설정 없음, keystore 없음(`frontend/docs/FeatureList.md` TODO "Release APK 서명 키 설정") |
 | Apple Developer Program 등록($99/년) 및 App Store Connect 앱 등록 | Critical | V_1.0.0 직전(iOS는 Beta 범위에서 제외 가능) | 미완료 — `frontend/docs/FeatureList.md` TODO에 "iOS `GoogleService-Info.plist` 등록"이 남아있어 iOS 빌드 자체가 배포 준비 전 단계 |
-| 개인정보처리방침(Privacy Policy) 실제 법률 문서 작성 | Critical | Beta 공개 배포 전(Play Store/App Store 제출 필수 항목) | 미완료 — `docs/docs/policies/privacy_policy.md`는 "요구사항 정리이지 실제 정책 문서가 아니다"로 명시(Status: Not Started, 0%) |
+
+> Privacy Policy/Terms 작성은 [Legal](#legal) 카테고리로 이동했다(2026-07-29,
+> 카테고리 재정리 — 내용 변경 없음).
+
+## Legal
+
+| 작업 내용 | 우선순위 | 권장 수행 시점 | 완료 여부 |
+|---|---|---|---|
+| 개인정보처리방침(Privacy Policy) 실제 법률 문서 작성 | Critical | Beta 공개 배포 전(Play Store/App Store 제출 필수 항목) | 미완료 — `docs/policies/privacy_policy.md`는 "요구사항 정리이지 실제 정책 문서가 아니다"로 명시(Status: Not Started, 0%) |
 | 이용약관(Terms of Service) 작성 | Critical | 위와 동일 시점 | 미완료 — 동일 문서, 동일 사유 |
+| BYOK 책임 소재 조항(사용자가 자신의 LLM Provider 키 사용량/비용을 직접 부담) 법률 검토 | High | Terms 작성과 동시 | 미착수 — `docs/policies/privacy_policy.md` "Terms 요구사항" 항목으로만 정리됨, 실제 조항 문구는 없음 |
+| Action 실행 면책 조항(향후 Home Assistant/NAS 등 실제 부작용 있는 Action의 오작동 책임 범위) 법률 검토 | Medium | Phase 10(Connector 확장) 착수 전 | 미착수 — 동일 문서, Beta 범위에서는 아직 실물 Action이 없어 낮은 시급성 |
+| 미성년자 이용 제한 여부 검토 | Medium | Terms 작성과 동시 | 미착수 — `docs/policies/privacy_policy.md` "검토 필요"로만 명시 |
+| 사용자 데이터 삭제(계정 삭제) 정책의 법적 요건 검토(GDPR류 지역 대상 서비스 여부 포함) | Medium | 공개 배포 전 | 미착수 — `userRepository.deleteUser(id)`는 코드에 존재하나 이를 노출하는 API/화면이 없음(`docs/policies/privacy_policy.md` "사용자 데이터 삭제 정책") |
 
 ## Cloud
 
@@ -57,6 +69,16 @@
 | 운영 Secret 관리 체계 도입(KMS/Vault, 키 rotation, 유출 대응 절차) | Medium | `V_1.0.0` 이전 | 미완료 — `docs/docs/policies/security_policy.md` "현재 전부 `.env` 기반... KMS/rotation 정책 없음" |
 | HTTPS/CORS/Cookie 속성(`Secure`/`SameSite`) 실제 설정값 확정 및 검증 | Critical | Beta 배포 직전 | 미확인 — `security_policy.md`가 CORS를 "`origin: true`로 완전 개방"이라고 확인함(Backend Schema Verification Report), 프로덕션 전 allow-list 전환 필요 |
 
+## Monitoring
+
+| 작업 내용 | 우선순위 | 권장 수행 시점 | 완료 여부 |
+|---|---|---|---|
+| 에러 트래킹 서비스(Sentry 등) 계정 개설 및 프로덕션 연동 | High | Beta 배포 직전~직후 | 미착수 — `docs/ops/monitoring.md` "Sentry: 미도입. `raw_logs`의 `unhandled_exception` 행이 유일한 예외 기록 수단" |
+| 메트릭/대시보드 서비스(Prometheus+Grafana 자체 호스팅 또는 관리형 서비스) 선정 및 구축 | Medium | Beta 트래픽이 늘어나는 시점 | 미착수 — `docs/ops/monitoring.md` "Prometheus/Grafana: 미도입" |
+| Alert 채널·에스컬레이션 정책 수립(누가/어떻게 알림받을지 — Slack/이메일/전화 등 운영 판단) | High | Beta 배포 직전 | 미착수 — `docs/ops/monitoring.md` "Alert: 현재 상태 없음", 대상 서비스 자체가 없어 Alert 정의 불가 상태 |
+| `GET /v1/status`를 외부 Uptime 모니터(UptimeRobot 등)에 연결 | Medium | Beta 배포 직후(비용 대비 가장 낮음, `docs/ops/monitoring.md` "Next Milestone") | 미착수 |
+| DB 커넥션 풀 고갈(`pool.ts` max 10) 등 인프라 임계치 모니터링 체계 구축 | Low | `V_1.0.0` 이전 | 미착수 — `docs/ops/monitoring.md` Alert 우선순위 4번 항목 |
+
 ## QA
 
 | 작업 내용 | 우선순위 | 권장 수행 시점 | 완료 여부 |
@@ -83,16 +105,32 @@
 
 ---
 
+## 카테고리별 항목 수
+
+| 카테고리 | Critical | High | Medium | Low | 합계 |
+|---|---|---|---|---|---|
+| Release | 2 | 0 | 0 | 0 | 2 |
+| Legal | 2 | 1 | 3 | 0 | 6 |
+| Cloud | 2 | 2 | 0 | 0 | 4 |
+| OAuth | 3 | 0 | 0 | 0 | 3 |
+| External Service | 1 | 1 | 0 | 1 | 3 |
+| Security | 1 | 1 | 1 | 0 | 3 |
+| Monitoring | 0 | 2 | 2 | 1 | 5 |
+| QA | 1 | 2 | 0 | 0 | 3 |
+| Design | 0 | 0 | 2 | 1 | 3 |
+| Business | 0 | 2 | 1 | 0 | 3 |
+| **합계** | **12** | **11** | **9** | **3** | **35** |
+
 ## 우선순위 요약
 
 | 우선순위 | 항목 수 | 비고 |
 |---|---|---|
-| Critical | 10 | Play/App Store 등록 2건, Privacy/Terms 2건, SSL, OAuth Verification·Redirect URI·Credential 3건, Calendar 운영 설정, HTTPS/CORS 확정, 태블릿 실기기 테스트 |
-| High | 7 | 서버 구축, 배포 자동화, 도메인, OpenWeather 키, 보안 점검, 실기기 테스트, 회귀 테스트, Beta 모집, 피드백 계획(일부 중복 집계 없이 표 기준) |
-| Medium | 4 | Secret 관리, 앱 아이콘, 스크린샷, 가격 정책 |
-| Low | 2 | Home Assistant 실기기, 스토어 프로모션 이미지 |
+| Critical | 12 | Play/App Store 등록 2건, Privacy/Terms 2건, 서버·SSL 2건, OAuth Verification·Redirect URI·Credential 3건, Calendar 운영 설정, HTTPS/CORS 확정, 태블릿 실기기 테스트 |
+| High | 11 | BYOK 법률 조항, 배포 자동화·도메인, OpenWeather 키, 보안 점검, 에러 트래킹·Alert 정책, 실기기·회귀 테스트, Beta 모집·피드백 계획 |
+| Medium | 9 | Action 면책·미성년자·데이터 삭제 법률 검토 3건, Secret 관리, 메트릭 대시보드·Uptime 모니터, 앱 아이콘·스크린샷, 가격 정책 |
+| Low | 3 | Home Assistant 실기기, DB 임계치 모니터링, 스토어 프로모션 이미지 |
 
-**Critical 10건 중 8건이 Beta 공개 배포(불특정 다수 대상) 이전 필수** — 내부
+**Critical 12건 중 8건이 Beta 공개 배포(불특정 다수 대상) 이전 필수** — 내부
 테스트 트랙(제한된 테스트 사용자)만이라면 Google Play Console 등록,
 서버/도메인/SSL, Redirect URI 등록만으로 시작 가능하고, Privacy
 Policy/Terms/OAuth Verification/Store 등록은 공개 전환 시점까지 유예할
@@ -105,6 +143,7 @@ Policy/Terms/OAuth Verification/Store 등록은 공개 전환 시점까지 유�
 - [current_status.md](current_status.md) — Blocker/Known Issues(코드 수준)
 - [../docs/workflow.md](../docs/workflow.md) — 출시 전 필수 체크리스트(Infrastructure/Database/Security/Testing/Reliability)
 - [../docs/policies/privacy_policy.md](../docs/policies/privacy_policy.md), [../docs/policies/security_policy.md](../docs/policies/security_policy.md)
+- [../docs/ops/monitoring.md](../docs/ops/monitoring.md) — Monitoring 카테고리 근거 원본
 - [../backend/docs/deployment/README.md](../backend/docs/deployment/README.md)
 - [../backend/docs/plugins/google-oauth.md](../backend/docs/plugins/google-oauth.md)
 - [../docs/roadmap/kpi.md](../docs/roadmap/kpi.md)

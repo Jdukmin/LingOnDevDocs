@@ -3,8 +3,9 @@
 > **자동 생성 기준**: 이 문서는 새 판단을 하지 않는다 — `status/current_status.md`,
 > `status/phase_status.md`, `status/roadmap.md`, `status/backend/*.md`,
 > `status/frontend/*.md`와 그 근거 보고서(`FRONTEND_VERIFICATION_REPORT.md`,
-> `FRONTEND_SCHEMA_VERIFICATION_REPORT.md`, `BACKEND_VERIFICATION_REPORT.md`,
-> `BACKEND_SCHEMA_VERIFICATION_REPORT.md` — 각 소스 저장소 루트)를 종합·연결한다.
+> `FRONTEND_SCHEMA_VERIFICATION_REPORT.md`, `FRONTEND_VERSION_HISTORY_REPORT.md`,
+> `BACKEND_VERIFICATION_REPORT.md`, `BACKEND_SCHEMA_VERIFICATION_REPORT.md` —
+> 각 소스 저장소 루트)를 종합·연결한다.
 > **Beta Release 용어 정의**: 이 저장소의 버전 정책(`status/README.md` §2.1)은
 > `V_0.1.0`을 "Baseline"(Release가 아닌 공식 기준점)으로 정의한다. 이
 > 문서에서 "Beta Release"는 그 `V_0.1.0` Baseline이 §7(Release Blockers)의
@@ -13,6 +14,17 @@
 >
 > **작성일**: 2026-07-29 · **커버 범위**: Backend(`jdukmin/lingon`),
 > Frontend(`jdukmin/letmeknow`), DevDocs(`LingOnDevDocs`, 이 저장소)
+>
+> **2026-07-29 갱신 이력**: Frontend 저장소에 새로 추가된
+> `FRONTEND_VERSION_HISTORY_REPORT.md`(V0.0.0~V0.0.18 재구성)를 반영해
+> `status/frontend/*.md`를 보강하고(Android 패키지명 변경, Calendar의
+> `_codeToMessage` 참조 구현 정확한 출처 등), `frontend/docs/FeatureList.md`·
+> `docs/policies/error_policy.md`·`docs/icd/gap_analysis.md`의 오래된
+> Calendar/401-인터셉터 기술을 정정했다. Backend 쪽은 이번 라운드에 새
+> 보고서가 없어 기존 `BACKEND_VERIFICATION_REPORT.md`/
+> `BACKEND_SCHEMA_VERIFICATION_REPORT.md` 반영 상태를 그대로 유지한다.
+> Required Human Resource에 Legal/Monitoring 카테고리를 신설했고, Release
+> Blocker를 P0/P1/P2로 재분류했다.
 
 ---
 
@@ -219,21 +231,26 @@ Claude가 코드/문서로 직접 수행 가능한 남은 작업(사람 전용 �
 
 # Required Human Resource
 
-전체 8개 카테고리(Release/Cloud/OAuth/External Service/Security/QA/Design/
-Business), 23개 항목의 상세 표는 [required_human_resource.md](required_human_resource.md)에
-있다. 요약:
+**2026-07-29 갱신** — 전체 10개 카테고리(Release/Legal/Cloud/OAuth/External
+Service/Security/Monitoring/QA/Design/Business), 35개 항목의 상세 표는
+[required_human_resource.md](required_human_resource.md)에 있다(Legal·Monitoring은
+이번 패스에서 신설 — Legal은 기존 Release 카테고리에 있던 Privacy
+Policy/Terms 항목을 이동·확장한 것이고, Monitoring은
+`docs/ops/monitoring.md`를 근거로 신규 작성했다). 요약:
 
 | 카테고리 | Critical | High | Medium | Low |
 |---|---|---|---|---|
-| Release | 4 | 0 | 0 | 0 |
+| Release | 2 | 0 | 0 | 0 |
+| Legal | 2 | 1 | 3 | 0 |
 | Cloud | 2 | 2 | 0 | 0 |
 | OAuth | 3 | 0 | 0 | 0 |
 | External Service | 1 | 1 | 0 | 1 |
 | Security | 1 | 1 | 1 | 0 |
+| Monitoring | 0 | 2 | 2 | 1 |
 | QA | 1 | 2 | 0 | 0 |
 | Design | 0 | 0 | 2 | 1 |
 | Business | 0 | 2 | 1 | 0 |
-| **합계** | **12** | **8** | **4** | **2** |
+| **합계** | **12** | **11** | **9** | **3** |
 
 Beta(제한된 내부 테스트) 배포만 목표라면 Critical 12건 중 상당수(Store
 등록, Privacy/Terms, OAuth Verification)는 유예 가능하다 — 서버/도메인/SSL,
@@ -260,44 +277,56 @@ Redirect URI/Credential, 태블릿 실기기 테스트만 선행하면 시작할
 
 # Release Blockers
 
-Beta 공개 배포를 막는 항목만(내부 테스트 트랙 기준이 아닌 **공개** 배포
-기준):
+Backend(`BACKEND_VERIFICATION_REPORT.md`, `BACKEND_SCHEMA_VERIFICATION_REPORT.md`)와
+Frontend(`FRONTEND_VERIFICATION_REPORT.md`, `FRONTEND_SCHEMA_VERIFICATION_REPORT.md`,
+`FRONTEND_VERSION_HISTORY_REPORT.md`)에서 전달된 Blocker를 통합해 **P0/P1/P2**로
+분류한다(이전 버전이 쓰던 Critical/High 혼용 표기를 이 표준으로 통일 —
+2026-07-29 정정).
 
-1. **[P0, 코드]** Weather 에러 메시지 노출 — Error Policy 위반, 미수정 상태.
-2. **[Critical, 사람]** Privacy Policy·Terms 부재 — 법적/스토어 제출 요건.
-3. **[Critical, 사람]** Google OAuth Verification 미착수 — `calendar.readonly`
-   민감 스코프, 테스트 사용자 목록을 벗어난 배포 자체가 기술적으로 불가.
-4. **[Critical, 사람]** Play/App Store 개발자 계정·앱 등록 미완료.
-5. **[Critical, 사람]** 프로덕션 서버·도메인·SSL 상태 확인 필요(코드 기본값은
-   `https://www.ling-on.com`으로 설정되어 있으나 실제 가동 여부 미확인).
-6. **[High, 사람]** 태블릿 실기기 테스트 0건 — 제품의 실제 타겟 폼팩터가
-   한 번도 실물로 검증되지 않음.
-7. **[High, 운영]** DB 마이그레이션 재현 불가 — 프로덕션 환경을 표준
-   절차로 구성할 수 없음.
+| Priority | Blocker | 출처 | 담당 |
+|---|---|---|---|
+| **P0** | Weather 에러 메시지 노출(`WeatherModule`에 `error.code`→메시지 매핑 없음, 원시 예외 노출) | Frontend Schema Verification Report Issue #1, Frontend Version History Report Known Issue #1 | 코드(Claude 가능) |
+| **P0** | 프로덕션 서버·도메인·SSL 가동 상태 미확인(코드 기본값 `https://www.ling-on.com`은 설정되어 있으나 실제 가동 여부는 저장소 밖) | required_human_resource.md Cloud | 사람 |
+| **P0** | 태블릿 실기기 테스트 0건 — 제품의 실제 타겟 폼팩터("AOD Tablet")가 한 번도 실물로 검증되지 않음 | required_human_resource.md QA | 사람 |
+| **P0** | Backend DB 마이그레이션 재현 불가(7개 테이블 중 5개 `CREATE TABLE` 없음) — 신규 환경을 표준 절차로 구성 불가 | Backend Schema Verification Report Issue #1(High) | 코드(Claude 가능, 사람이 적용) |
+| **P1** | Privacy Policy·Terms of Service 실제 법률 문서 부재 — **공개** 배포(Store 심사) 시에만 필수, 내부 테스트 트랙은 유예 가능 | required_human_resource.md Legal | 사람 |
+| **P1** | Google OAuth Verification(`calendar.readonly` 민감 스코프) 미착수 — 테스트 사용자 목록을 벗어난 **공개** 배포 시에만 기술적으로 막힘 | required_human_resource.md OAuth | 사람 |
+| **P1** | Google Play Console / Apple Developer 계정·앱 등록 미완료 — **공개** 배포 시에만 필수 | required_human_resource.md Release | 사람 |
+| **P1** | CORS 전체 개방(`origin: true`) — allow-list 미적용 | Backend Schema Verification Report Issue #2(Medium) | 코드(Claude 가능) |
+| **P1** | HTTPS/HSTS 코드 레벨 미강제 — 리버스 프록시 설정에 전적으로 의존 | Backend Schema Verification Report Issue #3(Medium) | 사람(프록시 설정) |
+| **P2** | 자동 테스트 0건(Backend/Frontend 모두) — 계약 드리프트 회귀(V0.0.17 사례)를 CI가 잡지 못함 | 양쪽 Verification/Schema Report 공통 | 코드(Claude 가능, 장기 과제) |
+| **P2** | Redirect OAuth 흐름의 실계정 동의 화면 미검증(자동화 환경 한계) | Backend/Frontend Verification Report 공통 권고 | 사람(1회 수동 확인) |
+| **P2** | Backend/Frontend 소스 저장소의 `package.json`(0.0.1)/`pubspec.yaml`(1.0.0+1)이 DevDocs 기준 버전(0.1.0)과 불일치 | `version/backend.json`/`version/frontend.json`의 `known_discrepancy` | 각 소스 저장소(코드) |
 
 **내부 테스트 트랙**(제한된 사용자, Store 공개 심사 불필요) 기준으로는
-1·5·6·7만 실질적 Blocker다 — 2·3·4는 공개 전환 시점까지 유예 가능.
+**P0 4건만 실질적 Blocker**다 — P1 항목(Privacy/Terms, OAuth Verification,
+Store 등록, CORS, HTTPS)은 공개 전환 시점까지 유예 가능하나, CORS/HTTPS는
+내부 테스트라도 실제 사용자 데이터가 오간다면 조기 해결을 권장한다.
 
 ---
 
 # Beta Release Checklist
 
 ```
+--- P0 (내부 테스트 트랙 포함, 전부 필수) ---
 [ ] P0 Weather 에러 메시지 매핑 수정(코드)
-[ ] Flutter SDK 환경에서 flutter analyze/test/build 1회 실행 및 결과 기록
-[ ] 사람 1회 수동 확인 — 실계정 Google 로그인 → Calendar 연결 → 이벤트 렌더링
-[ ] 사람 1회 수동 확인 — Redirect OAuth 흐름 실계정 동의 화면
-[ ] 프로덕션 서버 가동 확인 + 도메인(www.ling-on.com) 연결 확인 + SSL 인증서 확인
-[ ] GOOGLE_CALLBACK_URL / GOOGLE_CALENDAR_CALLBACK_URL 프로덕션 값 등록 확인
-[ ] 태블릿 실기기 1대 이상에서 전체 대시보드 동작 확인
-[ ] DB 베이스라인 마이그레이션 작성 및 신규 환경 재현 테스트
-[ ] CORS allow-list 적용(현재 전체 개방)
-[ ] HTTPS/HSTS 리버스 프록시 설정 확정 및 문서화
-  --- 아래는 "공개" 배포 시에만 필수, 내부 테스트 트랙은 유예 가능 ---
-[ ] Privacy Policy 법률 검토 및 게시
-[ ] Terms of Service 법률 검토 및 게시
-[ ] Google OAuth Verification 신청 및 통과
-[ ] Google Play Console / Apple Developer 계정·앱 등록
+[ ] P0 프로덕션 서버 가동 확인 + 도메인(www.ling-on.com) 연결 확인 + SSL 인증서 확인
+[ ] P0 태블릿 실기기 1대 이상에서 전체 대시보드 동작 확인
+[ ] P0 DB 베이스라인 마이그레이션 작성 및 신규 환경 재현 테스트
+--- P1 (공개 배포 시 필수, 내부 테스트 트랙은 유예 가능 — CORS/HTTPS 제외) ---
+[ ] P1 Privacy Policy 법률 검토 및 게시
+[ ] P1 Terms of Service 법률 검토 및 게시
+[ ] P1 Google OAuth Verification 신청 및 통과
+[ ] P1 Google Play Console / Apple Developer 계정·앱 등록
+[ ] P1 CORS allow-list 적용(현재 전체 개방) — 내부 테스트도 조기 권장
+[ ] P1 HTTPS/HSTS 리버스 프록시 설정 확정 및 문서화 — 내부 테스트도 조기 권장
+--- P2 (권장, 미해결 시에도 Beta 착수는 가능) ---
+[ ] P2 Flutter SDK 환경에서 flutter analyze/test/build 1회 실행 및 결과 기록
+[ ] P2 사람 1회 수동 확인 — 실계정 Google 로그인 → Calendar 연결 → 이벤트 렌더링
+[ ] P2 사람 1회 수동 확인 — Redirect OAuth 흐름 실계정 동의 화면
+[ ] P2 GOOGLE_CALLBACK_URL / GOOGLE_CALENDAR_CALLBACK_URL 프로덕션 값 등록 확인
+[ ] P2 에러 트래킹(Sentry) 계정 개설 및 연동
+[ ] P2 Alert 채널·에스컬레이션 정책 수립
 [ ] 앱 아이콘·스크린샷·스토어 이미지 확정
 ```
 

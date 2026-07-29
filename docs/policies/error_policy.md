@@ -38,7 +38,7 @@ HTTP Status별 정책이다. "현재" 열은 `backend/docs/api/*.md`에 이미 �
 | Frontend 처리 | `POST /v1/auth/refresh`로 1회 자동 재시도 → 실패 시 자동 로그아웃(`AuthService.md` `AuthErrorKind.unauthorized`) |
 | Retry 여부 | 예, 단 1회(재발급 토큰으로) — 재시도도 401이면 재시도 중단 |
 | 사용자 메시지 | "다시 로그인해주세요" |
-| 현재 | 전 API에서 사용 중. **단, 자동 재시도 인터셉터는 Frontend에 아직 연결되지 않음** — [docs/icd/gap_analysis.md](../icd/gap_analysis.md) "누락된 Interface" |
+| 현재 | 전 API에서 사용 중. **정정(2026-07-29)**: 이 행이 "자동 재시도 인터셉터 미연결"이라고 기술하던 것은 오래된 내용이다 — `ApiClient._withRetry`(`lib/core/network/api_client.dart`)가 V0.0.11부터 이미 구현되어 있다. 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` Finding D-2, `FRONTEND_VERSION_HISTORY_REPORT.md` V0.0.11/Known Issue #3(각 소스 저장소 루트), [status/frontend/V0.0.11.md](../../status/frontend/V0.0.11.md). [docs/icd/gap_analysis.md](../icd/gap_analysis.md) "누락된 Interface"의 동일 항목도 함께 오래된 것이니 참고 시 이 정정을 우선한다. |
 
 ### 403 Forbidden
 
