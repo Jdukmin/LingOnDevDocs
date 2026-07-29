@@ -4,9 +4,15 @@ Scope: this document covers **backend-only** conventions for the Lingon
 Fastify application. Cross-repo design (ICD, shared architecture) lives in
 `./docs` (LetMeKnow-Docs submodule) — do not duplicate it here.
 
-For the authoritative source layout and command reference, see the repository
-[CLAUDE.md](../../CLAUDE.md). This guide explains *why* the conventions exist
-and *how* to extend them.
+> **⚠ 2026-07-21 전략 검토**: 이 미러 저장소(`LingOnDevDocs`)에서 위 `./docs`는
+> 실제로 저장소 루트 [../../docs/](../../docs/)에 있다. Personal Action OS 전략
+> 전환에 따른 Action Layer ICD 제안은 [../../docs/icd/](../../docs/icd/)를 참조 —
+> 이 문서(백엔드 구현 컨벤션) 자체는 변경되지 않았다.
+
+For the authoritative source layout and command reference, see the backend
+source repository's `CLAUDE.md` (not mirrored into this docs-only repository —
+see [requirements/README.md](../../requirements/README.md)). This guide
+explains *why* the conventions exist and *how* to extend them.
 
 ## Fastify structure
 
@@ -52,7 +58,7 @@ sequenceDiagram
     Client->>Fastify: HTTP request
     Fastify->>Fastify: onRequest — RequestContext sets req.ctx
     Fastify->>Policy: preHandler — policy.before(req)
-    Policy->>Handler: (no-op until auth is implemented)
+    Policy->>Handler: verifies Bearer JWT, sets req.ctx.userId (정정 2026-07-22 — "Authentication" 절 참고)
     Handler->>Handler: sets req.ctx.provider / operation
     Handler->>Gateway: gatewayService.execute(...)
     Gateway->>DB: (optional) resolve encrypted key
@@ -164,21 +170,45 @@ sequenceDiagram
 
 ## Authentication
 
-- **Not implemented yet.** `req.ctx.userId` and `req.ctx.apiKeyId` are always
-  `undefined` (see `FastifyDefinition.ts` and the CLAUDE.md TODO section).
-- `DefaultPolicy.before()` in [Policy.ts](../../src/plugins/LingOnDataManage/Policy.ts)
-  is currently a no-op per ICD v0.0 ("Auth: None"). When auth is added, wire
-  the check there — throw `AppError('UNAUTHORIZED'/'FORBIDDEN', 401/403, ...)`
-  to reject, and populate `req.ctx.userId` / `req.ctx.apiKeyId` on success.
-  This is the single hook point; do not add ad hoc auth checks elsewhere.
-- Routes that already assume a logged-in user (`LingOnUsers`, `LingOnSettings`,
-  `LingOnApiKey`) each read `req.ctx.userId` and throw `UNAUTHORIZED` (401) if
-  it is absent — today this means **every** request to those routes 401s
-  until authentication is wired up.
-- `google-auth-library` is a declared dependency and `users` table already has
-  `provider` / `provider_id` columns (see [database/users.md](database/users.md)),
-  but no OAuth route/callback exists yet — see
-  [FeatureList.md](FeatureList.md) for status.
+JWT-based authentication is implemented end-to-end.
+
+### How it works
+
+1. Client authenticates via one of the flows in [api/auth.md](api/auth.md)
+   and receives `access_token` (1-hour HMAC-SHA256 JWT) and `refresh_token`
+   (30-day JWT).
+2. Subsequent requests include `Authorization: Bearer <access_token>`.
+3. `DefaultPolicy.before()` in
+   [Policy.ts](../../src/plugins/LingOnDataManage/Policy.ts) extracts the
+   token, calls `verifyAccessToken(token)` from
+   [Jwt.ts](../../src/core/utils/Jwt.ts), and sets `req.ctx.userId` on success.
+4. Protected route handlers read `req.ctx.userId` and throw
+   `AppError('UNAUTHORIZED', 401)` if it is `undefined`.
+
+`Policy.before()` is the **single hook point** — do not add ad hoc auth checks
+in route handlers.
+
+### Extending auth
+
+- To protect a new route: read `req.ctx.userId` in the handler, throw if absent.
+- To add a new auth method (API key, etc.): add the check in `Policy.before()`,
+  then also populate `req.ctx.apiKeyId` (`req.ctx.apiKeyId` is currently always
+  `undefined` — the field is reserved but not wired from the JWT payload).
+- `JWT_SECRET` is separate from `MASTER_ENCRYPTION_KEY`; do not mix them.
+
+### What's not yet implemented
+
+> **정정 2026-07-22 (Docs Revision / SSOT 정리)**: 이 절은 오래된 내용이었다.
+> `POST /v1/auth/refresh`와 로그아웃(현재 이름은 `POST /v1/auth/logout`,
+> `signout` 아님)은 이미 완전히 구현되어 있다 — 근거:
+> [api/auth.md](api/auth.md)(두 엔드포인트의 전체 Request/Response/Error
+> 명세), [database/refresh_tokens.md](database/refresh_tokens.md)(rotation/revoke
+> 구현), `FeatureList.md`("Token refresh", "Logout" — Current (implemented)),
+> [frontend/docs/services/AuthService.md](../../frontend/docs/services/AuthService.md)(양쪽
+> 모두 사용 중). 아래 `req.ctx.apiKeyId` 항목만 여전히 유효하다.
+
+- `req.ctx.apiKeyId` — always `undefined`; not included in the JWT payload
+  (API Key 기반 인증 자체가 아직 없음 — Bearer JWT만 지원).
 
 ## Logging
 

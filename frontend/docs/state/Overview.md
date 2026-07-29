@@ -2,6 +2,11 @@
 
 > 외부 상태 관리 패키지(Provider, Riverpod, Bloc 등)를 사용하지 않습니다.  
 > 모든 상태는 커스텀 `BaseModule extends ChangeNotifier` 패턴으로 관리됩니다.
+>
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: 아래 모듈 구조는 변경되지 않는다.
+> Action Layer 도입 시 동일한 `BaseModule` 패턴으로 `ActionModule`,
+> `ActionHistoryModule`, `SuggestionModule`이 추가될 것으로 제안된다 — 설계:
+> [../../../docs/icd/action_layer_api.md](../../../docs/icd/action_layer_api.md) State 섹션.
 
 ---
 

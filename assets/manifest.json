@@ -1,11 +1,317 @@
 {
-  "generatedAt": "2026-07-06T13:03:24.962Z",
+  "generatedAt": "2026-07-23T16:45:27.008Z",
   "docs": [
+    {
+      "app": "root",
+      "category": "",
+      "path": "CLAUDE.md",
+      "title": "CLAUDE.md"
+    },
     {
       "app": "root",
       "category": "",
       "path": "README.md",
       "title": "Development Documents"
+    },
+    {
+      "app": "docs",
+      "category": "",
+      "path": "docs/development_rules.md",
+      "title": "Development Rules"
+    },
+    {
+      "app": "docs",
+      "category": "",
+      "path": "docs/workflow.md",
+      "title": "LingOn AI Development Workflow (MVP)"
+    },
+    {
+      "app": "docs",
+      "category": "decisions",
+      "path": "docs/decisions/architecture_decisions.md",
+      "title": "Architecture Decisions"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/action_layer_api.md",
+      "title": "Action Layer API (Proposal)"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/api_comparison.md",
+      "title": "API Comparison — 기존 vs Action Layer 제안"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/frontend_interaction_flow.md",
+      "title": "Frontend Interaction Flow (Proposal)"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/gap_analysis.md",
+      "title": "Frontend ↔ Backend Gap Analysis"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/prompt_playbook.md",
+      "title": "Front/Back 분리 프롬프트 운영 Playbook"
+    },
+    {
+      "app": "docs",
+      "category": "icd",
+      "path": "docs/icd/README.md",
+      "title": "ICD — Action Layer 전환"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/data_sop.md",
+      "title": "Data SOP — Migration / Backup / Restore"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/deployment_sop.md",
+      "title": "Deployment SOP — Release / Deployment / Rollback / Versioning"
+    },
+    {
+      "app": "docs",
+      "category": "ops",
+      "path": "docs/ops/monitoring.md",
+      "title": "Monitoring"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/error_policy.md",
+      "title": "Error Policy"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/logging_policy.md",
+      "title": "Logging Policy"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/privacy_policy.md",
+      "title": "Privacy & Legal Requirements"
+    },
+    {
+      "app": "docs",
+      "category": "policies",
+      "path": "docs/policies/security_policy.md",
+      "title": "Security Policy"
+    },
+    {
+      "app": "docs",
+      "category": "roadmap",
+      "path": "docs/roadmap/kpi.md",
+      "title": "KPI"
+    },
+    {
+      "app": "docs",
+      "category": "roadmap",
+      "path": "docs/roadmap/mvp.md",
+      "title": "MVP Priority"
+    },
+    {
+      "app": "docs",
+      "category": "roadmap",
+      "path": "docs/roadmap/roadmap.md",
+      "title": "Roadmap"
+    },
+    {
+      "app": "docs",
+      "category": "strategy",
+      "path": "docs/strategy/architecture.md",
+      "title": "Product Architecture (Layers)"
+    },
+    {
+      "app": "docs",
+      "category": "strategy",
+      "path": "docs/strategy/competitors.md",
+      "title": "Competitive Analysis"
+    },
+    {
+      "app": "docs",
+      "category": "strategy",
+      "path": "docs/strategy/positioning.md",
+      "title": "Positioning"
+    },
+    {
+      "app": "docs",
+      "category": "strategy",
+      "path": "docs/strategy/product.md",
+      "title": "Product Definition"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/action_requirements.md",
+      "title": "Action Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/chat_requirements.md",
+      "title": "Chat Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/connector_requirements.md",
+      "title": "Connector Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/dashboard_requirements.md",
+      "title": "Dashboard Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/intent_requirements.md",
+      "title": "Intent Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/llm_gateway_requirements.md",
+      "title": "LLM Gateway Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/memory_requirements.md",
+      "title": "Memory Layer Requirements (RAG)"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/planner_requirements.md",
+      "title": "Planner Layer Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/README.md",
+      "title": "Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/requirements_traceability.md",
+      "title": "Requirements Traceability"
+    },
+    {
+      "app": "requirements",
+      "category": "",
+      "path": "requirements/system_requirements.md",
+      "title": "System Requirements"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/action.md",
+      "title": "Action Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/calendar.md",
+      "title": "Calendar Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/dashboard.md",
+      "title": "Dashboard Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/domain_analysis.md",
+      "title": "Domain Analysis — Gaps, Overlaps, Priority"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/homeassistant.md",
+      "title": "HomeAssistant Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/intent.md",
+      "title": "Intent Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/nas.md",
+      "title": "NAS Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/notification.md",
+      "title": "Notification Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/README.md",
+      "title": "Domain ICD"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/reminder.md",
+      "title": "Reminder Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/settings.md",
+      "title": "Settings Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/todo.md",
+      "title": "Todo Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/tool.md",
+      "title": "Tool Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/user.md",
+      "title": "User Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/weather.md",
+      "title": "Weather Domain"
+    },
+    {
+      "app": "requirements",
+      "category": "domain_icd",
+      "path": "requirements/domain_icd/workflow.md",
+      "title": "Workflow Domain"
     },
     {
       "app": "backend",
@@ -24,6 +330,18 @@
       "category": "api",
       "path": "backend/docs/api/apikey.md",
       "title": "/v1/apikey/* — BYOK API key management"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/auth.md",
+      "title": "/v1/auth/* — authentication & session management"
+    },
+    {
+      "app": "backend",
+      "category": "api",
+      "path": "backend/docs/api/calendar.md",
+      "title": "/v1/calendar/* — Google Calendar data"
     },
     {
       "app": "backend",
@@ -70,6 +388,12 @@
     {
       "app": "backend",
       "category": "database",
+      "path": "backend/docs/database/refresh_tokens.md",
+      "title": "refresh_tokens"
+    },
+    {
+      "app": "backend",
+      "category": "database",
       "path": "backend/docs/database/request_logs.md",
       "title": "request_logs"
     },
@@ -89,7 +413,7 @@
       "app": "backend",
       "category": "database",
       "path": "backend/docs/database/users.md",
-      "title": "users (inferred — no migration file)"
+      "title": "users"
     },
     {
       "app": "backend",
@@ -102,6 +426,12 @@
       "category": "plugins",
       "path": "backend/docs/plugins/config-handler.md",
       "title": "ConfigHandler (LingOnConfig/ConfigHandler.ts)"
+    },
+    {
+      "app": "backend",
+      "category": "plugins",
+      "path": "backend/docs/plugins/google-oauth.md",
+      "title": "GoogleOAuth (LingOnOAuth/GoogleOAuth.ts)"
     },
     {
       "app": "backend",
@@ -138,6 +468,18 @@
       "category": "routes",
       "path": "backend/docs/routes/README.md",
       "title": "Route registration mechanics"
+    },
+    {
+      "app": "backend",
+      "category": "services",
+      "path": "backend/docs/services/google-auth.md",
+      "title": "GoogleAuthAPI"
+    },
+    {
+      "app": "backend",
+      "category": "services",
+      "path": "backend/docs/services/google-calendar.md",
+      "title": "GoogleCalendarAPI + GoogleTokenService"
     },
     {
       "app": "backend",
@@ -264,6 +606,42 @@
       "category": "widgets",
       "path": "frontend/docs/widgets/WeatherNowWidget.md",
       "title": "WeatherNowWidget"
+    },
+    {
+      "app": "verification",
+      "category": "",
+      "path": "verification/README.md",
+      "title": "Verification Reports"
+    },
+    {
+      "app": "verification",
+      "category": "backend",
+      "path": "verification/backend/README.md",
+      "title": "Backend Verification Reports"
+    },
+    {
+      "app": "verification",
+      "category": "frontend",
+      "path": "verification/frontend/README.md",
+      "title": "Frontend Verification Reports"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/backend.md",
+      "title": "Backend ChangeLog"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/frontend.md",
+      "title": "Frontend ChangeLog"
+    },
+    {
+      "app": "changelog",
+      "category": "",
+      "path": "changelog/system.md",
+      "title": "System ChangeLog"
     }
   ]
 }

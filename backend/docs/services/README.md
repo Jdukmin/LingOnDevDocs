@@ -1,13 +1,29 @@
 # Services (gateways)
 
-"Service" in this codebase means a `BaseGateway` subclass under `src/gateway/`
-— an HTTP client for one external provider. Each gateway is instantiated once
-per route-plugin registration (not a singleton) and injected into its route
-group as `deps.gatewayService`.
+> **⚠ 2026-07-21 전략 검토 (Action Layer)**: 아래 게이트웨이는 변경되지 않는다.
+> Action Layer 도입 후 이들은 Action Type의 내부 구현("Tool")으로 호출된다
+> (예: `OpenWeatherAPI` → `weather.get_current` Action) — 자세한 매핑은
+> [../../../docs/icd/api_comparison.md](../../../docs/icd/api_comparison.md) 참조.
 
-| Service | Provider | Doc |
-|---|---|---|
-| `OpenWeatherAPI` | OpenWeather (openweathermap.org) | [openweather.md](openweather.md) |
+"Service" in this codebase means a subclass of `BaseGateway` or `BaseProvider`
+under `src/gateway/` — each is instantiated once per route-plugin registration
+(not a singleton) and injected into its route group as a dependency.
+
+| Service | Base class | Provider | Doc |
+|---|---|---|---|
+| `OpenWeatherAPI` | `BaseGateway` | OpenWeather (openweathermap.org) | [openweather.md](openweather.md) |
+| `GoogleAuthAPI` | `BaseProvider` | Google OAuth2 (`google-auth-library`) | [google-auth.md](google-auth.md) |
+| `GoogleCalendarAPI` | `BaseProvider` | Google Calendar (`googleapis`) | [google-calendar.md](google-calendar.md) |
+
+`GoogleTokenService` ([src/gateway/GoogleTokenService.ts](../../../src/gateway/GoogleTokenService.ts))
+is not itself a `BaseProvider`/`BaseGateway` — it's a plain helper class that
+`GoogleCalendarAPI` depends on to resolve a valid (auto-refreshed) Google
+access token per call. Documented alongside it in
+[google-calendar.md](google-calendar.md).
+
+`BaseGateway` extends `BaseProvider`. Use `BaseGateway` for services that make
+outbound HTTP calls via `fetch`; use `BaseProvider` directly for services that
+use an SDK (e.g. `google-auth-library`) or another non-HTTP transport.
 
 ## Shared base: `BaseGateway`
 
@@ -55,6 +71,7 @@ gateways that read a DB-stored provider key instead of `.env`.
 
 ## Adding a new service
 
-See "Adding a new provider" in [../../CLAUDE.md](../../CLAUDE.md) — create
+See "Adding a new provider" in the backend source repository's `CLAUDE.md`
+(not mirrored into this docs-only repository) — create
 `src/gateway/<Name>API.ts` extending `BaseGateway`, add a matching route file,
 and a doc here.

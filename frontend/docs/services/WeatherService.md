@@ -45,12 +45,32 @@ lat=37.5665&lon=126.9780&units=metric&lang=kr
 
 ## Response 요약
 
+> **정정 2026-07-22**: 이전 버전은 "ResponseEnvelope 미사용, OpenWeatherMap
+> 원본 포맷을 직접 파싱"이라고 서술했으나, `backend/docs/api/weather.md`와
+> `frontend/docs/FeatureList.md`("날씨 API 연동: Fastify 백엔드 프록시")는
+> 다른 모든 API와 동일하게 **ICD v0.0 envelope + 정규화된 응답**을 문서화하고
+> 있어 두 문서가 서로 달랐다. Backend 문서가 더 상세하고 다른 API 전체와
+> 일관되므로 이를 기준으로 정정한다 — 단, 이 저장소에는 실제 Flutter 소스가
+> 없어 `weather_module.dart`가 실제로 어떤 JSON 키를 읽는지는 코드로 직접
+> 재확인이 필요하다(API Contract Verification 결과 P0 항목 — 실제 코드 확인
+> 전까지는 이 정정도 잠정적이다).
+
 ```jsonc
-// 성공 (ResponseEnvelope 미사용 — 직접 JSON 파싱)
+// 성공 — backend/docs/api/weather.md 기준 (ICD v0.0 envelope)
 {
-  "weather": [...],
-  "main": { "temp": 22.5, "feels_like": 21.0, ... },
-  "name": "Seoul"
+  "success": true,
+  "data": {
+    "location": { "city": "Seoul", "country": "KR", "lat": 37.5665, "lon": 126.978 },
+    "weather": { "main": "Clear", "description": "clear sky", "icon": "01d" },
+    "temperature": { "temp": 22.5, "feels_like": 21.0, "temp_min": 20.0, "temp_max": 24.0, "humidity": 55, "pressure": 1013 },
+    "wind": { "speed": 2.1, "deg": 180 },
+    "clouds": 0,
+    "visibility": 10000,
+    "sunrise": 0,
+    "sunset": 0,
+    "observed_at": 0
+  },
+  "error": null
 }
 ```
 
