@@ -30,7 +30,7 @@ Status/Progress는 대응하는 [requirements/](../../requirements/) 문서의 �
 | Phase 2 | Home Assistant | Planned | 0% | 2026-07-21 | Home Assistant 커넥터 Requirement/설계 착수(CON-002) |
 | Phase 3 | NAS, Server Monitoring | Planned | 0% | 2026-07-21 | 커넥터 프로토콜 설계(CON-004/CON-005) |
 | Phase 4 | Workflow, Multi Action | Planned | 0% | 2026-07-21 | Planner Layer 최초 설계(PLN-001) |
-| Phase 5 | Always-On Dashboard | In Progress | 25% | 2026-07-21 | (이미 가장 앞서 있음) Widget Visibility, AI Layout Update 정의 |
+| Phase 5 | Always-On Dashboard | In Progress | 25% | 2026-07-30 | (이미 가장 앞서 있음) Widget Variant/Layout Constraint 구현 착수(DSH-009~011), Widget Visibility 구현(DSH-006), Planner 선행 후 AI Layout Update 구현(PLN-006) |
 
 ### Phase 1 — Calendar / Todo / Reminder
 
@@ -63,6 +63,16 @@ Planner Layer 전체가 아직 없다. 근거: [requirements/planner_requirement
 **신규 투자**를 이 Phase에 넣지 않는다는 의미다. 근거:
 [requirements/dashboard_requirements.md](../../requirements/dashboard_requirements.md),
 [../decisions/architecture_decisions.md](../decisions/architecture_decisions.md).
+
+**2026-07-30 업데이트**: 이전 Next Milestone("AI Layout Update 정의")에 해당하는
+문서 정의 작업을 완료했다 — Widget Variant(Vertical/Square/Horizontal), Widget
+Metadata Schema, Layout Constraint System을 [requirements/domain_icd/dashboard.md](../../requirements/domain_icd/dashboard.md)와
+[requirements/dashboard_requirements.md](../../requirements/dashboard_requirements.md)
+DSH-009~011에 신규 정의했다. 자연어 → Layout Preference 해석 책임은
+Dashboard가 아니라 Planner Layer로 배정했다([requirements/planner_requirements.md](../../requirements/planner_requirements.md)
+PLN-006) — Dashboard가 제품이라는 프레이밍은 반영하지 않았고, 기존
+DEC-001(Dashboard는 MVP가 아니다) 결정은 그대로 유지된다. 이 단계는 **정의만
+완료**했을 뿐 구현은 없어 Progress는 25%로 유지한다.
 
 ## 관련 문서
 

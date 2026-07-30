@@ -1,6 +1,6 @@
 # Dashboard Domain
 
-> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-21 · **Owner**: Frontend/UX · **Version**: 0.1.0-draft
+> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-30 · **Owner**: Frontend/UX · **Version**: 0.2.0-draft
 
 비즈니스 계약만 정의한다. Flutter Widget 구현은
 [frontend/docs/ui/AodDisplay.md](../../frontend/docs/ui/AodDisplay.md) 등에
@@ -8,6 +8,18 @@
 아니라 "시각화 기능 자체의 구현도"를 뜻한다** — 근거:
 [requirements/system_requirements.md](../system_requirements.md) SYS-001(25%,
 개별 위젯은 다수 75%).
+
+> **확장 2026-07-30 (LLM Adaptive Dashboard UI 구조 반영)**: Widget Variant /
+> Widget Metadata / Layout Constraint 개념을 Domain Model에 추가한다(아래
+> 근거: [dashboard_requirements.md](../dashboard_requirements.md) DSH-009~011).
+> "Dashboard is the Product"(Dashboard가 제품이다) 문구는 **반영하지 않았다** —
+> [docs/strategy/product.md](../../docs/strategy/product.md) Core Philosophy("Dashboard는
+> 제품이 아니다. Action Layer가 제품이다.")와
+> [docs/decisions/architecture_decisions.md](../../docs/decisions/architecture_decisions.md)
+> DEC-001(Adopted, "Dashboard는 MVP가 아니다")이 이미 정반대 결론을 Adopted
+> 상태로 채택하고 있어, 사용자 확인 결과 기존 SSOT를 유지하기로 결정했다.
+> 이번 확장은 그 경계 안에서 Layer 3(Always-On Dashboard)의 다중 Device 대응
+> 기술 구조만 정의한다.
 
 ---
 
@@ -23,9 +35,54 @@ Layer를 시각화하는 인터페이스일 뿐이다" — 를 그대로 이 Dom
 
 | Entity | 설명 |
 |---|---|
-| **DashboardView** | 하나의 화면 구성(현재는 3컬럼 태블릿 레이아웃 1종). |
+| **DashboardView** | 하나의 화면 구성(현재는 3컬럼 태블릿 레이아웃 1종. 향후 LayoutConstraint별 복수 구성). |
 | **Widget** | DashboardView를 구성하는 개별 시각화 단위(Clock, Weather, Calendar, Brief, Chat, Status 등). |
+| **WidgetVariant** | 동일 Widget이 화면 비율/정보량에 따라 갖는 표시 형태(Vertical / Square / Horizontal). Business Logic이 아니라 순수 표시 형태 선택이다. |
+| **WidgetMetadata** | WidgetVariant를 선택하기 위해 각 Widget이 노출하는 서술 가능한 속성 집합(아래 표). |
+| **LayoutConstraint** | 특정 Device 이름이 아니라 화면 제약 조건(컬럼 수, Widget 수용량, 정보 밀도 등)으로 정의되는 레이아웃 규칙 집합. |
+| **LayoutDirective** | AI Decision Layer(Planner)가 발행하는 Layout 조정 지시(Module 우선순위, Widget 밀도/크기). Dashboard는 이를 **구독**할 뿐 직접 생성하지 않는다. |
 | **WidgetState** | 특정 Widget이 구독하는, 다른 Domain이 발행한 "최신 상태" 스냅샷. |
+
+### WidgetVariant 정의
+
+| Variant | 대상 | 특징 |
+|---|---|---|
+| **Vertical** | 긴 세로형 Mobile | 적은 정보량, 빠른 확인, 좁은 width 대응 |
+| **Square** | Tablet, Dashboard Grid | 균형 정보량, 일반 Dashboard 카드 |
+| **Horizontal** | Desktop, Wide Display | 많은 정보량, 상세 정보 표시 |
+
+> 초기 검토안에서 쓰인 "Compact/Standard/Expanded" 3단계 명칭은 이 표의
+> Vertical/Square/Horizontal로 통일한다 — 아래 `WidgetMetadata.aspect_ratio`
+> 필드와 1:1로 대응시키기 위함이며, 두 명칭 체계를 동시에 쓰지 않는다.
+
+### WidgetMetadata 필드
+
+| 필드 | 설명 |
+|---|---|
+| `widget_id` | Widget 고유 식별자 |
+| `module_id` | 데이터를 공급하는 Module(BaseModule) 식별자 |
+| `aspect_ratio` | 지원 WidgetVariant(Vertical/Square/Horizontal) |
+| `information_density` | 표시 정보량 수준(low/medium/high) |
+| `supported_device` | 지원 Device 분류(Mobile Portrait/Square Display/Tablet/Desktop) |
+| `min_size` / `max_size` | 축소/확대 가능 범위 |
+| `priority` | 동일 화면 내 배치 우선순위 |
+| `interaction_level` | 사용자 상호작용 정도(read-only/tap/expand 등) |
+
+이 Metadata는 LLM/Planner가 자연어 요청(예: "일정과 날씨를 크게 보여줘")을
+Widget 선택 파라미터로 변환할 수 있도록 존재한다 — Metadata를 해석해 실제
+선택을 "판단"하는 주체는 Dashboard가 아니라 Planner다(아래 Responsibilities
+참고).
+
+### LayoutConstraint 정의
+
+Device 이름이 아니라 제약 조건(Constraint Set)으로 정의한다.
+
+| Constraint Set | 대상 | 파라미터 |
+|---|---|---|
+| **Mobile Portrait** | 세로형 Mobile | `max_columns`, `widget_count`, `preferred_ratio`, `information_density`, `spacing` |
+| **Square Display** | 정사각 Display | `max_columns`, `widget_count`, `preferred_ratio`, `spacing` |
+| **Tablet** | Tablet(현재 유일하게 구현된 대상, [dashboard_requirements.md](../dashboard_requirements.md) DSH-005) | `column_count`, `widget_capacity`, `preferred_widget_ratio` |
+| **Desktop** | Desktop/Wide Display | `grid_size`, `widget_capacity`, `expanded_information` |
 
 # Responsibilities
 
@@ -47,6 +104,12 @@ Layer를 시각화하는 인터페이스일 뿐이다" — 를 그대로 이 Dom
   Dashboard가 실행 로직을 갖는 것이 아니다).
 - 데이터를 가공/집계하지 않는다(단순 표시만) — 집계가 필요하면 그 로직은
   발행하는 Domain(Action History 등)에 있어야 한다.
+- **자연어 요청을 Layout Preference로 해석하지 않는다** — "출장 중에는 일정과
+  날씨를 크게 보여줘" 같은 자연어를 구조화된 Layout 조정값으로 바꾸는 판단은
+  AI Decision Layer(Planner, [planner_requirements.md](../planner_requirements.md)
+  PLN-006)의 책임이다. Dashboard는 Planner가 발행한 `LayoutDirective`를
+  구독해 WidgetVariant/LayoutConstraint 선택에 반영할 뿐, 스스로 자연어를
+  해석하거나 LLM을 직접 호출하지 않는다.
 
 # State
 
@@ -72,6 +135,7 @@ Dashboard는 이벤트를 **발행하지 않는다**(순수 소비자). 구독�
 | `ReminderScheduled` | Reminder |
 | `NotificationDelivered` | Notification |
 | `ToolConnectionExpired` | Tool |
+| `LayoutDirectiveIssued` | Planner(AI Decision Layer) — Future Extension, [planner_requirements.md](../planner_requirements.md) PLN-006 |
 
 # Inputs
 
@@ -86,7 +150,7 @@ Dashboard는 이벤트를 **발행하지 않는다**(순수 소비자). 구독�
 # Relationships
 
 ```
-Action / Calendar / Reminder / Notification / Tool
+Action / Calendar / Reminder / Notification / Tool / Planner(LayoutDirective, Future Extension)
               ↓ (읽기 전용 구독)
           Dashboard
 ```
@@ -98,13 +162,18 @@ Domain의 경계를 지키는 핵심 규칙이다.
 # Future Extensions
 
 - Widget Visibility(표시/숨김) — [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-006
-- AI 기반 레이아웃 조정 — 단, 조정 "판단"은 AI Decision Layer(Planner 등)가
-  하고, Dashboard는 그 결과(레이아웃 지시)를 받아 표시만 한다(경계 유지) —
-  [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-007
+- Widget Variant / WidgetMetadata Schema(Vertical/Square/Horizontal 표시 형태 분리) —
+  [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-009, DSH-010
+- LayoutConstraint 기반 다중 Device 대응(Mobile Portrait/Square Display/Tablet/Desktop) —
+  [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-011
+- AI 기반 레이아웃 조정 — 단, 조정 "판단"은 AI Decision Layer(Planner)가
+  [planner_requirements.md](../planner_requirements.md) PLN-006(Layout Preference
+  Generation)을 통해 수행하고, Dashboard는 그 결과(`LayoutDirective`)를 구독해
+  표시만 한다(경계 유지) — [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-007
 
 # References
 
 - Backend: (직접 대응 없음 — Dashboard는 순수 Frontend 개념)
 - Frontend: [frontend/docs/ui/AodDisplay.md](../../frontend/docs/ui/AodDisplay.md), [frontend/docs/state/Overview.md](../../frontend/docs/state/Overview.md), `frontend/docs/widgets/*`
 - Strategy: [docs/strategy/product.md](../../docs/strategy/product.md) (Core Philosophy), [docs/strategy/architecture.md](../../docs/strategy/architecture.md) (Layer 3)
-- Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md)
+- Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md), [requirements/planner_requirements.md](../planner_requirements.md) PLN-006

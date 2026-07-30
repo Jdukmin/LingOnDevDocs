@@ -19,6 +19,9 @@ Business Goal: **LetMeKnow — AI 기반 Personal Action OS**
 | SYS-001 | DSH-006 Widget Visibility | 없음 | Review |
 | SYS-001 | DSH-007 AI Layout Update | 없음 (Planner Layer 선행 필요) | Analysis |
 | SYS-001 | DSH-008 Real-time Refresh | `frontend/docs/widgets/ClockWidget.md`(구현) · 날씨 스케줄러(미구현, `frontend/docs/FeatureList.md`) | Demo |
+| SYS-001 | DSH-009 Widget Variant System | 없음 — [domain_icd/dashboard.md](domain_icd/dashboard.md) Domain Model(WidgetVariant)만 정의됨 | Analysis |
+| SYS-001 | DSH-010 Widget Metadata Schema | 없음 — [domain_icd/dashboard.md](domain_icd/dashboard.md) Domain Model(WidgetMetadata)만 정의됨 | Review |
+| SYS-001 | DSH-011 Layout Constraint System | 없음 (Planner Layer 선행 불필요, Dashboard 단독 구현 가능하나 미착수) | Analysis |
 | SYS-002 Natural Language Interaction | CHAT-001 Chat Interface | `frontend/docs/widgets/ChatWidget.md`, `frontend/docs/services/LlmService.md` | Demo |
 | SYS-002 | CHAT-002 Streaming Response | 선언만 존재(`LlmGateway.stream()`), 미구현 | Test |
 | SYS-002 | CHAT-003 Voice Input | 없음 | Demo |
@@ -52,6 +55,7 @@ Business Goal: **LetMeKnow — AI 기반 Personal Action OS**
 | SYS-009 | PLN-003 Conditional Workflow | 없음 | Test |
 | SYS-009 | PLN-004 Retry Strategy | 없음 | Test |
 | SYS-009 | PLN-005 Rollback Strategy | 없음 | Test |
+| SYS-009 | PLN-006 Layout Preference Generation | 없음 — [domain_icd/dashboard.md](domain_icd/dashboard.md) Future Extensions에서 `LayoutDirective` 구독 측만 정의됨 | Analysis |
 | SYS-010 LLM Gateway | LLM-001 Multi Provider Support | `backend/docs/api/apikey.md`(저장소만) · `frontend/docs/services/LlmService.md`(단일 provider 구현) | Integration Test |
 | SYS-010 | LLM-002 Model Routing | 없음 | Test |
 | SYS-010 | LLM-003 Fallback Strategy | 없음 | Test |
