@@ -17,6 +17,7 @@ Parent Feature: [SYS-001 Dashboard Management](system_requirements.md). 구현 �
 | DSH-009 | SYS-001 | Widget Variant System | Each Widget shall be implemented in up to three WidgetVariants (Vertical/Square/Horizontal) selected per device class and available space, instead of a single fixed layout per Widget. | Analysis | Planned | 0% |
 | DSH-010 | SYS-001 | Widget Metadata Schema | Each Widget shall expose descriptive metadata (widget_id, module_id, aspect_ratio, information_density, supported_device, min_size, max_size, priority, interaction_level) so a WidgetVariant can be selected programmatically. | Review | Planned | 0% |
 | DSH-011 | SYS-001 | Layout Constraint System | Dashboard layout shall be defined by device-independent Constraint Sets (Mobile Portrait / Square Display / Tablet / Desktop) rather than a single fixed per-device layout, so DSH-005's tablet layout becomes one Constraint Set instance among several. | Analysis | Planned | 0% |
+| DSH-012 | SYS-001 | Widget Placement Resolution Rule | When a Widget's preferred WidgetVariant (per WidgetMetadata.aspect_ratio) is not in the current LayoutConstraint's supported_widget_variant set, Dashboard shall resolve the conflict by falling back to the Widget's next-compatible variant (per priority/min_size), or omit the Widget (treated as hidden, not an error) if no compatible variant exists. | Analysis | Planned | 0% |
 
 ---
 
@@ -70,3 +71,14 @@ Parent Feature: [SYS-001 Dashboard Management](system_requirements.md). 구현 �
   `migrations/`)를 검토한 결과 Dashboard/Widget/Module/Layout 관련 코드가
   없어 세 항목 모두 Backend/API/DB 영향이 없음을 확인했다 — 근거:
   [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md).
+- **DSH-012** (2026-07-30 신규, Phase 5.3 준비): DSH-009/010/011과 동일한
+  이유로 코드/문서 근거 없음 — Planned/0%. WidgetMetadata의 선호 Variant와
+  LayoutConstraint의 `supported_widget_variant`가 불일치할 때의 해소 규칙을
+  정의한다(예: Widget은 horizontal을 선호하나 Mobile Portrait Constraint
+  Set은 Vertical만 허용). 상세: [domain_icd/dashboard.md](domain_icd/dashboard.md)
+  Widget Placement Rule. **주의**: 이 시점(2026-07-30) 기준 "Phase 5.1
+  Widget Variant Domain Foundation"/"Phase 5.2 Widget Variant Rendering"이
+  완료됐다는 외부 보고가 있었으나, DSH-009/010이 여전히 Planned/0%이고
+  `version/frontend.json`도 변동 없어(0.1.0 유지) DevDocs 근거로는 확인되지
+  않는다 — 실제 구현 근거(코드/테스트 결과)가 제공되면 DSH-009/010의
+  Status/Progress를 재검토한다.

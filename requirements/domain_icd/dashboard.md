@@ -1,6 +1,6 @@
 # Dashboard Domain
 
-> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-30 · **Owner**: Frontend/UX · **Version**: 0.2.0-draft
+> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-30 · **Owner**: Frontend/UX · **Version**: 0.3.0-draft
 
 비즈니스 계약만 정의한다. Flutter Widget 구현은
 [frontend/docs/ui/AodDisplay.md](../../frontend/docs/ui/AodDisplay.md) 등에
@@ -75,14 +75,55 @@ Widget 선택 파라미터로 변환할 수 있도록 존재한다 — Metadata�
 
 ### LayoutConstraint 정의
 
-Device 이름이 아니라 제약 조건(Constraint Set)으로 정의한다.
+Device 이름이 아니라 제약 조건(Constraint Set)으로 정의한다. **책임 범위**:
+LayoutConstraint는 "어떤 레이아웃 제약이 존재하는가"만 정의한다 — "어떻게
+렌더링할 것인가"는 정의하지 않는다(그건 WidgetVariant의 책임).
 
 | Constraint Set | 대상 | 파라미터 |
 |---|---|---|
-| **Mobile Portrait** | 세로형 Mobile | `max_columns`, `widget_count`, `preferred_ratio`, `information_density`, `spacing` |
-| **Square Display** | 정사각 Display | `max_columns`, `widget_count`, `preferred_ratio`, `spacing` |
-| **Tablet** | Tablet(현재 유일하게 구현된 대상, [dashboard_requirements.md](../dashboard_requirements.md) DSH-005) | `column_count`, `widget_capacity`, `preferred_widget_ratio` |
-| **Desktop** | Desktop/Wide Display | `grid_size`, `widget_capacity`, `expanded_information` |
+| **Mobile Portrait** | 세로형 Mobile | `max_columns`, `widget_count`, `preferred_ratio`, `information_density`, `spacing`, `supported_widget_variant` |
+| **Square Display** | 정사각 Display | `max_columns`, `widget_count`, `preferred_ratio`, `information_density`, `spacing`, `supported_widget_variant` |
+| **Tablet** | Tablet(현재 유일하게 구현된 대상, [dashboard_requirements.md](../dashboard_requirements.md) DSH-005) | `column_count`, `widget_capacity`, `preferred_widget_ratio`, `supported_widget_variant` |
+| **Desktop** | Desktop/Wide Display | `grid_size`, `widget_capacity`, `expanded_information`, `supported_widget_variant` |
+
+`supported_widget_variant`(신규, 2026-07-30 Phase 5.3 준비): 해당 Constraint
+Set이 수용 가능한 WidgetVariant 목록. WidgetVariant 정의의 대상 매핑을
+그대로 기본값으로 쓴다:
+
+| Constraint Set | supported_widget_variant 기본값 |
+|---|---|
+| Mobile Portrait | `[Vertical]` |
+| Square Display | `[Square]` |
+| Tablet | `[Square]` |
+| Desktop | `[Horizontal]` |
+
+이 필드가 없으면 WidgetMetadata가 선호하는 Variant와 실제 화면이 수용
+가능한 Variant를 대조할 방법이 없었다 — 아래 Widget Placement Rule이 이
+필드를 전제로 한다.
+
+### Widget Placement Rule
+
+WidgetMetadata(Widget이 선호하는 표시 형태)와 LayoutConstraint(화면이 수용
+가능한 형태) 사이의 결정 규칙. 예: WidgetMetadata가 "horizontal 선호"인데
+현재 LayoutConstraint(Mobile Portrait)의 `supported_widget_variant`가
+`[Vertical]`뿐이면 어떻게 할지 정의해야 한다.
+
+```
+selected_variant = WidgetMetadata.aspect_ratio ∩ LayoutConstraint.supported_widget_variant
+
+if selected_variant is non-empty:
+    가장 우선순위 높은 교집합 Variant로 렌더링
+else if WidgetMetadata가 차선 Variant(priority/min_size 기준)를 지원:
+    차선 Variant로 대체 렌더링
+else:
+    Widget을 배치하지 않음(에러 아님 — DSH-006 Widget Visibility와 동일하게
+    "숨김" 취급)
+```
+
+이 규칙 자체는 Business Logic이 아니라 **표시 형태 선택 로직**이다 —
+"이 데이터를 보여줘도 되는가" 같은 판단(Business Logic)과는 다르다. 상세
+Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md)
+DSH-012.
 
 # Responsibilities
 
@@ -166,6 +207,8 @@ Domain의 경계를 지키는 핵심 규칙이다.
   [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-009, DSH-010
 - LayoutConstraint 기반 다중 Device 대응(Mobile Portrait/Square Display/Tablet/Desktop) —
   [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-011
+- Widget Placement Rule(WidgetMetadata ↔ LayoutConstraint 충돌 해소) —
+  [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-012
 - AI 기반 레이아웃 조정 — 단, 조정 "판단"은 AI Decision Layer(Planner)가
   [planner_requirements.md](../planner_requirements.md) PLN-006(Layout Preference
   Generation)을 통해 수행하고, Dashboard는 그 결과(`LayoutDirective`)를 구독해
@@ -179,4 +222,5 @@ Domain의 경계를 지키는 핵심 규칙이다.
   [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md)
 - Frontend: [frontend/docs/ui/AodDisplay.md](../../frontend/docs/ui/AodDisplay.md), [frontend/docs/state/Overview.md](../../frontend/docs/state/Overview.md), `frontend/docs/widgets/*`
 - Strategy: [docs/strategy/product.md](../../docs/strategy/product.md) (Core Philosophy), [docs/strategy/architecture.md](../../docs/strategy/architecture.md) (Layer 3)
-- Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md), [requirements/planner_requirements.md](../planner_requirements.md) PLN-006
+- Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md) DSH-009~012, [requirements/planner_requirements.md](../planner_requirements.md) PLN-006
+- Testing: [docs/testing/dashboard_integration_verification.md](../../docs/testing/dashboard_integration_verification.md)
