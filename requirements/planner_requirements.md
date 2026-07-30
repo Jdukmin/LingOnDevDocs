@@ -25,4 +25,7 @@ Architecture에서만 정의되어 있으며, 대응하는 구현 코드나 문�
   Preference 해석은 Dashboard Domain의 경계("Business Logic을 포함하지
   않는다", [domain_icd/dashboard.md](domain_icd/dashboard.md))를 위반하므로
   Planner(AI Decision Layer) 책임으로 정의했다. Planner Layer 자체가 0%이므로
-  코드/문서 근거 없이 Planned/0%로 시작한다.
+  코드/문서 근거 없이 Planned/0%로 시작한다. **Backend 확인 (2026-07-30)**:
+  실제 Backend 소스를 검토한 결과 Planner 관련 route/gateway/db 코드가
+  없음을 재확인했다(기존 PLN-001~005와 동일 상태) — 근거:
+  [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md).
