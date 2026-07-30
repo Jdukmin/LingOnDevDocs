@@ -89,11 +89,10 @@ Mock 결과를 성공으로 보고하지 않는다. 실제 실행/응답/저장�
 
 파일: `version/backend.json`, `version/frontend.json`, `version/system.json`
 
-| 자리 | 조건 |
-|---|---|
-| Major | Breaking Change |
-| Minor | Feature 추가 |
-| Patch | Bug fix |
+버전이 오를 때마다 **끝자리(Patch)만 1씩 올린다**: `V_0.1.0` → `V_0.1.1` →
+`V_0.1.2` → ... (2026-07-30 변경, 사용자 지시). Major/Minor 자리는 사용자가
+명시적으로 지시할 때만 올린다 — Breaking Change/Feature 추가 여부로 자동
+판단하지 않는다.
 
 API/DB/ICD를 변경하면 해당 컴포넌트의 version을 반드시 올린다. 문서만
 바뀌고 계약이 바뀌지 않았다면 version을 올리지 않는다.

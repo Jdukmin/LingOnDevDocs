@@ -1,11 +1,11 @@
 {
   "system": "LingOn",
-  "version": "0.2.0",
+  "version": "0.1.1",
   "components": {
     "backend": "0.1.0",
     "frontend": "0.1.0"
   },
   "last_updated": "2026-07-30",
   "changelog": "changelog/system.md",
-  "note": "V_0.2.0: Domain ICD contract extension only (requirements/domain_icd/dashboard.md, requirements/planner_requirements.md PLN-006) — no source code changed in either component, so backend/frontend component versions stay at 0.1.0. See changelog/system.md 2026-07-30 entry. Prior baseline: V_0.1.0 Baseline Release, confirmed real. Reconciled against jdukmin/lingon (commit 0e6928b) and jdukmin/letmeknow (commit 28f8bb2) via BACKEND_VERIFICATION_REPORT.md, BACKEND_SCHEMA_VERIFICATION_REPORT.md, FRONTEND_VERIFICATION_REPORT.md, FRONTEND_SCHEMA_VERIFICATION_REPORT.md (each source repo root). See status/README.md §2.1 and status/backend/V0.1.0.md, status/frontend/V0.1.0.md for the full rebaseline narrative."
+  "note": "V_0.1.1: Domain ICD contract extension only (requirements/domain_icd/dashboard.md, requirements/planner_requirements.md PLN-006) — no source code changed in either component, so backend/frontend component versions stay at 0.1.0. Per user instruction (2026-07-30), version bumps now always increment the last digit only (V_0.1.0 → V_0.1.1 → V_0.1.2 ...) — see CLAUDE.md Version 관리. See changelog/system.md 2026-07-30 entry. Prior baseline: V_0.1.0 Baseline Release, confirmed real. Reconciled against jdukmin/lingon (commit 0e6928b) and jdukmin/letmeknow (commit 28f8bb2) via BACKEND_VERIFICATION_REPORT.md, BACKEND_SCHEMA_VERIFICATION_REPORT.md, FRONTEND_VERIFICATION_REPORT.md, FRONTEND_SCHEMA_VERIFICATION_REPORT.md (each source repo root). See status/README.md §2.1 and status/backend/V0.1.0.md, status/frontend/V0.1.0.md for the full rebaseline narrative."
 }
