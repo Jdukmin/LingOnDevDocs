@@ -65,4 +65,8 @@ Parent Feature: [SYS-001 Dashboard Management](system_requirements.md). 구현 �
   근거가 없다(현재 구현은 DSH-005의 고정 3컬럼 태블릿 레이아웃 1종뿐). 따라서
   전부 Planned/0%. 상세 정의: [domain_icd/dashboard.md](domain_icd/dashboard.md)
   Domain Model. `docs/roadmap/roadmap.md` Phase 5의 기존 Next Milestone("AI
-  Layout Update 정의")과 정확히 일치하는 작업이다.
+  Layout Update 정의")과 정확히 일치하는 작업이다. **Backend 확인
+  (2026-07-30)**: 실제 Backend 소스(`src/route/`, `src/gateway/`, `src/db/`,
+  `migrations/`)를 검토한 결과 Dashboard/Widget/Module/Layout 관련 코드가
+  없어 세 항목 모두 Backend/API/DB 영향이 없음을 확인했다 — 근거:
+  [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md).

@@ -173,7 +173,10 @@ Domain의 경계를 지키는 핵심 규칙이다.
 
 # References
 
-- Backend: (직접 대응 없음 — Dashboard는 순수 Frontend 개념)
+- Backend: (직접 대응 없음 — Dashboard는 순수 Frontend 개념). 2026-07-30
+  WidgetVariant/WidgetMetadata/LayoutConstraint 확장이 Backend 계약(API
+  ICD/DB Schema)에 영향 없음을 실제 Backend 소스 검토로 확인함 —
+  [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md)
 - Frontend: [frontend/docs/ui/AodDisplay.md](../../frontend/docs/ui/AodDisplay.md), [frontend/docs/state/Overview.md](../../frontend/docs/state/Overview.md), `frontend/docs/widgets/*`
 - Strategy: [docs/strategy/product.md](../../docs/strategy/product.md) (Core Philosophy), [docs/strategy/architecture.md](../../docs/strategy/architecture.md) (Layer 3)
 - Requirement: [requirements/dashboard_requirements.md](../dashboard_requirements.md), [requirements/planner_requirements.md](../planner_requirements.md) PLN-006
