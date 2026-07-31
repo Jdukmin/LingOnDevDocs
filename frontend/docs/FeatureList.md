@@ -31,7 +31,7 @@
 |------|------|------|
 | 3컬럼 태블릿 레이아웃 | `layout/aod_tablet_layout.dart` | 좌28% / 중44% / 우28% |
 | 사이드바 슬라이드인 | `layout/aod_tablet_layout.dart` | `AnimatedPositioned` 300px |
-| 다크/라이트/시스템 테마 | `main.dart` + `SidebarWidget` | `AodColors` ThemeExtension |
+| 다크/라이트/시스템 테마 | `main.dart` + `SidebarWidget` | `AodColors` ThemeExtension — v2 색상 재설계 검증됨(2026-07-31), 상세: [theme/ThemeGuide.md](theme/ThemeGuide.md) |
 
 ### 시계
 
