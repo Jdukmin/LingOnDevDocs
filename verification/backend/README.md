@@ -1,7 +1,7 @@
 # Backend Verification Reports
 
-Empty — no reports filed yet. Format and rules: [../README.md](../README.md).
+Format and rules: [../README.md](../README.md).
 
-When adding the first report, name it `<YYYY-MM-DD>-<주제>.md` in this
-directory and remove this placeholder note (keep the file, just replace
-this content with the first real report, or add the report alongside it).
+| 날짜 | 문서 | 요약 |
+|---|---|---|
+| 2026-07-30 | [2026-07-30-dashboard-widget-layout-icd-impact-review.md](2026-07-30-dashboard-widget-layout-icd-impact-review.md) | Dashboard/Widget/Layout ICD 확장(DSH-009~011, PLN-006)이 Backend 계약에 영향 없음을 확인 — Required Changes: None |

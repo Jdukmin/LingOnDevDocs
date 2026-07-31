@@ -88,12 +88,25 @@ Mock 결과를 성공으로 보고하지 않는다. 실제 실행/응답/저장�
 ## Version 관리
 
 파일: `version/backend.json`, `version/frontend.json`, `version/system.json`
+(2026-07-30 정책 갱신 — 이전 "끝자리만 증가" 규칙을 대체한다)
+
+### System Version — `version/system.json`
+
+관리 대상: Architecture Contract / Cross Component Interface / Global
+Requirement. **Component Version들의 집합이 아니다** — 독립적으로 판단한다.
+
+### Component Version — `version/backend.json`, `version/frontend.json`
+
+각 Component의 구현 상태를 추적한다. Component마다 독립적으로 증가하며,
+System Version과 기계적으로 연동하지 않는다.
+
+### 자리 증가 규칙 (System/Component 공통)
 
 | 자리 | 조건 |
 |---|---|
-| Major | Breaking Change |
-| Minor | Feature 추가 |
-| Patch | Bug fix |
+| Major | Breaking system change |
+| Minor | Domain Contract change / Architecture change |
+| Patch | Bug fix / Implementation change / Test addition / Component documentation |
 
 API/DB/ICD를 변경하면 해당 컴포넌트의 version을 반드시 올린다. 문서만
 바뀌고 계약이 바뀌지 않았다면 version을 올리지 않는다.

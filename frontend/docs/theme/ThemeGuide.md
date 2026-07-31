@@ -250,6 +250,33 @@ Widget이 화면 형태(Vertical/Square/Horizontal)에 따라 다르게 렌더�
 | 상태 저장 | `_LingonAppState._themeMode` |
 | 변경 요청 | `SidebarWidget.onSetTheme(mode)` |
 | MaterialApp 적용 | `theme: _buildTheme(AodColors.light)`, `darkTheme: _buildTheme(AodColors.dark)` |
+| 대안 진입 | `DevScreen` 외관 섹션 (StatusWidget 롱프레스) |
+
+---
+
+## 타이포그래피 규칙 (2026-07-31 기준 미검증 — 기존 내용 유지)
+
+> 이번에 제공된 `aod_colors.dart`는 색상 토큰만 다룬다. 아래는 이전부터
+> 있던 내용으로, 이번 검증 대상이 아니다 — 실제 폰트/크기 소스가 확인되면
+> 갱신한다.
+
+| 용도 | 폰트 | 크기 | Weight |
+|------|------|------|--------|
+| 본문, 한국어 | `NotoSansKR` | 12~14 | 400~600 |
+| 숫자, 레이블 | `Inter` | 9~14 | 600~700 |
+| 섹션 레이블 | `Inter` | 9~10 | 700 |
+| 섹션 레이블 자간 | — | `letterSpacing: 1.2~1.4` | — |
+
+---
+
+## 아이콘 규칙 (2026-07-31 기준 미검증 — 기존 내용 유지)
+
+| 항목 | 값 |
+|------|-----|
+| 소형 아이콘 크기 | `12~16` |
+| 인터랙티브 색상 | `c.accent` |
+| 장식 색상 | `c.textDim` |
+| AI 전용 색상 | `c.aiAccent`(구 `c.aiGold`, deprecated alias로 하위 호환) |
 | 대안 진입 | `DevScreen` 외관 섹션(StatusWidget 롱프레스) |
 
 ---

@@ -12,8 +12,12 @@ Parent Feature: [SYS-001 Dashboard Management](system_requirements.md). 구현 �
 | DSH-004 | SYS-001 | Todo Widget | Dashboard shall display the user's outstanding to-do items. | Review | Planned | 0% |
 | DSH-005 | SYS-001 | Widget Layout | Dashboard shall arrange widgets in a fixed 3-column tablet layout (28% / 44% / 28%). | Demo | Done | 75% |
 | DSH-006 | SYS-001 | Widget Visibility | User shall be able to show/hide individual dashboard widgets. | Review | Planned | 0% |
-| DSH-007 | SYS-001 | AI Layout Update | Dashboard layout shall be adjustable by the AI/Planner based on inferred user context or priority. | Analysis | Planned | 0% |
+| DSH-007 | SYS-001 | AI Layout Update | Dashboard layout shall be adjustable based on a `LayoutDirective` (Structured Layout Preference) published by the Planner from a user's natural-language request; Dashboard shall only apply the directive, not interpret natural language itself. | Analysis | Planned | 0% |
 | DSH-008 | SYS-001 | Real-time Refresh | Dashboard widgets shall refresh their data automatically on a schedule (or push) without a manual reload. | Demo | In Progress | 25% |
+| DSH-009 | SYS-001 | Widget Variant System | Each Widget shall be implemented in up to three WidgetVariants (Vertical/Square/Horizontal) selected per device class and available space, instead of a single fixed layout per Widget. | Analysis | Planned | 0% |
+| DSH-010 | SYS-001 | Widget Metadata Schema | Each Widget shall expose descriptive metadata (widget_id, module_id, aspect_ratio, information_density, supported_device, min_size, max_size, priority, interaction_level) so a WidgetVariant can be selected programmatically. | Review | Planned | 0% |
+| DSH-011 | SYS-001 | Layout Constraint System | Dashboard layout shall be defined by device-independent Constraint Sets (Mobile Portrait / Square Display / Tablet / Desktop) rather than a single fixed per-device layout, so DSH-005's tablet layout becomes one Constraint Set instance among several. | Analysis | Planned | 0% |
+| DSH-012 | SYS-001 | Widget Placement Resolution Rule | When a Widget's preferred WidgetVariant (per WidgetMetadata.aspect_ratio) is not in the current LayoutConstraint's supported_widget_variant set, Dashboard shall resolve the conflict by falling back to the Widget's next-compatible variant (per priority/min_size), or omit the Widget (treated as hidden, not an error) if no compatible variant exists. | Analysis | Planned | 0% |
 
 ---
 
@@ -39,12 +43,42 @@ Parent Feature: [SYS-001 Dashboard Management](system_requirements.md). 구현 �
   모듈, 엔드포인트가 없다.
 - **DSH-005**: 3컬럼 태블릿 레이아웃이 `AodTabletLayout`으로 구현·문서화됨.
   근거: [frontend/docs/ui/AodDisplay.md](../frontend/docs/ui/AodDisplay.md).
+  이 Requirement는 현재 구현된 유일한 레이아웃(Tablet)만 기술한다 — 그 외
+  Device(Mobile Portrait/Square Display/Desktop) 대응은 DSH-011(Layout
+  Constraint System)에서 별도로 추적하며, DSH-005 자체의 Status/Progress는
+  변경하지 않았다.
 - **DSH-006**: 위젯 단위 표시/숨김 토글에 대한 코드·문서 근거 없음. `SidebarWidget`은
   테마/볼륨/밝기 등 값을 저장하지만 위젯 가시성 제어는 아니다. 근거:
   [frontend/docs/widgets/SidebarWidget.md](../frontend/docs/widgets/SidebarWidget.md).
 - **DSH-007**: Architecture가 지향하는 Planner 기반 레이아웃 조정은 Planner
-  Layer 자체가 없어(PLN-xxx 전부 0%) 불가능한 상태.
+  Layer 자체가 없어(PLN-xxx 전부 0%) 불가능한 상태. 2026-07-30에 Description을
+  구체화(Structured Layout Preference/`LayoutDirective` 개념 도입,
+  [domain_icd/dashboard.md](domain_icd/dashboard.md) Future Extensions,
+  [planner_requirements.md](planner_requirements.md) PLN-006)했지만, 코드/문서
+  근거가 없어 Status/Progress는 변경하지 않았다(Planned/0% 유지).
 - **DSH-008**: Clock만 실시간(1초) 갱신이 실제로 구현되어 있고, 날씨 자동
   갱신 주기는 설정값(`SidebarModule.weatherRefreshMinutes`)만 저장될 뿐 실제
   스케줄러가 없다 — "WeatherModule 스케줄러 필요"로 스텁 처리됨. 근거:
   [frontend/docs/FeatureList.md](../frontend/docs/FeatureList.md) 스텁 섹션.
+- **DSH-009 / DSH-010 / DSH-011** (2026-07-30 신규): Always-On AI Dashboard
+  UI/UX 구조 개선 요청을 반영해 신규 정의했다 — `backend/docs`, `frontend/docs`
+  어디에도 WidgetVariant, WidgetMetadata, LayoutConstraint에 대응하는 코드/문서
+  근거가 없다(현재 구현은 DSH-005의 고정 3컬럼 태블릿 레이아웃 1종뿐). 따라서
+  전부 Planned/0%. 상세 정의: [domain_icd/dashboard.md](domain_icd/dashboard.md)
+  Domain Model. `docs/roadmap/roadmap.md` Phase 5의 기존 Next Milestone("AI
+  Layout Update 정의")과 정확히 일치하는 작업이다. **Backend 확인
+  (2026-07-30)**: 실제 Backend 소스(`src/route/`, `src/gateway/`, `src/db/`,
+  `migrations/`)를 검토한 결과 Dashboard/Widget/Module/Layout 관련 코드가
+  없어 세 항목 모두 Backend/API/DB 영향이 없음을 확인했다 — 근거:
+  [verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md](../verification/backend/2026-07-30-dashboard-widget-layout-icd-impact-review.md).
+- **DSH-012** (2026-07-30 신규, Phase 5.3 준비): DSH-009/010/011과 동일한
+  이유로 코드/문서 근거 없음 — Planned/0%. WidgetMetadata의 선호 Variant와
+  LayoutConstraint의 `supported_widget_variant`가 불일치할 때의 해소 규칙을
+  정의한다(예: Widget은 horizontal을 선호하나 Mobile Portrait Constraint
+  Set은 Vertical만 허용). 상세: [domain_icd/dashboard.md](domain_icd/dashboard.md)
+  Widget Placement Rule. **주의**: 이 시점(2026-07-30) 기준 "Phase 5.1
+  Widget Variant Domain Foundation"/"Phase 5.2 Widget Variant Rendering"이
+  완료됐다는 외부 보고가 있었으나, DSH-009/010이 여전히 Planned/0%이고
+  `version/frontend.json`도 변동 없어(0.1.0 유지) DevDocs 근거로는 확인되지
+  않는다 — 실제 구현 근거(코드/테스트 결과)가 제공되면 DSH-009/010의
+  Status/Progress를 재검토한다.
