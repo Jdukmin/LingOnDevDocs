@@ -27,11 +27,23 @@
 
 ### AOD 대시보드
 
+> **각주 2026-07-31(Design System v2 반영 확인 — Working Tree 기준, 미커밋)**:
+> 대시보드 7개 위젯(Clock/Status/WeatherNow/WeatherForecast/Calendar/Chat/
+> BriefCard) 전부가 `core/design/app_card.dart`(`SmallCard`/`MediumCard`/
+> `LargeCard`), `app_typography.dart`(`AppTypography`), `app_spacing.dart`
+> (`AppSpacing`/`AppRadius`)를 쓰도록 수정된 코드가 로컬 uncommitted
+> working tree에 존재함을 확인했다 — `jdukmin/letmeknow`에는 아직
+> 커밋되지 않았다(커밋 `ad0e0f4`에는 컴포넌트 정의만 있고 위젯 채택은
+> 없음). 근거: [frontend/docs/theme/ThemeGuide.md](theme/ThemeGuide.md),
+> [frontend/docs/theme/CardComponent.md](theme/CardComponent.md). `AodColors`
+> Green Theme(Primary `#61CE70`, 이건 `ad0e0f4`에 커밋되어 있음)와 병행 적용.
+
 | 기능 | 파일 | 비고 |
 |------|------|------|
 | 3컬럼 태블릿 레이아웃 | `layout/aod_tablet_layout.dart` | 좌28% / 중44% / 우28% |
 | 사이드바 슬라이드인 | `layout/aod_tablet_layout.dart` | `AnimatedPositioned` 300px |
-| 다크/라이트/시스템 테마 | `main.dart` + `SidebarWidget` | `AodColors` ThemeExtension — v2 색상 재설계 검증됨(2026-07-31), 상세: [theme/ThemeGuide.md](theme/ThemeGuide.md) |
+| 다크/라이트/시스템 테마 | `main.dart` + `SidebarWidget` | `AodColors` ThemeExtension(Green Theme v2) |
+| Design System v2 (Card/Typography/Spacing) | `core/design/{app_card,app_typography,app_spacing}.dart` | 7개 대시보드 위젯 전부 적용 확인(uncommitted) — Tier 매핑은 `theme/CardComponent.md` 참고 |
 
 ### 시계
 
