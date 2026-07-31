@@ -11,7 +11,7 @@ component's implementation.
 - **Versioning convention changed**: from this entry on, every version bump
   increments only the last digit (`V_0.1.0` → `V_0.1.1` → `V_0.1.2` ...),
   per user instruction — see [../CLAUDE.md](../CLAUDE.md) Version 관리.
-  This entry itself was originally drafted as `0.2.0` and renumbered to
+  This entry itself was originally drafted as `0.1.2` and renumbered to
   `0.1.1` to follow the new rule.
 - **Dashboard Domain ICD extended for LLM Adaptive Dashboard UI structure.**
   Added `WidgetVariant` (Vertical/Square/Horizontal), `WidgetMetadata`, and

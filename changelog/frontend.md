@@ -33,7 +33,7 @@ bump must have a matching entry here.
   detail of the already-`Done` theme-toggle feature
   (`frontend/docs/FeatureList.md` "다크/라이트/시스템 테마"), not a new
   Requirement. No `system.json`/`backend.json` impact.
-## [0.2.0] - 2026-07-31
+## [0.1.2] - 2026-07-31
 
 Minor bump — Frontend Design System documentation reconciliation. Reconciled
 directly against `jdukmin/letmeknow` source (commit `ad0e0f4` "updated UI

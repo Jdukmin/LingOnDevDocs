@@ -99,7 +99,7 @@
 
 | 작업 내용 | 우선순위 | 권장 수행 시점 | 완료 여부 |
 |---|---|---|---|
-| 가격 정책 검토 | Medium | `V_0.2.0`~`V_0.5.0` 사이(PMF 검증 이후) | 미착수 — **의도된 보류**, 결함 아님. `docs/docs/roadmap/kpi.md`: "수익보다 PMF가 우선이다" — 현재 Primary KPI는 매출이 아니라 Daily Action Count |
+| 가격 정책 검토 | Medium | `V_0.1.2`~`V_0.5.0` 사이(PMF 검증 이후) | 미착수 — **의도된 보류**, 결함 아님. `docs/docs/roadmap/kpi.md`: "수익보다 PMF가 우선이다" — 현재 Primary KPI는 매출이 아니라 Daily Action Count |
 | Beta 사용자 모집 | High | Beta 배포 직후 | 미착수 |
 | 피드백 수집 계획(채널, 설문, 분석 파이프라인) 수립 | High | Beta 배포와 동시 | 미착수 — 현재 `AnalyticsModule`은 로컬 카운터 수준으로, KPI 계측 파이프라인이 아님(`docs/docs/roadmap/kpi.md` "근거") |
 

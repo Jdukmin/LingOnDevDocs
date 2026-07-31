@@ -1,6 +1,6 @@
 # Domain Analysis — Gaps, Overlaps, Priority
 
-> **Status**: Complete (분석 완료, Weather/Todo/Settings는 2026-07-22에 실제 작성됨) · **Progress**: N/A(분석 문서) · **Last Updated**: 2026-07-22 · **Owner**: Product/Architecture · **Version**: 0.2.0-draft
+> **Status**: Complete (분석 완료, Weather/Todo/Settings는 2026-07-22에 실제 작성됨) · **Progress**: N/A(분석 문서) · **Last Updated**: 2026-07-22 · **Owner**: Product/Architecture · **Version**: 0.1.2-draft
 
 [README.md](README.md)의 Domain을 현재 `backend/docs`(API), `frontend/docs`(Service/State),
 `backend/docs/database`(DB)와 비교해 분석한다. 이하 "제안"이라고 표시한

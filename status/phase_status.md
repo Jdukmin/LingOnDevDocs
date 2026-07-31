@@ -30,7 +30,7 @@
 ```
 Phase 1(Foundation) → Phase 2(Auth) → Phase 4(Calendar), Phase 5(Weather) → [V_0.1.0 Baseline, 현재]
                                                                                     ↓
-                                                                        Phase 6(Intent Engine) → V_0.2.0
+                                                                        Phase 6(Intent Engine) → V_0.1.2
                                                                                     ↓
                                                 Phase 7(Memory), Phase 8(Planner), Phase 9(Action Router), Phase 10(Connector) → V_0.5.0
                                                                                     ↓

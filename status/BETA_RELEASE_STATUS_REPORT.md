@@ -346,7 +346,7 @@ Store 등록, CORS, HTTPS)은 공개 전환 시점까지 유예 가능하나, CO
    (Claude가 스키마 문서 기준 SQL 초안 작성 가능, 사람이 실제 DB에 적용·검증).
 6. **(공개 배포 결정 시, 사람)** Privacy Policy/Terms 법률 검토 착수 —
    가장 리드타임이 긴 항목이므로 다른 작업과 병행 시작 권장.
-7. **(V_0.2.0 착수 조건)** 위 Beta Release Checklist가 모두 체크된 이후에만
+7. **(V_0.1.2 착수 조건)** 위 Beta Release Checklist가 모두 체크된 이후에만
    Phase 6(Intent Engine) 착수 — `docs/development_rules.md`의 Action
    Layer 우선순위 원칙과 별개로, 이미 열린 P0/High 결함을 먼저 닫는 것이
    우선이다.

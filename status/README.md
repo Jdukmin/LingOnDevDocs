@@ -65,7 +65,7 @@ V_0.1.0 (Baseline, 현재)
   ↓
 V_0.1.x  (Baseline 이후 patch/minor 반복)
   ↓
-V_0.2.0
+V_0.1.2
   ↓
 V_1.0.0  (정식 출시)
 ```
@@ -233,7 +233,7 @@ Update)을 아래 7단계로 세분화한다:
 
 ## 5. 관련 문서
 
-- [roadmap.md](roadmap.md) — Phase 단위 계획(V_0.1.0 → V_0.2.0 → V_0.5.0 → V_1.0.0)
+- [roadmap.md](roadmap.md) — Phase 단위 계획(V_0.1.0 → V_0.1.2 → V_0.5.0 → V_1.0.0)
 - [phase_status.md](phase_status.md) — Phase 단위 현재 상태
 - [current_status.md](current_status.md) — 프로젝트 전체 현재 상태
 - [../CLAUDE.md](../CLAUDE.md) — Version/ChangeLog/Verification Report 관리 규칙(기계 판독용 SSOT)

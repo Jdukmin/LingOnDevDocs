@@ -1,6 +1,6 @@
 # Calendar Domain
 
-> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-22 · **Owner**: Integrations/Productivity · **Version**: 0.2.0-draft
+> **Status**: Proposed · **Progress**: 25% · **Last Updated**: 2026-07-22 · **Owner**: Integrations/Productivity · **Version**: 0.1.2-draft
 
 비즈니스 계약만 정의한다 — Google Calendar OAuth/REST 세부사항은 Tool
 구현이며 [backend/docs/api/calendar.md](../../backend/docs/api/calendar.md)에

@@ -83,7 +83,7 @@ Progress: 0%`로 명시).
    갱신했고 `frontend/docs/`/`docs/policies/` 원본은 아직 수정하지 않음).
 5. **(High)** DB 베이스라인 마이그레이션(`000_baseline_schema.sql`) 작성.
 6. **(Medium)** CORS allow-list 확정, HTTPS/HSTS 리버스 프록시 설정 문서화.
-7. Phase 6(Intent Engine) 착수 — `V_0.2.0` 목표.
+7. Phase 6(Intent Engine) 착수 — `V_0.1.2` 목표.
 
 ## 6. Release Readiness — `V_0.1.0` Baseline
 

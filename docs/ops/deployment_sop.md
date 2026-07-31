@@ -14,7 +14,7 @@
 |---|---|
 | Backend API | ICD v0.0 envelope 자체는 유지, Action Type 스키마는 추가만 허용(하위 호환) — [docs/icd/action_layer_api.md](../icd/action_layer_api.md) "버전/호환성" 절과 동일 원칙 |
 | 앱(Flutter) | Semantic Versioning(`MAJOR.MINOR.PATCH`) — 기존 커밋 로그의 `V_0.0.x` 표기와 정합성 확인 필요 |
-| Domain ICD 문서 | `0.x.0-draft` → 검토·승인 후 `1.0.0`로 전환(현재 전부 `0.1.0-draft`/`0.2.0-draft`) |
+| Domain ICD 문서 | `0.x.0-draft` → 검토·승인 후 `1.0.0`로 전환(현재 전부 `0.1.0-draft`/`0.1.2-draft`) |
 
 ## Release SOP (제안 — 미수립)
 
