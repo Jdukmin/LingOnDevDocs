@@ -200,7 +200,9 @@ await runGuarded(() async {
 
 ## Theme 규칙
 
-→ 색상 토큰 전체 목록: [frontend/docs/theme/ThemeGuide.md](theme/ThemeGuide.md)
+→ 색상/Shape/Typography 토큰 전체: [frontend/docs/theme/ThemeGuide.md](theme/ThemeGuide.md)
+→ Card Component(Small/Medium/Large): [frontend/docs/theme/CardComponent.md](theme/CardComponent.md)
+→ Widget = Module Data + Widget Variant + Card Component 원칙: [frontend/docs/widgets/WidgetPresentationRule.md](widgets/WidgetPresentationRule.md)
 
 - `AodColors.dark` / `AodColors.light` 두 가지 테마 제공
 - 테마 상태: `_LingonAppState._themeMode`
