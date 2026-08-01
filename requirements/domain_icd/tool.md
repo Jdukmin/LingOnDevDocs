@@ -107,8 +107,12 @@ Action → Tool → External Service
 
 - Tool Capability의 동적 등록(런타임에 신규 Tool 추가)
 - Tool별 Rate Limit/Quota 정책 표준화
-- LLM Provider(OpenAI/Anthropic/Gemini/OpenRouter)도 Tool의 한 사례로 편입할지 검토
-  — [requirements/llm_gateway_requirements.md](../llm_gateway_requirements.md) 참고
+- ~~LLM Provider(OpenAI/Anthropic/Gemini/OpenRouter)도 Tool의 한 사례로 편입할지 검토~~
+  → **결론(2026-08-01): 편입하지 않는다.** LLM Provider는 별도 Domain으로
+  분리했다 — [llm.md](llm.md). 사유: (1) Tool의 `ToolConnection` 5-state는 OAuth
+  연결 수명주기를 표현하는데 LLM은 API 키 유무만 있으면 되고, (2) Intent/Planner가
+  Action을 거치지 않고 LLM을 직접 소비하며, (3) Provider 라우팅·폴백·비용·구조화
+  출력이 범용 Tool 계약보다 풍부하다. 두 Domain은 **형제 관계**다(상하 아님).
 
 # References
 

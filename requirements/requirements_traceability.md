@@ -62,6 +62,8 @@ Business Goal: **LetMeKnow — AI 기반 Personal Action OS**
 | SYS-010 | LLM-003 Fallback Strategy | 없음 | Test |
 | SYS-010 | LLM-004 Cost Monitoring | 없음 (`backend/docs/FeatureList.md` Planned: `usage_logs`) | Analysis |
 | SYS-010 | LLM-005 Structured Output | 없음 | Test |
+| SYS-010 | LLM-006 Credential Source Resolution | 없음 — 저장 측만 존재(`backend/docs/database/user_api_keys.md`, `backend/docs/api/apikey.md`); 해석/소비 측 없음(`useApiKey` 호출부 0개) — [domain_icd/llm.md](domain_icd/llm.md) §CredentialSource | Integration Test |
+| SYS-010 | LLM-007 Provider Adapter Contract | 없음 — [domain_icd/llm.md](domain_icd/llm.md) Domain Model + [docs/icd/action_layer_api.md](../docs/icd/action_layer_api.md) `llm.chat_complete`만 정의됨 | Review |
 
 ---
 

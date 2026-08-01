@@ -1,11 +1,16 @@
 {
   "system": "LingOn",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "components": {
     "backend": "0.1.0",
-    "frontend": "0.1.0"
+    "frontend": "0.1.2"
   },
-  "last_updated": "2026-07-30",
+  "last_updated": "2026-08-01",
   "changelog": "changelog/system.md",
-  "note": "V_0.1.1: Domain ICD contract extension (requirements/domain_icd/dashboard.md, requirements/planner_requirements.md PLN-006) — no source code changed in either component, so backend/frontend component versions stay at 0.1.0. Numbered under the same-day 'always bump last digit' rule that applied when this bump was made; that rule has since been superseded by the 2026-07-30 Version Management Policy (Major/Minor/Patch by change type — see CLAUDE.md Version 관리). Under the new policy this would classify as Minor (Domain Contract change) rather than Patch; left as V_0.1.1 pending explicit confirmation on whether to renumber already-shipped versions. System Version tracks Architecture Contract/Cross Component Interface/Global Requirement and is NOT a rollup of component versions — backend.json/frontend.json increment independently. See changelog/system.md 2026-07-30 entry. Prior baseline: V_0.1.0 Baseline Release, confirmed real. Reconciled against jdukmin/lingon (commit 0e6928b) and jdukmin/letmeknow (commit 28f8bb2) via BACKEND_VERIFICATION_REPORT.md, BACKEND_SCHEMA_VERIFICATION_REPORT.md, FRONTEND_VERIFICATION_REPORT.md, FRONTEND_SCHEMA_VERIFICATION_REPORT.md (each source repo root). See status/README.md §2.1 and status/backend/V0.1.0.md, status/frontend/V0.1.0.md for the full rebaseline narrative."
+  "note": "V_0.2.0: Minor bump — AI Platform Domain contract definition. Domain Contract change (new requirements/domain_icd/llm.md) + Architecture/API Contract change (docs/icd/action_layer_api.md — llm.chat_complete formalized from an example into a specified Action Type) + two new Requirements (llm_gateway_requirements.md LLM-006 Credential Source Resolution, LLM-007 Provider Adapter Contract). Classified Minor per CLAUDE.md Version 관리 ('Domain Contract change / Architecture change'), confirmed by CTO decision 2026-08-01. No source code was changed in either component — this pass defines contracts only — so backend stays 0.1.0 and frontend stays 0.1.2. System Version tracks Architecture Contract/Cross Component Interface/Global Requirement and is NOT a rollup of component versions. Key architecture decision recorded as DEC-004 (LLM is a separate Domain, sibling to Tool, and is NOT a Product Domain — DEC-001/002 unchanged). Basis: docs/ai_platform/2026-08-01-ai-platform-review.md, verified against jdukmin/letmeknow @ 011b9c2 and jdukmin/lingon @ dd38b22. Prior baseline: V_0.1.1 (2026-07-30, Dashboard Domain ICD extension).",
+  "phase_versioning_note": "CTO decision 2026-08-01: no further system version bump during the AI Platform implementation Phase. The contract is frozen at 0.2.0 and the implementation fills that contract rather than changing it. Component versions (backend.json/frontend.json) still move independently as their implementations land. Re-evaluate only if the contract itself changes after the Phase closes.",
+  "known_discrepancy": [
+    "The 2026-07-30 V_0.1.1 entry was numbered under a since-superseded 'always bump the last digit' rule and would classify as Minor under the current policy. It was left as 0.1.1 pending a decision on whether to renumber already-shipped versions; that question remains open and is unaffected by this 0.2.0 bump.",
+    "The components.frontend snapshot in this file still read 0.1.0 while version/frontend.json had already moved to 0.1.2 (2026-07-31). Corrected to 0.1.2 in this pass. The per-component files remain authoritative; this map is a snapshot only."
+  ]
 }

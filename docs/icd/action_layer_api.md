@@ -209,6 +209,172 @@ AI Decision Layer([../strategy/architecture.md](../strategy/architecture.md) Lay
 
 ---
 
+---
+
+## Action Type — `llm.chat_complete` (2026-08-01 정식화)
+
+> **정정 2026-08-01**: 이전 버전에서 `llm.chat_complete`는 Event 표의 *예시*로만
+> 등장했고 입력/결과 스키마가 없었다 — Backend/Frontend가 계약을 지어낼 수밖에
+> 없는 상태였다. 아래는 그 공백을 메운 정식 Action Type 정의다. Domain 계약은
+> [requirements/domain_icd/llm.md](../../requirements/domain_icd/llm.md)이 기준이며,
+> 두 문서가 벌어지면 항상 domain_icd/llm.md를 우선한다.
+
+**Status**: Proposed (미구현) · **Progress**: 0%
+
+### Request
+
+`POST /v1/actions/execute` 의 공통 봉투를 그대로 쓴다 — 즉 최상위 필드는
+`type` / `input` / `source` / `intent_id?`다.
+
+> ⚠️ **필드명은 `input`이다(`payload`가 아니다).** 이 문서의 다른 모든 Action
+> Type과 동일한 봉투를 쓴다 — Action Type마다 최상위 필드명이 달라지면 공통
+> Dispatcher가 성립하지 않는다.
+
+```jsonc
+POST /v1/actions/execute
+Authorization: Bearer <access_token>
+
+{
+  "type": "llm.chat_complete",
+  "source": "chat",
+  "input": {
+    "messages": [                        // required — 정렬된 대화 이력(오래된 것부터)
+      { "role": "system",    "content": "…" },   // role: "system" | "user" | "assistant"
+      { "role": "user",      "content": "내일 일정 알려줘" }
+    ],
+    "provider": "openai",                // optional — 미지정 시 Gateway가 선택(LLM-002)
+    "model": "gpt-4o",                   // optional — 미지정 시 ai_settings → Provider 기본값
+    "temperature": 0.7,                  // optional — 0..2, 미지정 시 ai_settings
+    "max_tokens": 1024,                  // optional — 양의 정수, 미지정 시 ai_settings
+    "stream": false                      // optional — 기본 false. true면 202 + SSE(아래)
+  }
+}
+```
+
+| 필드 | 타입 | 필수 | 비고 |
+|---|---|---|---|
+| `messages[].role` | `system\|user\|assistant` | ✅ | Provider별 role 명칭 차이는 어댑터가 흡수한다 |
+| `messages[].content` | string | ✅ | 빈 배열/전부 공백이면 `ACTION_VALIDATION_FAILED` |
+| `provider` | string | ❌ | **불투명 식별자.** 값의 출처는 `GET /v1/actions/types`(아래) — Frontend가 목록을 하드코딩하지 않는다 |
+| `model` | string | ❌ | 불투명 문자열. 검증은 Provider에 위임 |
+| `temperature` | number | ❌ | `0..2` — `/v1/settings/ai`와 동일 범위 |
+| `max_tokens` | integer | ❌ | 양의 정수 — `/v1/settings/ai`와 동일 검증 |
+| `stream` | boolean | ❌ | CHAT-002 대응. `true`는 SSE 경로를 요구한다 |
+
+**파라미터 우선순위**: `input`의 명시값 > `ai_settings`(사용자 기본값) >
+Provider 기본값.
+
+### Response — 동기 완료 (200)
+
+`data`는 정규화된 `LlmCompletion`이다. **Provider별 원본 응답 형태를 그대로
+노출하지 않는다.**
+
+```jsonc
+{
+  "success": true,
+  "data": {
+    "action_id": "act_01H...",
+    "type": "llm.chat_complete",
+    "status": "succeeded",
+    "result": {
+      "content": "내일은 10시에 팀 회의가 있습니다.",
+      "provider": "openai",              // 실제 사용된 provider(폴백 시 요청값과 다를 수 있음)
+      "model": "gpt-4o",                 // 실제 사용된 model
+      "credential_source": "byok",       // "byok" | "platform" — domain_icd/llm.md §CredentialSource
+      "finish_reason": "stop",           // "stop" | "length" | "content_filter" | "error"
+      "usage": {
+        "prompt_tokens": 128,
+        "completion_tokens": 42,
+        "total_tokens": 170
+      }
+    },
+    "started_at": "2026-08-01T00:00:00.000Z",
+    "completed_at": "2026-08-01T00:00:02.400Z"
+  },
+  "error": null
+}
+```
+
+> `usage`는 Provider가 사용량을 돌려주지 않는 경우 `null`일 수 있다 — 이때도
+> 필드는 존재해야 한다(호출자가 분기하지 않도록).
+
+### Response — 스트리밍 (202 + SSE)
+
+`input.stream: true`인 경우 `202`로 `action_id`를 먼저 반환하고, 본문은
+`GET /v1/actions/:id/stream`(SSE)로 전달한다 — 이 문서의 [Event 모델](#event-모델)을
+그대로 쓰며 **LLM 전용 이벤트를 새로 만들지 않는다**.
+
+| Event | 페이로드 | 의미 |
+|---|---|---|
+| `action.started` | `{action_id, type}` | 생성 시작 |
+| `action.progress` | `{action_id, partial:{content_delta}}` | 증분 토큰 |
+| `action.completed` | `{action_id, result}` | 위 `result`와 동일 shape(누적 `content` 포함) |
+| `action.failed` | `{action_id, error}` | 아래 에러 코드 |
+
+### 에러 코드 (LLM 전용 — 레지스트리 확장)
+
+Provider별 오류는 **반드시** 아래 안정 코드로 정규화된다. Provider 원문
+메시지를 그대로 클라이언트에 전달하지 않는다
+([domain_icd/llm.md](../../requirements/domain_icd/llm.md) Error Normalization).
+
+| Code | HTTP | 의미 |
+|---|---|---|
+| `LLM_KEY_MISSING` | 403 | 요청 Provider에 대해 `byok`·`platform` 어느 Source에도 자격증명이 없음 |
+| `LLM_AUTH_FAILED` | 502 | Provider가 자격증명을 거부(키 무효/해지). **401이 아니다** — LingOn 자체 인증 실패(`UNAUTHORIZED`)와 구분한다 |
+| `LLM_RATE_LIMITED` | 429 | Provider 쿼터/레이트리밋 초과 |
+| `LLM_TIMEOUT` | 504 | Provider 응답 시간 초과 |
+| `LLM_PROVIDER_ERROR` | 502 | Provider 5xx / 그 외 upstream 실패 |
+| `LLM_BAD_REQUEST` | 400 | Provider가 요청을 거부(잘못된 model/파라미터 등) |
+| `LLM_CONTEXT_TOO_LONG` | 400 | 컨텍스트 윈도 초과 |
+| `LLM_PROVIDER_UNSUPPORTED` | 400 | 등록되지 않은/비활성 `provider` 값 |
+
+이 코드들은 [에러 코드 레지스트리](#에러-코드-레지스트리)의
+`ACTION_EXECUTION_FAILED`를 LLM 도메인에 대해 구체화한 것이다 — 기존 공통 코드
+(`BAD_REQUEST`/`UNAUTHORIZED`/`ACTION_VALIDATION_FAILED`)는 그대로 적용된다.
+
+**폴백(LLM-003)**: 재시도 가능한 코드(`LLM_RATE_LIMITED`, `LLM_TIMEOUT`,
+`LLM_PROVIDER_ERROR`)에 한해 폴백 Provider로 재시도하고, 전부 실패한 경우에만
+최종 오류를 반환한다. 폴백이 성공하면 `result.provider`가 요청값과 달라진다.
+
+### `GET /v1/actions/types` — LLM 항목 표현
+
+Provider 목록의 **단일 출처는 Backend다**(LLM-007 · Frontend 하드코딩 금지).
+LLM은 OAuth 연결 개념이 없으므로 `connection_status`는 자격증명 등록 여부로
+사상한다 — `connected`(키 있음) / `not_connected`(키 없음).
+
+```jsonc
+{
+  "type": "llm.chat_complete",
+  "domain": "llm",
+  "connector": "llm_gateway",
+  "connection_status": "connected",
+  "connected": true,
+  "input_schema": {
+    "messages": "{role,content}[]",
+    "provider": "string?", "model": "string?",
+    "temperature": "number?", "max_tokens": "number?", "stream": "boolean?"
+  },
+  "providers": [                                  // Frontend의 Provider 선택 UI 출처
+    { "id": "openai", "label": "OpenAI", "credential_source": "byok", "available": true },
+    { "id": "gemini", "label": "Google Gemini", "credential_source": "byok", "available": false }
+  ]
+}
+```
+
+> `available`은 "현재 이 사용자가 이 Provider로 호출 가능한가"(자격증명 해석
+> 결과)다. 신규 Provider는 이 배열에 항목이 추가되는 것만으로 Frontend에
+> 나타나야 하며, 클라이언트 코드 변경을 요구하지 않는다.
+
+### 범위 밖 (이번 정의에서 하지 않는 것)
+
+- Planner / Intent Engine / Memory(RAG) 연결 — `messages`는 **호출자가 이미
+  조립한** 상태로 전달된다. Gateway는 Memory를 호출하지 않는다.
+- `llm.summarize` 등 그 외 `llm.*` Action Type — Workflow 예시에만 등장하며
+  아직 정식화되지 않았다.
+- Structured Output(LLM-005) — 별도 필드/Action Type으로 후속 정의한다.
+
+---
+
 ## Workflow API (Tier 4)
 
 ### `POST /v1/workflow`
@@ -380,4 +546,8 @@ Workflow), PLN-004(Retry), PLN-005(Rollback)에 대응한다.
 
 # Change Log
 
+- **2026-08-01** — `llm.chat_complete` Action Type 정식화(입력/결과 스키마,
+  스트리밍 경로, LLM 전용 에러 코드 8종, `GET /v1/actions/types`의 Provider 목록
+  표현). 이전에는 Event 표의 예시로만 존재해 계약이 없었다. Domain 계약은
+  [requirements/domain_icd/llm.md](../../requirements/domain_icd/llm.md) 신설로 대응.
 - **2026-07-21** — Action Layer 전략에 따라 신규 작성(Created according to Action Layer Strategy).

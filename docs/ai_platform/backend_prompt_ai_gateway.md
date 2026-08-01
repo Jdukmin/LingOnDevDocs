@@ -2,12 +2,26 @@
 
 > **Status**: Prepared implementation prompt · **Target repo**: `jdukmin/lingon`
 > (Fastify/TypeScript backend) · **Author**: DevDocs Architect · **Date**: 2026-07-31
+> · **Last updated**: 2026-08-01 (contracts frozen; re-verified against `lingon @ dd38b22`)
 >
-> ⛔ **GATED — do not execute until CTO Decisions 1–3 & 5 in
-> [2026-07-31-ai-architecture-review.md](2026-07-31-ai-architecture-review.md)
-> are resolved.** In particular, [CLAUDE.md](../../CLAUDE.md) ICD Rule forbids
-> implementation before an LLM **Domain ICD** exists (H1). This prompt assumes
-> the recommended resolutions; adjust if the CTO decides otherwise.
+> ✅ **ICD GATE CLEARED (2026-08-01).** The blocker that held this prompt —
+> "no LLM Domain ICD exists" ([CLAUDE.md](../../CLAUDE.md) ICD Rule) — is
+> resolved. The contracts you implement now exist and are **frozen**:
+> - **Domain**: [requirements/domain_icd/llm.md](../../requirements/domain_icd/llm.md) (new)
+> - **Requirement**: [llm_gateway_requirements.md](../../requirements/llm_gateway_requirements.md) LLM-001…**007** (LLM-006 Credential Source, LLM-007 Provider Adapter Contract are new)
+> - **API**: [action_layer_api.md](../icd/action_layer_api.md) → `llm.chat_complete` is now a **fully specified Action Type** (input/result schema, streaming path, 8 LLM error codes, provider catalog)
+>
+> ⛔ **Still gated on two non-technical items** — see §Human Resource in
+> [2026-08-01-ai-platform-review.md](2026-08-01-ai-platform-review.md):
+> (1) **privacy/legal sign-off** before real user chat content reaches any
+> third-party provider; (2) a **real provider key** to run the mandated
+> Real-Execution verification.
+>
+> **Two code-level facts verified 2026-08-01** that the 07-31 revision got wrong
+> or left implicit: **(M3)** `BaseGateway` is **GET-only**, so "route every
+> outbound call through `httpGetJson`" was not executable for a chat completion;
+> **(H5)** the base class's key repo is **provider-scoped, not user-scoped**, so
+> BYOK cannot flow through it unchanged. Both are first-class requirements below.
 
 Copy everything below the line into the backend implementation session.
 
@@ -22,14 +36,18 @@ do **not** touch the frontend. You do **not** modify any DevDocs.
 ## Authoritative contracts (read these first — do not invent contracts)
 
 Read, in order:
-1. `requirements/system_requirements.md` — SYS-010 (LLM Gateway).
-2. `requirements/llm_gateway_requirements.md` — LLM-001…005 (multi-provider,
-   routing, fallback, cost, structured output).
-3. `requirements/domain_icd/llm.md` **(or `tool.md` if the CTO folded LLM into
-   Tool Domain)** — the Domain contract you implement. **If this file does not
-   exist, STOP and report — do not proceed** (CLAUDE.md ICD Rule).
-4. `docs/icd/action_layer_api.md` — the `llm.chat_complete` Action Type, the
-   `{success,data,error}` envelope, and streaming events.
+1. **`requirements/domain_icd/llm.md`** — the Domain contract you implement.
+   Read this **first**; it is the single source of truth and outranks every other
+   document here. Pay particular attention to §Responsibilities ("하지 않는다")
+   and §CredentialSource.
+2. `requirements/system_requirements.md` — SYS-010 (LLM Gateway).
+3. `requirements/llm_gateway_requirements.md` — LLM-001…**007**, including the
+   **Gateway 책임 범위** table, the **Credential Source** minimal contract
+   (LLM-006), and the **Provider Adapter Contract** (LLM-007).
+4. `docs/icd/action_layer_api.md` — **§Action Type `llm.chat_complete`**: the
+   exact input/result schema, the streaming path, the 8 LLM error codes, and the
+   provider catalog in `GET /v1/actions/types`. Implement it **exactly** as
+   written; do not re-derive it.
 5. `backend/docs/DevelopmentGuide.md` — route/plugin/service/repository/error
    conventions. Follow them exactly.
 6. `backend/docs/api/apikey.md`, `backend/docs/database/user_api_keys.md`,
@@ -57,6 +75,17 @@ IAIProvider  (reuse BaseProvider/BaseGateway — do NOT create a parallel base)
   (`chat.complete`, `chat.stream`), throwing `AppError('OP_NOT_SUPPORTED', 400)`
   for unknown routes — exactly like `OpenWeatherAPI`. Put providers under
   `src/gateway/llm/`.
+- **`BaseGateway` needs a POST helper before any of this works (M3).** Verified:
+  its only outbound path is `httpGetJson`, which hardcodes
+  `fetch(url, { method: 'GET' })` (`src/core/base/BaseGateway.ts:280,288`);
+  `getJson`/`getJsonWithApiKey` both wrap it. A chat completion is
+  **POST with a JSON body**. Add a `httpPostJson`/`postJson` helper to
+  `BaseGateway` that **mirrors the existing behaviour** — same structured
+  logging stages, same `sanitizeUrl` redaction, same timeout handling, same
+  `AppError` wrapping, same `safeJson` parsing. **Do not** bypass the base class
+  with a bare `fetch` in a provider, and **do not** fork a parallel base class.
+  This is an additive change to a class shared with `OpenWeatherAPI` /
+  `GoogleCalendarAPI` — do not alter the existing GET path's behaviour.
 - **No provider name may leak above `LlmGatewayService`.** Route handlers,
   dispatcher, Intent, and Planner speak only `llm.chat_complete` /
   `LlmCompletion`. Selecting OpenAI vs Gemini is `LlmGatewayService`'s job,
@@ -71,17 +100,45 @@ IAIProvider  (reuse BaseProvider/BaseGateway — do NOT create a parallel base)
 
 ### Key resolution (fixes the review's Critical C2)
 
+**The contract is LLM-006 / [domain_icd/llm.md](../../requirements/domain_icd/llm.md)
+§CredentialSource.** Two sources only — `byok` (Owner: User, `user_api_keys`,
+AES-256-GCM) and `platform` (Owner: Platform, backend secret). **Resolution
+order: `byok` first → `platform` only if policy allows → otherwise fail with
+`LLM_KEY_MISSING`.** Report the resolved source back in
+`result.credential_source`.
+
+> **Do NOT introduce** a `CredentialResolver` domain, KMS, Secret Manager, or a
+> separate credential service. The minimal two-source contract above is the whole
+> scope. If you believe more is needed, **report it — do not build it.**
+
 - Resolve the API key **per-user, per-request** from the encrypted BYOK store:
   `apiKeyRepository.useApiKey(userId, provider)` (already implemented, currently
   **unused** — this prompt is where it gets its first call site). Fall back to a
   server-owned env key only if the CTO chose platform-funded/hybrid mode.
-- The existing `BaseGateway.getApiKey()` `keyRepo+crypto` path is **not
-  user-scoped** — do not assume `getActiveKey(provider)` returns the right user's
-  key. Either extend the key-resolution to carry `userId`, or resolve the
-  plaintext in the route/service layer and inject it into the provider for that
-  request. Document which you chose in the verification report.
+- **The existing `BaseGateway.getApiKey()` path cannot serve BYOK (H5).**
+  Verified: `GatewayKeyRepo.getActiveKey(provider: string)` takes **no `userId`**,
+  and `getApiKey()` calls `getActiveKey(this.name)`
+  (`src/core/base/BaseGateway.ts:27,110`). Wiring BYOK through it unchanged
+  returns **the wrong user's key or none at all**. Choose one seam explicitly:
+  - **(a) Recommended — service-layer resolution.** `LlmGatewayService` calls
+    `useApiKey(userId, provider)` and injects the plaintext into a short-lived
+    provider instance for that single request. Shortest key lifetime; leaves the
+    base class (shared with OpenWeather/Google) untouched.
+  - **(b)** Extend `GatewayKeyRepo`/`getApiKey()` to carry `userId`. Heavier —
+    it changes a contract two non-LLM gateways already depend on.
+
+  **Record which you chose, and why, in the verification report.**
+- ⚠️ **Do not use the `Repositories.ts` `providerKeys` seed as a key source
+  without checking CTO Decision 3 (H6).** It Base64-encodes
+  `process.env.OPENAI_API_KEY` via `cryptoUtil`, which its own source comment and
+  [security_policy.md](../policies/security_policy.md) both declare
+  **"NOT secure encryption"**. If platform-funded/hybrid mode is selected, the
+  server key must come from `src/db/encrypt.ts` (AES-256-GCM) or a real secret
+  store — **report this rather than silently building on the Base64 path.**
 - The `--dart-define`/client key path is being removed on the frontend; the
   backend is the **only** place a provider key is ever held.
+- **BYOK must not be weakened or bypassed.** A design where the user can no
+  longer supply their own key is out of contract — stop and report instead.
 
 ### Error contract (fixes Critical C3)
 
@@ -107,27 +164,59 @@ IAIProvider  (reuse BaseProvider/BaseGateway — do NOT create a parallel base)
 
 ## API contract (implement exactly as documented)
 
-- `POST /v1/actions/execute` with `type:"llm.chat_complete"`,
-  `input:{ messages:[{role,content}], model?, temperature?, max_tokens? }`,
-  `source:"chat"`. Auth required (`req.ctx.userId`; throw
-  `AppError('UNAUTHORIZED',401)` if absent). Return the ICD v0.0 envelope
-  `{success,data,error}` — `data` carries the normalized `LlmCompletion`.
+**The contract is frozen in [action_layer_api.md](../icd/action_layer_api.md)
+§`llm.chat_complete`. Implement that section literally.** Summary of the parts
+implementers most often get wrong:
+
+- Top-level fields are **`type` / `input` / `source`** — the field is **`input`,
+  not `payload`**. Every Action Type shares one envelope; a per-type top-level
+  field name would break the common dispatcher.
+- `input`: `messages:[{role,content}]` (required, roles
+  `system|user|assistant`), plus optional `provider`, `model`, `temperature`
+  (0–2), `max_tokens` (positive int), `stream` (default `false`).
+- Parameter precedence: **explicit `input` > `ai_settings` > provider default.**
+- `data.result` is the normalized `LlmCompletion`:
+  `{ content, provider, model, credential_source, finish_reason, usage:{prompt_tokens,completion_tokens,total_tokens} }`.
+  `usage` may be `null` when a provider omits it — **the field must still be
+  present** so callers never branch on its existence. `provider`/`model` report
+  what was **actually used** (these differ from the request after a fallback).
+- Auth required (`req.ctx.userId`; throw `AppError('UNAUTHORIZED',401)` if
+  absent). Return the ICD v0.0 envelope `{success,data,error}`.
+- **Error codes are fixed** — use exactly the 8 documented codes with their
+  documented HTTP statuses. Note `LLM_AUTH_FAILED` is **502, not 401**: it means
+  the *provider* rejected our credential, which must not be confused with the
+  caller's own LingOn auth failure. Do not invent new codes; if you need one,
+  stop and report it as a required ICD addition.
+- `GET /v1/actions/types` must expose the **provider catalog**
+  (`providers:[{id,label,credential_source,available}]`). This is the **only**
+  source the frontend may use for its provider list (LLM-007) — `available`
+  reflects whether *this user* can currently call that provider.
 - Follow the `BaseRoutes` pattern: `class … extends BaseRoutes { readonly name;
   registerRoutes(app){…} }` + default-export `FastifyPluginAsync`. Do not
   hardcode `/v1`. Register static before dynamic routes.
-- **Streaming** (only if CTO Decision 5 approves): `GET /v1/actions/:id/stream`
-  as SSE (`text/event-stream`) emitting `action.progress`/`action.completed` per
-  `action_layer_api.md`. The backend has no SSE today — add it minimally; do not
-  add a worker queue unless required.
+- **Streaming**: `input.stream:true` → respond `202` with `action_id`, then serve
+  the body over `GET /v1/actions/:id/stream` as SSE (`text/event-stream`) emitting
+  `action.started` / `action.progress{partial:{content_delta}}` /
+  `action.completed` / `action.failed`. **Reuse the existing Action event names —
+  do not invent LLM-specific events.** The backend has no SSE today; add it
+  minimally and do not add a worker queue unless required. Shipping
+  non-streaming (`stream:false`) first is acceptable — if you do, leave
+  CHAT-002 at 0% and say so rather than claiming partial streaming.
 - **Do not create any endpoint not described in `action_layer_api.md`.** If you
   need one, stop and report it as a required ICD addition.
 
 ## Security rules (hard requirements)
 
 - Provider API keys **never** appear in a response body, a log, `raw_logs`,
-  `request_logs`, or Pino output. Route every outbound URL through
-  `BaseGateway`'s `sanitizeUrl`/`httpGetJson`; never `fetch` a provider directly
-  with the key in a loggable place.
+  `request_logs`, or Pino output. Route every outbound call through the
+  `BaseGateway` helpers (`sanitizeUrl` + the existing `httpGetJson` and the new
+  `httpPostJson` from M3 above) so redaction and error wrapping apply uniformly;
+  never `fetch` a provider directly with the key in a loggable place. Send the
+  key in an `Authorization` header, **never** as a query parameter.
+- The chat `messages` payload is user content — ensure the new POST helper does
+  **not** log request bodies (the existing GET path has no body to leak; the POST
+  path introduces that risk for the first time). Cross-check
+  [logging_policy.md](../policies/logging_policy.md) before logging anything new.
 - BYOK keys stay AES-256-GCM at rest (`src/db/encrypt.ts`, `MASTER_ENCRYPTION_KEY`).
   `MASTER_ENCRYPTION_KEY` is **separate** from `JWT_SECRET` — never mix them.
 - Enforce per-user isolation: a request may only use the authenticated user's own
@@ -148,10 +237,17 @@ IAIProvider  (reuse BaseProvider/BaseGateway — do NOT create a parallel base)
   least one real error path (e.g. bad key → `LLM_AUTH_FAILED`).
 - Demonstrate the provider abstraction: switch the selected provider (OpenAI ↔
   Gemini) for the **same** request and show identical envelope shape.
+- **Prove BYOK end-to-end**: store a real key via `PUT /v1/apikey/:provider`,
+  run a completion that consumes it through `useApiKey(userId, provider)`, and
+  show that a **second** user without a stored key gets `LLM_KEY_MISSING` — not
+  the first user's key. Per-user isolation must be demonstrated, not asserted.
+- **Prove no key leakage**: grep the response body, `request_logs`, `raw_logs`,
+  and stdout of the verification run for the test key's value. Include the result.
 - Produce a verification report at
   `verification/backend/<YYYY-MM-DD>-llm-gateway.md` with the required sections
   (변경 목적 / 변경 파일 / 영향 분석 / 테스트 결과 / 남은 문제). Record the exact
-  error-code set and the key-resolution approach you chose.
+  error-code set, the key-resolution seam you chose (H5 option a or b), and
+  whether the `BaseGateway` POST helper (M3) altered any existing GET behaviour.
 
 ## Hard constraints
 
@@ -164,9 +260,31 @@ IAIProvider  (reuse BaseProvider/BaseGateway — do NOT create a parallel base)
 - ✅ Backend-only. Progress you may claim is capped at **25%** until the frontend
   integrates and integration is verified ([prompt_playbook.md](../icd/prompt_playbook.md) §4).
 
+## Scope boundary — what this task does NOT include
+
+The Domain contract fixes the gateway's responsibilities narrowly. **Out of
+scope; do not build, even if it seems convenient:**
+
+| Out of scope | Why | Where it belongs |
+|---|---|---|
+| Intent classification / slot extraction | Gateway does not judge user intent | Intent Domain (SYS-004, 0%) |
+| Planner / Workflow orchestration | Gateway executes one call, not a plan | Planner (SYS-009, 0%) |
+| Memory / RAG retrieval, ranking, context assembly | Gateway receives **already-assembled** `messages` | Memory Layer (SYS-005, 0%) |
+| Conversation/session persistence | Gateway does not own chat history | (undefined — report if needed) |
+| Dashboard/UI generation | Gateway produces text, not layout | Dashboard Domain |
+| Business logic of any kind | Gateway is an Engine/Tool layer | Action Domain |
+| `llm.summarize` or other `llm.*` types | Not yet specified in the ICD | future ICD pass |
+| Structured Output (LLM-005) | Deliberately deferred past the Chat MVP | future ICD pass |
+| KMS / Secret Manager / CredentialResolver | Explicitly excluded (LLM-006) | `security_policy.md` decision |
+
+**The architectural rule this enforces**: `User → Intent/Action → Action Layer →
+LLM Gateway → Provider`. The gateway must never become a path by which the LLM
+sits *above* the Action Layer (DEC-001/002 — LLM은 제품이 아니다).
+
 ## Companion documents to keep open
 
-`requirements/domain_icd/llm.md` (or `tool.md`), `docs/icd/action_layer_api.md`,
-`docs/icd/api_comparison.md`, `backend/docs/DevelopmentGuide.md`,
-`backend/docs/api/apikey.md`, `backend/docs/database/{ai_settings,user_api_keys}.md`,
-`docs/policies/security_policy.md`.
+`requirements/domain_icd/llm.md` (**primary**), `requirements/llm_gateway_requirements.md`,
+`docs/icd/action_layer_api.md` (§`llm.chat_complete`), `docs/icd/api_comparison.md`,
+`backend/docs/DevelopmentGuide.md`, `backend/docs/api/apikey.md`,
+`backend/docs/database/{ai_settings,user_api_keys}.md`,
+`docs/policies/security_policy.md`, `docs/policies/logging_policy.md`.

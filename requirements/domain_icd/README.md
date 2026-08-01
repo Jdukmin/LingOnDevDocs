@@ -36,6 +36,7 @@ API는 Domain ICD를 구현하는 수단일 뿐이다.
 | Intent | [intent.md](intent.md) | Action Layer (Core) | 0% |
 | Action | [action.md](action.md) | Action Layer (Core) | 0% |
 | Tool | [tool.md](tool.md) | Integrations/Connectors | 25% |
+| LLM | [llm.md](llm.md) | Action Layer (Core) / Platform | 0% |
 | Workflow | [workflow.md](workflow.md) | Action Layer (Core) | 0% |
 | Calendar | [calendar.md](calendar.md) | Integrations/Productivity | 25% |
 | Reminder | [reminder.md](reminder.md) | Integrations/Productivity | 0% |
@@ -47,6 +48,12 @@ API는 Domain ICD를 구현하는 수단일 뿐이다.
 | Weather | [weather.md](weather.md) | Integrations/Productivity | 75% |
 | Todo | [todo.md](todo.md) | Integrations/Productivity | 0% |
 | Settings | [settings.md](settings.md) | Platform/Identity | 50% |
+
+LLM은 2026-08-01에 추가됐다 — [tool.md](tool.md) Future Extensions의 "LLM
+Provider도 Tool의 한 사례로 편입할지 검토" 항목에 대한 결론이며, **별도 Domain으로
+분리**했다(사유: [llm.md](llm.md) §Relationships — Tool의 `ToolConnection`
+5-state가 LLM에 적용되지 않고, Intent/Planner가 LLM을 직접 소비한다). LLM은
+Product Domain이 아니라 Engine/Tool 계층이며, 실행 모델상 Action 아래에 위치한다.
 
 Weather/Todo/Settings는 2026-07-22에 추가됐다 — 최초 11개 Domain에서 누락이
 지적된 항목([domain_analysis.md](domain_analysis.md) "누락된 Domain")과,
