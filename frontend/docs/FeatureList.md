@@ -53,13 +53,18 @@
 
 ### 날씨
 
-> **⚠ P0 결함(2026-07-29 기록, 미수정)**: `modules/weather/weather_module.dart`에
-> `error.code`→사용자 메시지 매핑이 없어, API 실패 시 `RouteException.toString()`
-> 원시 문자열이 `WeatherNowWidget`/`WeatherForecastWidget`에 그대로
-> 노출된다(`docs/policies/error_policy.md` 위반). Calendar의
-> `GoogleCalendarDataSource._codeToMessage`(V0.0.17)와 동일한 패턴으로
-> 수정 필요 — 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` Issue #1,
-> `FRONTEND_VERSION_HISTORY_REPORT.md` Known Issue #1. 상세:
+> **✅ 정정 2026-09-14(TASK-002, 미커밋)**: 위 P0 결함(2026-07-29 기록)은
+> 수정되었다. `letmeknow/lib/modules/weather/weather_error_mapper.dart`와
+> `letmeknow/lib/modules/brief/brief_error_mapper.dart`가 신설되어
+> `error.code`→한국어 사용자 메시지 매핑을 제공한다(존재 확인:
+> `ls letmeknow/lib/modules/weather/weather_error_mapper.dart
+> letmeknow/lib/modules/brief/brief_error_mapper.dart`, 2026-09-14).
+> Calendar의 `GoogleCalendarDataSource._codeToMessage`(V0.0.17)와 동일한
+> 패턴을 재사용했다. **이 수정은 `letmeknow` 작업 트리에 UNCOMMITTED 상태다**
+> (`git status --porcelain`에 `?? lib/modules/weather/weather_error_mapper.dart`,
+> `?? lib/modules/brief/brief_error_mapper.dart`로 표시됨) — 아직 릴리즈된
+> 것이 아니다. 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` Issue #1,
+> `FRONTEND_VERSION_HISTORY_REPORT.md` Known Issue #1(원 결함 기록), 상세:
 > [status/current_status.md](../../status/current_status.md).
 
 | 기능 | 파일 | 비고 |
@@ -151,13 +156,51 @@
 
 ---
 
+## ⚠️ 문서화 공백 — Client-emitted `RouteException` 코드 (2026-09-14, TASK-007)
+
+클라이언트(`letmeknow`)가 자체적으로 만들어내는 `RouteException.code` 값들이
+**SSOT 어느 문서에도 등재되어 있지 않다.** 이 코드들은 서버가 내려주는
+`error.code`(`docs/docs/policies/error_policy.md` 대상)와는 **출처가 다르다**
+— 서버 응답을 받기 전(타임아웃/네트워크 단절/파싱 실패 등) 클라이언트가
+스스로 만들어 붙이는 코드이므로, 두 코드 체계를 혼동하지 않아야 한다.
+
+**출처 1 — `letmeknow/lib/core/utils/error_handler.dart`** (`ErrorHandler`):
+- `normalize()` (일반 예외 → `RouteException` 변환, 서버 응답 이전 단계):
+  `TIMEOUT`(38행), `NETWORK_ERROR`(45행), `HTTP_EXCEPTION`(52행),
+  `FORMAT_ERROR`(59행), `UNKNOWN_ERROR`(65행, 위 4가지에 해당하지 않는 모든
+  예외의 기본값)
+- `fromHttpResponse()` (HTTP 응답은 받았으나 2xx가 아닌 경우): 서버가
+  응답 바디에 `error.code`를 실었다면 그 값을 그대로 통과시키고(82행),
+  그렇지 않으면 `HTTP_<statusCode>` 형태로 대체한다(96행, 예: `HTTP_502`).
+
+**출처 2 — `letmeknow/lib/core/base/base_route.dart`** (`BaseRoute`, `get`/
+`post`/`put`/`patch`/`delete` 5개 메서드 각각에 동일 패턴 반복):
+`TIMEOUT`(각 메서드의 `on TimeoutException` catch, 예: 74행), `CLIENT_EXCEPTION`
+(각 메서드의 `on http.ClientException` catch, 예: 76행), `INVALID_JSON_OBJECT`
+(HTTP 응답 바디가 JSON object가 아닐 때, 216행).
+
+**전체 코드 집합**: `TIMEOUT`, `CLIENT_EXCEPTION`, `NETWORK_ERROR`,
+`HTTP_EXCEPTION`, `FORMAT_ERROR`, `INVALID_JSON_OBJECT`, `HTTP_<status>`,
+`UNKNOWN_ERROR`.
+
+**영향**: `weather_error_mapper.dart`/`brief_error_mapper.dart`/
+`GoogleCalendarDataSource._codeToMessage` 등 모든 에러 매퍼가 서버
+`error.code`뿐 아니라 이 클라이언트 코드도 함께 처리해야 사용자에게 원시
+예외 텍스트가 노출되지 않는다(실제로 `weather_error_mapper.dart`는
+`TIMEOUT`/`NETWORK_ERROR`/`CLIENT_EXCEPTION`을 매핑 테이블에 포함하고
+있음 — `weatherCodeToMessage()` 참고). **TODO**: 이 코드 집합을
+`docs/docs/policies/error_policy.md` 또는 별도 문서에 정식으로 등재할지
+결정 필요(현재는 이 파일에만 기록됨).
+
+---
+
 ## 📝 TODO
 
 - [ ] Deprecated 파일 삭제 및 영향 확인
 - [ ] `shared_preferences`로 SidebarModule 상태 영속화
-- [ ] **[P0]** `WeatherModule` `error.code`→메시지 매핑 추가(Calendar 패턴 재사용)
+- [x] **[P0]** `WeatherModule` `error.code`→메시지 매핑 추가(Calendar 패턴 재사용) — **완료(2026-09-14, TASK-002, 미커밋)**: `lib/modules/weather/weather_error_mapper.dart`, `lib/modules/brief/brief_error_mapper.dart` 신설. 위 "날씨" 절 정정 노트 참고.
 - [ ] Release APK 서명 키 설정
 - [ ] iOS `GoogleService-Info.plist` 등록
-- [ ] `flutter analyze` CI 통합(Flutter SDK 미설치 환경이라 2회 연속 미실행 — `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` §7, `FRONTEND_VERSION_HISTORY_REPORT.md`)
-- [ ] `CalendarEvent`/`WeatherCurrentModel`/`UserModel`의 `fromJson` 회귀 테스트 추가
+- [x] `flutter analyze` CI 통합 관련 실행 결과 — **정정 2026-09-14**: "Flutter SDK 미설치"는 더 이상 사실이 아니다. `flutter doctor`가 Flutter 3.41.2 / Dart 3.11.0으로 clean(`[✓] Flutter`, `[✓] Chrome`, `[✓] Visual Studio`, `[✓] Connected device`, `No issues found!`, 2026-09-14 실행). `flutter analyze` 결과 "No issues found! (ran in 1.8s)"(2026-09-14). CI 파이프라인 자체 통합 여부는 `docs/ops/deployment_sop.md` 참고(현재 CI는 미구성 — 로컬 실행만 확인됨). 근거는 여전히 `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` §7 참고(과거 미실행 기록).
+- [~] `CalendarEvent`/`WeatherCurrentModel`/`UserModel`의 `fromJson` 회귀 테스트 추가 — **부분 진행(2026-09-14)**: `fromJson` 파싱 자체를 겨냥한 회귀 테스트는 아직 추가되지 않았다. 대신 TASK-002로 `error.code`→메시지 매핑 회귀 테스트 3개 파일이 신설되었다(모두 미커밋 — `git status --porcelain`에 `?? test/core/modules/`, `?? test/modules/`): `test/core/modules/weather_icon_error_mapping_test.dart`, `test/modules/brief/brief_error_mapping_test.dart`, `test/modules/weather/weather_error_mapping_test.dart`. 실행 결과(`flutter test`, 2026-09-14): **134 passing, 0 failing**(commit `ad08414` 기준 트래킹된 테스트 파일 98개 통과분 + 위 신규 미커밋 3개 파일에서 36개 통과분 = 134 — 신규 3개 파일만 단독 실행 시 `+36: All tests passed!`로 확인). 이 항목의 원래 범위(`fromJson` 파싱 테스트)는 여전히 미착수 상태이므로 체크를 완료로 바꾸지 않는다.
 - [ ] Settings/BYOK API Key 쓰기 경로 UI 연결 여부 결정(구현 또는 post-V0.1.0 명시)

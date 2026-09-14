@@ -11,7 +11,7 @@ Migrations:
 
 | Column | Type | Notes |
 |---|---|---|
-| `id` | uuid PK | referenced as `req.ctx.userId` in auth middleware |
+| `id` | uuid PK, `DEFAULT gen_random_uuid()` | referenced as `req.ctx.userId` in auth middleware |
 | `provider` | varchar(32) | OAuth provider name — currently always `"google"` |
 | `provider_id` | varchar(255) | provider-issued user identifier (`sub` from Google payload) — **never returned in HTTP responses** |
 | `email` | varchar(255) | |
@@ -21,8 +21,26 @@ Migrations:
 | `google_access_token` | text, nullable | AES-256-GCM encrypted Google Calendar access token. Set by `GET /v1/auth/google/calendar/callback`, refreshed by `GoogleTokenService`. **Never returned in HTTP responses.** |
 | `google_refresh_token` | text, nullable | AES-256-GCM encrypted Google Calendar refresh token. **Never returned in HTTP responses.** |
 | `google_token_expire` | timestamptz, nullable | absolute expiry of `google_access_token`; `GoogleTokenService` refreshes ~60s ahead of this |
-| `created_at` | timestamptz | set at INSERT |
-| `updated_at` | timestamptz | set to `NOW()` on `upsertByProvider` / `update()` / Google token save |
+| `created_at` | timestamptz `NOT NULL DEFAULT NOW()` | set at INSERT |
+| `updated_at` | timestamptz `NOT NULL DEFAULT NOW()` | set to `NOW()` on `upsertByProvider` / `update()` / Google token save |
+
+> **DevDocs Update Required (2026-09-14, TASK-007)** — `id` was documented as
+> `uuid PK` with no default. As documented, the schema would not boot the
+> app: `userRepository.ts`'s `create()`
+> ([userRepository.ts:72](../../../src/db/userRepository.ts)) and
+> `upsertByProvider()`
+> ([userRepository.ts:138](../../../src/db/userRepository.ts)) both run
+> `INSERT INTO users (provider, provider_id, email, nickname, profile_image) VALUES ($1,$2,$3,$4,$5) ...`
+> — the column list never includes `id`, so every login INSERT would fail
+> with a null-violation on `id` unless the column has a server-side default.
+> `lingon/migrations/000_baseline_schema.sql` (currently **uncommitted** in
+> the lingon working tree) declares
+> `id uuid PRIMARY KEY DEFAULT gen_random_uuid()`. `gen_random_uuid()` is a
+> built-in core function since PostgreSQL 13 — no `pgcrypto` extension is
+> required. `created_at`/`updated_at` are likewise absent from every INSERT
+> column list in `userRepository.ts`, so the baseline gives both
+> `NOT NULL DEFAULT NOW()` as well; this doc's rows above have been
+> corrected to match.
 
 `google_access_token`, `google_refresh_token`, and `google_token_expire` are
 entirely independent of the OAuth login columns above (`provider`,
@@ -41,7 +59,11 @@ responses, not the query shape.
 
 - `PRIMARY KEY (id)`
 - `UNIQUE (provider, provider_id)` — required for `upsertByProvider`'s atomic
-  `INSERT ... ON CONFLICT DO UPDATE`. Added by migration 001.
+  `INSERT ... ON CONFLICT DO UPDATE`. Added by migration 001. Named exactly
+  `users_provider_provider_id_key` in
+  `lingon/migrations/000_baseline_schema.sql` (uncommitted) — migration 001
+  checks for this constraint by that exact name before deciding whether to
+  add it.
 
 ## Queries
 

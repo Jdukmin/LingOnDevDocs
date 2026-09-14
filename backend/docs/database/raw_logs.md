@@ -11,11 +11,21 @@ request/response data here — that belongs in [request_logs](request_logs.md).
 | Column | Type | Notes |
 |---|---|---|
 | `id` | bigserial PK | auto |
-| `level` | varchar(32) | dedicated column — stripped out of `log` JSONB |
-| `event` | varchar(128) | dedicated column — stripped out of `log` JSONB |
-| `source` | varchar(128) | dedicated column — stripped out of `log` JSONB |
+| `level` | varchar(32), nullable | dedicated column — stripped out of `log` JSONB; optional in `RawLogPayload`, inserted as `?? null` by `AppLogger.saveRawLog` |
+| `event` | varchar(128) NOT NULL | dedicated column — stripped out of `log` JSONB; required in `RawLogPayload` |
+| `source` | varchar(128), nullable | dedicated column — stripped out of `log` JSONB; optional in `RawLogPayload`, inserted as `?? null` by `AppLogger.saveRawLog` |
 | `log` | jsonb NOT NULL | all other payload fields + auto-injected `ts` (ISO-8601) |
-| `created_at` | timestamptz DEFAULT NOW() | auto |
+| `created_at` | timestamptz NOT NULL DEFAULT NOW() | auto |
+
+> **DevDocs Update Required (2026-09-14, TASK-007)** — `level` and `source`
+> were not previously marked nullable. Both are optional fields on
+> `RawLogPayload` (`level?: string`, `source?: string` in
+> [Logger.ts](../../../src/core/utils/Logger.ts)) and are inserted as
+> `level ?? null` / `source ?? null` by `AppLogger.saveRawLog`. Confirmed
+> against `lingon/migrations/000_baseline_schema.sql` (currently
+> uncommitted in the lingon working tree), which declares `level varchar(32)`
+> and `source varchar(128)` without `NOT NULL`, while `event varchar(128)`
+> is `NOT NULL`.
 
 `saveRawLog` destructures `{ event, level, source, ...rest }` from the
 payload — only `rest` (plus an injected `ts`) goes into the `log` JSONB

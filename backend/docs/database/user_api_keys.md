@@ -1,19 +1,51 @@
-# `user_api_keys` (inferred — no migration file)
+# `user_api_keys`
+
+> **DevDocs Update Required (2026-09-14, TASK-007)** — this title previously
+> read "(inferred — no migration file)". That is no longer true:
+> `lingon/migrations/000_baseline_schema.sql` defines this table explicitly
+> (final shape after migration `005`), so the columns below are verified
+> against it rather than purely inferred from `src/db/*.ts`. That baseline
+> migration is **currently uncommitted** in the lingon working tree.
+>
+> **Unresolved conflict, recorded not resolved**: `lingon/CLAUDE.md:325-333`
+> (in the **backend** repository) documents a different shape for this table:
+>
+> | Column | `lingon/CLAUDE.md:325-333` | This SSOT + `000_baseline_schema.sql` |
+> |---|---|---|
+> | `id` | `bigserial PK` | **absent** — no `id` column |
+> | `user_id` | `FK → users.id` | `text NOT NULL`, **no foreign key** |
+> | `provider` | `varchar` | `text NOT NULL` |
+> | primary key | `id` | **`(user_id, provider)`** composite |
+> | `updated_at` | `timestamptz DEFAULT NOW()` | `timestamp NOT NULL DEFAULT NOW()` |
+>
+> The composite key is what `apiKeyRepository.ts` actually requires: it never
+> selects or orders by an `id`, and `saveApiKey`'s
+> `ON CONFLICT (user_id, provider)` needs exactly that unique key.
+> `000_baseline_schema.sql` follows this SSOT, not `lingon/CLAUDE.md`.
+> Per `Route.md` §1 (`docs/ SSOT > … > implementation`) the SSOT wins;
+> `lingon/CLAUDE.md` is the stale side and must be corrected in a
+> backend-repository pass — **this docs-only repository cannot edit it**
+> (`docs/CLAUDE.md`: "Never modify source code from this repository").
 
 Repository: [src/db/apiKeyRepository.ts](../../../src/db/apiKeyRepository.ts).
 Stores user-supplied ("BYOK") API keys for LLM providers, encrypted at rest.
 
 ## Columns
 
-| Column | Type (inferred) | Notes |
+| Column | Type | Notes |
 |---|---|---|
-| `user_id` | text | part of composite key/unique constraint with `provider` |
-| `provider` | text | one of `openai`, `anthropic`, `gemini`, `openrouter` (enforced at the route layer, not the DB) |
-| `encrypted_key` | text | AES-256-GCM ciphertext, base64 — see [src/db/encrypt.ts](../../../src/db/encrypt.ts) |
-| `updated_at` | timestamp | set to `NOW()` on insert/update |
+| `user_id` | text NOT NULL | part of the composite primary key with `provider` |
+| `provider` | text NOT NULL | one of `openai`, `anthropic`, `gemini`, `openrouter` (enforced at the route layer, not the DB) |
+| `encrypted_key` | text NOT NULL | AES-256-GCM ciphertext, base64 — see [src/db/encrypt.ts](../../../src/db/encrypt.ts). No separate `iv` column: the IV is packed into this value |
+| `updated_at` | timestamp NOT NULL DEFAULT NOW() | set to `NOW()` on insert/update. Note this is `timestamp` (no time zone) while `users`/`refresh_tokens`/`request_logs`/`raw_logs` use `timestamptz` — a known docs-internal inconsistency, see [README.md](README.md) |
 
-`ON CONFLICT (user_id, provider) DO UPDATE` in `saveApiKey` implies a unique
-constraint on `(user_id, provider)`.
+## Constraints
+
+- `PRIMARY KEY (user_id, provider)` — this also satisfies the unique constraint
+  that `ON CONFLICT (user_id, provider) DO UPDATE` in `saveApiKey` requires.
+- No foreign key to `users.id`. `user_id` is `text`, deliberately kept
+  compatible with either a `uuid` or a `bigserial` `users.id` — the same
+  rationale `migrations/002` gives for `refresh_tokens.user_id`.
 
 ## Encryption
 

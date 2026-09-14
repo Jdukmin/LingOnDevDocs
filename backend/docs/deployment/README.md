@@ -53,6 +53,7 @@ read via `process.env` / `dotenv` in individual modules):
 | `OPENWEATHER_BASE_URL` | same | default `https://api.openweathermap.org` |
 | `OPENAI_API_KEY` | `Repositories.ts` | seeds the in-memory provider-key map at startup |
 | `LOG_LEVEL` | `Logger.ts` | default `info` |
+| `CORS_ALLOWED_ORIGINS` | `app.ts` (`@fastify/cors`) | default `https://www.ling-on.com` — comma-separated exact-match origin allowlist; requests with no `Origin` header are always allowed |
 | `DB_HOST` / `DB_PORT` / `DB_NAME` / `DB_USER` / `DB_PASSWORD` | `pool.ts` | `DB_PORT` defaults to `5432` |
 | `MASTER_ENCRYPTION_KEY` | `encrypt.ts` | **required** 64-hex-char (32-byte) key for `user_api_keys` AES-256-GCM encryption — generate with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 

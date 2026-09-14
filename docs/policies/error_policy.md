@@ -1,6 +1,6 @@
 # Error Policy
 
-> **Status**: Proposed · **Progress**: 부분 구현(아래 표의 "현재" 열 참고) · **Last Updated**: 2026-07-22 · **Next Milestone**: 409/422/503을 실제로 반환하는 첫 엔드포인트 설계 시 이 문서를 기준으로 코드 작성
+> **Status**: Proposed · **Progress**: 부분 구현(아래 표의 "현재" 열 참고) · **Last Updated**: 2026-09-14 · **Next Milestone**: 409/422/503을 실제로 반환하는 첫 엔드포인트 설계 시 이 문서를 기준으로 코드 작성
 
 HTTP Status별 정책이다. "현재" 열은 `backend/docs/api/*.md`에 이미 문서화된
 실제 사용 현황(SSOT), "정책"은 이 문서가 새로 확정하는 표준이다 — 앞으로
@@ -89,11 +89,11 @@ HTTP Status별 정책이다. "현재" 열은 `backend/docs/api/*.md`에 이미 �
 | 항목 | 내용 |
 |---|---|
 | 발생 조건 | Rate limit 초과(`@fastify/rate-limit` — 미인증 30 req/min, 인증 120 req/min) |
-| Backend 처리 | `@fastify/rate-limit` 기본 동작(플러그인이 자동 처리) |
+| Backend 처리 | `@fastify/rate-limit`의 `errorResponseBuilder`가 **`AppError('RATE_LIMITED', 429, ...)` 인스턴스를 반환**한다(`lingon/src/app.ts:192-197`). 플러그인이 이 반환값을 `throw`하므로 `AppError.plugin`의 전역 `setErrorHandler`가 받아 ICD v0.0 envelope으로 감싼다. `meta`에 `{ limit, retryAfter }` 포함 |
 | Frontend 처리 | 지수 백오프 후 재시도 |
 | Retry 여부 | 예(지연 후) |
 | 사용자 메시지 | "잠시 후 다시 시도해주세요" |
-| 현재 | Rate limit 임계치는 문서화되어 있으나(`backend/docs/DevelopmentGuide.md`), 429 응답의 정확한 `error` envelope 형태는 문서화되지 않음 — **확인 필요**(플러그인 기본 응답을 ICD v0.0으로 감싸는지 미확인) |
+| 현재 | **정정(2026-09-14, TASK-007 — DevDocs Update Required)**: 이 행은 "429 응답의 정확한 `error` envelope 형태는 문서화되지 않음 — 확인 필요"라고 기술했으나 이미 확정되어 있다. `error.code`는 `RATE_LIMITED`, HTTP 429, envelope은 ICD v0.0. 임계치 `max: (req) => (req.ctx.userId ? 120 : 30)`, key는 `req.ctx.userId ?? req.ip`(`lingon/src/app.ts:182-183`), hook은 `preHandler`(`:180` — `onRequest` 기본값이면 `Policy.before()`보다 먼저 돌아 인증 티어가 적용되지 않기 때문). 예시: [backend/docs/api/weather.md](../../backend/docs/api/weather.md) `## Errors` |
 
 ### 500 Internal Server Error
 
@@ -128,6 +128,33 @@ HTTP Status별 정책이다. "현재" 열은 `backend/docs/api/*.md`에 이미 �
 | 사용자 메시지 | "서비스 점검 중입니다" |
 | 현재 | **미사용** — [docs/ops/monitoring.md](../ops/monitoring.md) Health Check 도입과 함께 정의 필요 |
 
+## Client-emitted 코드 (`RouteException`) — 서버 `error.code`가 아니다
+
+> **신규 기록 2026-09-14(TASK-007)**: 아래 코드들은 Frontend가 **자체적으로**
+> 생성하는 것으로, 서버가 보낸 적이 없다. 지금까지 SSOT 어디에도 문서화되어
+> 있지 않았다. 위 표의 서버 `error.code`와 **같은 네임스페이스로 취급하지 말 것** —
+> Backend에 이 코드들을 구현하라고 요구하는 문서가 아니다.
+
+출처: `letmeknow/lib/core/utils/error_handler.dart`,
+`letmeknow/lib/core/base/base_route.dart`.
+
+| Code | 생성 위치 | 발생 조건 |
+|---|---|---|
+| `TIMEOUT` | `error_handler.dart:38`(`ErrorHandler.normalize`), `base_route.dart:74`, `:105`, `:136`, `:167`, `:195` | `TimeoutException` — 요청이 클라이언트 타임아웃에 걸림 |
+| `NETWORK_ERROR` | `error_handler.dart:45` | `SocketException` — 네트워크 연결 실패 |
+| `HTTP_EXCEPTION` | `error_handler.dart:52` | `HttpException` |
+| `FORMAT_ERROR` | `error_handler.dart:59` | `FormatException` — 응답 파싱 실패 |
+| `UNKNOWN_ERROR` | `error_handler.dart:65` | 위 어디에도 해당하지 않는 모든 예외(fallback) |
+| `CLIENT_EXCEPTION` | `base_route.dart:76`, `:107`, `:138`, `:169`, `:197` | `http` 패키지의 `ClientException` |
+| `INVALID_JSON_OBJECT` | `base_route.dart:214-216` | 응답 본문이 JSON 객체가 아님 |
+| `HTTP_<statusCode>` | `error_handler.dart:93-96`(`ErrorHandler.fromHttpResponse`) | 서버가 non-2xx를 보냈으나 본문에서 `error.code`를 꺼낼 수 없을 때의 fallback(예: `HTTP_502`). 본문에 `error.code`가 있으면 **그 값을 그대로 통과시킨다**(`error_handler.dart:79-88`) — 즉 이 문서 앞부분 "HTTP Status별 정책"의 서버 코드가 그대로 올라온다 |
+
+**정책적 함의**: 공통 규칙("Frontend는 `error.code`를 기준으로 자체 문구를
+표시한다")을 지키려면 Frontend의 `code`→메시지 매퍼가 서버 코드와 위
+클라이언트 코드를 **모두** 처리해야 한다. 참조 구현:
+`letmeknow/lib/modules/calendar/google_calendar_data_source.dart`
+`_codeToMessage`(V0.0.17).
+
 ## 기타 (사용자 요청 목록 외, 이미 존재하는 코드)
 
 | Status | Code | 비고 |
@@ -145,3 +172,4 @@ HTTP Status별 정책이다. "현재" 열은 `backend/docs/api/*.md`에 이미 �
 # Change Log
 
 - **2026-07-22** — 최초 작성. Docs Revision(SSOT 정리) 작업의 일부.
+- **2026-09-14** — TASK-007 SSOT 동기화: 429 행의 "envelope 형태 미문서화 — 확인 필요" 기술 정정(`RATE_LIMITED`/429/ICD v0.0 envelope으로 확정, `lingon/src/app.ts:182-197` 근거). Client-emitted `RouteException` 코드 표 신규 추가(SSOT 최초 기록). 두 건 모두 **DevDocs Update Required** — 구현이 아니라 문서가 뒤처져 있었다.

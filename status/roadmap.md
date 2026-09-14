@@ -153,7 +153,7 @@
 | **목표** | `V_1.0.0` 출시 전 비-기능 요구사항(DB 재현성, CORS/HTTPS, 테스트, 법률 검토)을 완료한다. |
 | **관련 Requirement** | 없음(체크리스트 관리 — [docs/workflow.md](../docs/workflow.md) 출시 전 체크리스트) |
 | **관련 Version** | [backend/V0.1.0](backend/V0.1.0.md), [frontend/V0.1.0](frontend/V0.1.0.md) |
-| **완료 조건** | DB 마이그레이션 전체 재현 가능(현재 7개 중 2개만 가능), CORS allow-list 적용(현재 전체 개방), HTTPS/HSTS 확정 문서화, 자동 테스트 도입(현재 0), Privacy Policy/Terms 법률 검토 완료. |
+| **완료 조건** | DB 마이그레이션 전체 재현 가능(현재 7개 중 2개만 가능), CORS allow-list 적용(현재 전체 개방), HTTPS/HSTS 확정 문서화, 자동 테스트 도입(**정정 2026-09-14/TASK-007**: Frontend는 `flutter test` **134 passing**으로 이미 도입됨 — 남은 것은 **Backend 0건**, TASK-006), Privacy Policy/Terms 법률 검토 완료. |
 
 ## 관련 문서
 

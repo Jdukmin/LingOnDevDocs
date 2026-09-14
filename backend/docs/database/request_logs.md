@@ -13,17 +13,28 @@ here — that belongs in [raw_logs](raw_logs.md).
 | Column | Type | Source |
 |---|---|---|
 | `id` | bigserial PK | auto |
-| `req_id` | uuid | `req.ctx.requestId` |
-| `user_id` | text | `req.ctx.userId` — populated for authenticated routes (JWT verified by `Policy.before()`); `null` for routes that don't require auth (e.g. `GET /v1/status`, `GET /v1/weather/*`, `POST /v1/auth/google`) |
-| `method` | varchar(10) | `req.method` |
-| `endpoint` | varchar(255) | `req.routeOptions.url` (falls back to path without query string) |
-| `remote_ip` | varchar(45) | `req.ctx.ip` |
-| `provider` | varchar(64) | `req.ctx.provider`, set by route handlers before a gateway call |
-| `operation` | varchar(128) | `req.ctx.operation` |
-| `status_code` | integer | `reply.statusCode` |
-| `latency_ms` | integer | `Date.now() - req.ctx.startedAtMs` |
-| `query_params` | jsonb | `req.query` — **route-level params only** (lat, lon, units, lang, q, limit, ...) |
-| `created_at` | timestamptz DEFAULT NOW() | auto |
+| `req_id` | uuid NOT NULL | `req.ctx.requestId` |
+| `user_id` | text, nullable | `req.ctx.userId` — populated for authenticated routes (JWT verified by `Policy.before()`); `null` for routes that don't require auth (e.g. `GET /v1/status`, `GET /v1/weather/*`, `POST /v1/auth/google`) |
+| `method` | varchar(10) NOT NULL | `req.method` |
+| `endpoint` | varchar(255) NOT NULL | `req.routeOptions.url` (falls back to path without query string) |
+| `remote_ip` | varchar(45) NOT NULL | `req.ctx.ip` |
+| `provider` | varchar(64), nullable | `req.ctx.provider`, set by route handlers before a gateway call — `null` for non-gateway routes |
+| `operation` | varchar(128), nullable | `req.ctx.operation` — `null` for non-gateway routes |
+| `status_code` | integer NOT NULL | `reply.statusCode` |
+| `latency_ms` | integer NOT NULL | `Date.now() - req.ctx.startedAtMs` |
+| `query_params` | jsonb NOT NULL | `req.query` — **route-level params only** (lat, lon, units, lang, q, limit, ...) |
+| `created_at` | timestamptz NOT NULL DEFAULT NOW() | auto |
+
+> **DevDocs Update Required (2026-09-14, TASK-007)** — `provider` and
+> `operation` were not previously marked nullable in this table, though the
+> prose already noted `user_id` can be `null`. All three must be nullable:
+> [RequestLog.ts](../../../src/plugins/LingOnDataManage/RequestLog.ts) feeds
+> `req.ctx.userId ?? null`, `req.ctx.provider ?? null`, and
+> `req.ctx.operation ?? null` into `AppLogger.saveRequestLog`, because
+> non-gateway routes never set `provider`/`operation`. Confirmed against
+> `lingon/migrations/000_baseline_schema.sql` (currently uncommitted in the
+> lingon working tree), which declares `user_id text`, `provider
+> varchar(64)`, and `operation varchar(128)` all without `NOT NULL`.
 
 ## Security
 

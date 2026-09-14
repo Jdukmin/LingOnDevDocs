@@ -96,7 +96,7 @@
 |---|---|---|---|
 | 실기기 테스트(Android/iOS 실물 폰) | High | Beta 배포 전 | 미완료 — 자동화 환경(이 세션 포함)은 실기기 접근이 없어 검증 불가(Frontend Schema Verification Report §7·§9) |
 | 태블릿 실기기 테스트(제품의 실제 타겟 폼팩터 — "AOD Tablet") | Critical | Beta 배포 전 | 미완료 — 제품명이 "AOD Tablet"임에도 실 태블릿 기기 검증 기록이 두 저장소 어디에도 없음 |
-| 회귀 테스트(자동화된 regression suite 구축 및 정기 실행) | High | 지속적 — Beta 배포 이후에도 매 릴리즈마다 | 미착수 — `docs/workflow.md` 출시 전 체크리스트 "Testing" 카테고리 전체가 Not Started(Backend 자동 테스트, Flutter Widget Test, Integration Test 포함) |
+| 회귀 테스트(자동화된 regression suite 구축 및 정기 실행) | High | 지속적 — Beta 배포 이후에도 매 릴리즈마다 | 부분 착수 — **정정 2026-09-14(TASK-007)**: Flutter Widget/Integration Test는 이미 존재한다(`flutter test` → **134 passing**, 15개 파일, `test/widget/`·`test/integration/` 포함). 미착수로 남은 것은 **Backend 자동 테스트**(TASK-006, 작업 트리에 하네스 추가 중·미커밋)와 **CI에서의 정기 실행**(파이프라인 자체가 없음 — `docs/ops/deployment_sop.md`) |
 
 ## Design
 

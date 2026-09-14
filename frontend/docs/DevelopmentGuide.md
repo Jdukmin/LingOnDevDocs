@@ -27,31 +27,62 @@
 
 ## 프로젝트 구조
 
+> **정정 2026-09-14(TASK-007)**: 아래 트리는 이전에 `lib/auth/`(data/domain/
+> presentation 3단 구조, `auth_api.dart`/`auth_controller.dart` 포함)를
+> 기술했으나, 실제 경로는 `lib/modules/auth/`(flat, 4개 파일:
+> `auth_module.dart`/`auth_repository.dart`/`llm_provider.dart`/
+> `user_model.dart`)이며 **`lib/auth`는 존재하지 않는다**. `auth_api.dart`,
+> `auth_controller.dart`, data/domain/presentation 서브폴더 모두 존재하지
+> 않는다. `lib/modules/*` 전부가 파일이 아니라 각각 디렉토리(analytics/
+> auth/brief/calendar/chat/clock/sidebar/weather)이고, `lib/core/`에는
+> `dashboard/`·`design/`·`registry/` 3개 디렉토리가 누락되어 있었으며,
+> `lib/core/base/`·`lib/core/utils/`·`lib/route/`·`lib/layout/`·
+> `lib/widget/`·`lib/screen/`의 실제 파일 목록도 아래처럼 갱신했다.
+> 분류: **DevDocs Update Required**(문서가 stale, 코드는 정상). 근거:
+> `letmeknow` 저장소 `lib/` 디렉토리 실측(`find lib -type d`, 각 디렉토리
+> `ls`, 2026-09-14). Frontend Schema Verification Report Finding D-3.
+> (이 정정 이전의 2026-07-29 `FeatureList.md` 정정은 인증 파일 표만
+> 바로잡았을 뿐, 이 문서의 트리 자체는 갱신되지 않았었다.)
+
 ```
 lib/
-├── auth/
-│   ├── data/auth_api.dart            # AuthApi, AuthTokens
-│   ├── domain/
-│   │   ├── auth_repository.dart      # 토큰 저장, 세션 관리, 프리로드
-│   │   ├── user_model.dart           # UserModel
-│   │   └── llm_provider.dart         # LlmProvider enum (선언만)
-│   └── presentation/auth_controller.dart  # ChangeNotifier, Google Sign-In
-│
 ├── core/
 │   ├── base/
 │   │   ├── base_gateway.dart         # 싱글턴 레지스트리
+│   │   ├── base_layout.dart          # 레이아웃 베이스
+│   │   ├── base_model.dart           # 모델 베이스
 │   │   ├── base_module.dart          # ChangeNotifier + runGuarded + gw<T>()
 │   │   ├── base_route.dart           # HTTP 기반 (get / post / URI 빌더)
 │   │   ├── base_screen.dart          # Scaffold 래퍼 (Stateless / Stateful)
 │   │   └── base_widget.dart          # BaseModuleWidget (선택 사용)
+│   ├── dashboard/
+│   │   ├── dashboard_widget_catalog.dart
+│   │   ├── layout_constraint.dart
+│   │   ├── layout_resolver.dart
+│   │   ├── widget_metadata.dart
+│   │   └── widget_variant.dart
+│   ├── design/
+│   │   ├── app_card.dart             # SmallCard/MediumCard/LargeCard
+│   │   ├── app_spacing.dart          # AppSpacing/AppRadius
+│   │   ├── app_typography.dart       # AppTypography
+│   │   └── density_constraint.dart
 │   ├── modules/
 │   │   ├── weather_icon_module.dart  # SVG → Uint8List 변환
 │   │   └── weather_metrics_module.dart  # WeatherModule 어댑터
 │   ├── network/
 │   │   └── api_client.dart           # ResponseEnvelope<T>, Bearer 토큰, 401 콜백
+│   ├── registry/
+│   │   └── widget_registry.dart
 │   └── utils/
+│       ├── _web_history_stub.dart
+│       ├── _web_history_web.dart
 │       ├── aod_colors.dart           # AodColors ThemeExtension
-│       └── error_handler.dart        # RouteException, ErrorHandler
+│       ├── aod_theme.dart
+│       ├── error_handler.dart        # RouteException, ErrorHandler
+│       ├── unix_time.dart
+│       ├── value_parser.dart
+│       ├── weather_formatter.dart
+│       └── web_history.dart
 │
 ├── gateway/
 │   ├── geolocator_gateway.dart
@@ -62,26 +93,61 @@ lib/
 │       └── openai_gateway.dart
 │
 ├── layout/
-│   └── aod_tablet_layout.dart        # 3컬럼 AOD (좌28% / 중44% / 우28%)
+│   ├── aod_compact_layout.dart
+│   ├── aod_dashboard_layout.dart
+│   ├── aod_focus_layout.dart
+│   ├── aod_slot.dart
+│   ├── aod_tablet_layout.dart        # 3컬럼 AOD (좌28% / 중44% / 우28%)
+│   └── dashboard_lab/                # 위젯 배치 실험용 Lab 화면 일체
+│       ├── dashboard_canvas.dart
+│       ├── dashboard_lab_controller.dart
+│       ├── dashboard_lab_page.dart
+│       ├── lab_widget_catalog.dart
+│       ├── layout_control_panel.dart
+│       ├── widget_catalog_panel.dart
+│       └── widget_inspector.dart
 │
 ├── modules/
-│   ├── analytics_module.dart
-│   ├── brief_module.dart
-│   ├── calendar_module.dart
-│   ├── chat_module.dart
-│   ├── clock_module.dart
-│   ├── sidebar_module.dart
-│   └── weather_module.dart
+│   ├── analytics/
+│   │   └── analytics_module.dart
+│   ├── auth/
+│   │   ├── auth_module.dart
+│   │   ├── auth_repository.dart      # 토큰 저장, 세션 관리, 프리로드
+│   │   ├── llm_provider.dart         # LlmProvider enum (선언만)
+│   │   └── user_model.dart
+│   ├── brief/
+│   │   ├── brief_error_mapper.dart
+│   │   └── brief_module.dart
+│   ├── calendar/
+│   │   ├── calendar_module.dart
+│   │   └── google_calendar_data_source.dart
+│   ├── chat/
+│   │   └── chat_module.dart
+│   ├── clock/
+│   │   └── clock_module.dart
+│   ├── sidebar/
+│   │   └── sidebar_module.dart
+│   └── weather/
+│       ├── weather_error_mapper.dart
+│       └── weather_module.dart
 │
 ├── route/
+│   ├── lingon_api_key.dart
+│   ├── lingon_auth.dart
+│   ├── lingon_calendar.dart
+│   ├── lingon_settings.dart
+│   ├── lingon_status.dart
+│   ├── lingon_users.dart
 │   └── lingon_weather.dart           # 날씨 API 라우트
 │
 ├── screen/
 │   ├── aod_display.dart              # 메인 화면 — 모든 모듈 소유
 │   ├── bootstrap_screen.dart         # 아이콘·폰트 프리로드
-│   └── dev_screen.dart              # 개발자 도구
+│   ├── dev_screen.dart               # 개발자 도구
+│   └── oauth_callback_screen.dart    # Web OAuth redirect 콜백 처리
 │
 ├── widget/                           # → frontend/docs/widgets/ 참조
+│   └── user/                         # user_info_dialog.dart, city_selection_dialog.dart
 │
 └── main.dart
 ```
