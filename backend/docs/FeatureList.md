@@ -22,9 +22,9 @@ repository's `CLAUDE.md` — not mirrored into this docs-only repository).
 | 5-day forecast | `GET /v1/weather/forecast5` | 3-hour interval entries, flattened. |
 | Forward geocoding | `GET /v1/weather/geo/direct` | City name → coordinates. |
 | Reverse geocoding | `GET /v1/weather/geo/reverse` | Coordinates → place names. |
-| BYOK API key status | `GET /v1/apikey/status` | Returns boolean per provider (openai/anthropic/gemini/openrouter). See [api/apikey.md](api/apikey.md). |
+| BYOK API key status | `GET /v1/apikey/status` | Returns boolean per registry-derived `SUPPORTED_PROVIDER_IDS` provider — currently openai/gemini (D-005; `anthropic`/`openrouter` no longer supported) — plus any stale stored provider so it stays deletable. See [api/apikey.md](api/apikey.md). |
 | BYOK API key save | `PUT /v1/apikey/:provider` | AES-256-GCM encrypted at rest, never echoed back. |
-| BYOK API key delete | `DELETE /v1/apikey/:provider` | 404 if not registered. |
+| BYOK API key delete | `DELETE /v1/apikey/:provider` | Not allow-list-restricted; 404 if not registered and provider is supported, else 400. |
 | AI settings get/save | `GET`/`PUT /v1/settings/ai` | Full-replacement upsert. See [api/settings.md](api/settings.md). |
 | UI settings get/save | `GET`/`PUT /v1/settings/ui` | Full-replacement upsert. |
 | User profile get/update | `GET`/`PATCH /v1/users/me` | Requires `req.ctx.userId`. PATCH supports `nickname`, `profile_image`, `city`. See [api/users.md](api/users.md). |
@@ -45,7 +45,7 @@ repository's `CLAUDE.md` — not mirrored into this docs-only repository).
 | Feature | Notes |
 |---|---|
 | `usage_logs` table | LLM token count / cost tracking. Referenced by TODO comments in `Logger.ts` and `RequestLog.ts`; no table, repository, or route exists yet. |
-| Additional LLM providers | `LingOnApiKey`'s allow-list (`openai`, `anthropic`, `gemini`, `openrouter`) implies planned gateways for these providers; none exist under `src/gateway/` yet besides OpenWeather. |
+| Additional LLM providers | Owner decision D-005 narrowed the supported set to `openai` and `gemini`; both adapters already exist (`lingon/src/gateway/llm/OpenAIProvider.ts`, `GeminiProvider.ts`) and are registered in `PROVIDER_REGISTRY` (`LlmGatewayService.ts:161`). Adding a third provider is exactly one new adapter file implementing `IAIProvider` plus one new row in that Map — nothing else changes (invariant stated at `LlmGatewayService.ts:150-155`). `anthropic`/`openrouter` are no longer implied-planned by an allow-list; supporting them again would require a new Owner decision. |
 | Refresh token cleanup job | Periodic `DELETE FROM refresh_tokens WHERE expires_at < NOW()` — expired rows are never pruned automatically. |
 
 ## Deprecated

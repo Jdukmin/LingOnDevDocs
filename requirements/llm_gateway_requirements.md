@@ -2,10 +2,17 @@
 
 Parent Feature: [SYS-010 LLM Gateway](system_requirements.md). Architecture 상
 LLM Gateway는 **백엔드**가 Intent/Planner/Chat에 제공하는 provider-agnostic 게이트웨이를
-의미한다. 현재 백엔드에는 이 게이트웨이가 없고(`backend/docs/services`에는
-OpenWeather 게이트웨이만 존재), 프론트엔드에는 클라이언트에서 직접 OpenAI를
-호출하는 임시 구현(`LlmGateway`/`OpenAiGateway`)만 있다 — 이는 이 Requirement가
-목표로 하는 백엔드 게이트웨이가 아니다.
+의미한다.
+
+**현황(2026-09-14 갱신)**: 이 게이트웨이는 TASK-005에서 백엔드에 실제로
+구축되었다 — `lingon/src/gateway/llm/`(`LlmGatewayService.ts`,
+`OpenAIProvider.ts`, `GeminiProvider.ts`), 진입점은
+`POST /v1/actions/execute`. 프론트엔드의 클라이언트-직접-호출 임시
+구현(`OpenAiGateway`)은 TASK-009에서 **삭제**되었고 백엔드 Action Layer를
+경유하는 `LingonLlmGateway`로 대체되었다. 이전 판의 "백엔드에 게이트웨이가
+없다"는 서술은 폐기한다. 다만 구현은 **mocked transport로만** 검증되었고
+실제 provider 자격증명을 가진 실서버 대상 Integration Verification은 아직
+이루어지지 않았다 — 아래 Progress 값은 그 제약을 반영한 것이다.
 
 | ID | Parent Feature | Requirement | Description | Verification | Status | Progress |
 |---|---|---|---|---|---|---|
@@ -16,6 +23,25 @@ OpenWeather 게이트웨이만 존재), 프론트엔드에는 클라이언트에
 | LLM-005 | SYS-010 | Structured Output | The LLM Gateway shall support requesting and validating structured (schema-constrained) JSON output from a provider. | Test | Planned | 0% |
 | LLM-006 | SYS-010 | Credential Source Resolution | The LLM Gateway shall resolve the credential for a request from one of two sources — `byok` (user-owned, stored encrypted per user) or `platform` (platform-owned backend secret) — preferring `byok`, and shall fail with a stable error when neither is available. | Integration Test | Planned | 0% |
 | LLM-007 | SYS-010 | Provider Adapter Contract | Adding a new provider shall require only a new provider adapter — no change to the Action Type, response envelope, database schema, or frontend. | Review | Planned | 0% |
+
+> **⚠ LLM-001은 Owner 결정 D-005(2026-09-14)에 의해 *부분 이행* 상태다 —
+> 폐기되거나 상위 규정된 것이 아니다.** 이 구분이 중요하다:
+>
+> - **Requirement는 그대로 유효하다.** 위 표의 "at least OpenAI, Anthropic,
+>   Gemini, and OpenRouter"는 여전히 LLM-001의 목표 문구이며 개정되지 않았다.
+> - **D-005가 한정한 것은 Closed Alpha의 *릴리스 범위*다.** 이번 릴리스에서
+>   실제 지원되는 provider는 **OpenAI, Gemini 2개**이고, Anthropic/OpenRouter
+>   어댑터 추가는 이번 릴리스 범위 밖으로 *연기*됐다(취소가 아니다).
+> - 따라서 Progress는 25%로 유지된다 — 4개 중 2개가 동작하고, 나머지 둘은
+>   미착수다. 100%로 올리기 위해 Requirement 문구를 줄이지 않는다.
+> - 연기 비용이 낮은 이유는 **LLM-007**(Provider Adapter Contract) 때문이다:
+>   provider 추가는 어댑터 하나만 요구하고 Action Type·응답 envelope·DB
+>   스키마·프론트엔드를 건드리지 않는다. 실제로 `PROVIDER_REGISTRY`에 행을
+>   추가하면 BYOK 계약이 자동으로 넓어진다(아래 "지원 대상" 절).
+>
+> 요약: 지금 allow-list에 Anthropic/OpenRouter가 **없는 것은 결함이 아니라
+> 의도된 릴리스 범위**다. Requirement 문구 개정은 필요하지 않으므로 Domain
+> Contract 변경도, 그에 따른 version bump도 발생하지 않는다.
 
 ---
 
@@ -82,24 +108,50 @@ Provider 어댑터는 **생성 능력 2개**를 노출한다. 명칭·시그니�
    allow-list 1행 추가로 끝나야 한다. Action Type·응답 봉투·DB Schema·Frontend는
    변경되지 않는다.
 
-초기 대상은 **OpenAI, Gemini**다. Anthropic/OpenRouter는 이미 allow-list에
-있으며, Local LLM/Enterprise Model은 같은 계약으로 추가 가능해야 한다.
+지원 대상은 **OpenAI, Gemini 2개뿐이다**(Owner 결정 D-005). Anthropic/OpenRouter는
+**어떤 allow-list에도 존재하지 않는다** — 예약된 슬롯이 아니다. 단일 진실
+소스는 `PROVIDER_REGISTRY`(`lingon/src/gateway/llm/LlmGatewayService.ts:161`,
+정확히 2행: `openai`→`gpt-4o`, `gemini`→`gemini-1.5-pro`)이며, BYOK
+allow-list(`SUPPORTED_PROVIDER_IDS`, 같은 파일 188행)도 이 레지스트리에서
+파생된다. 신규 Provider 추가는 `IAIProvider`를 구현하는 어댑터 1개 +
+`PROVIDER_REGISTRY` 1행 추가로 끝나야 하지만, 이는 이미 예약된 슬롯을 채우는
+것이 아니라 **새로운 Owner 결정**을 필요로 한다. Local LLM/Enterprise
+Model도 같은 계약으로 추가 가능해야 한다는 원칙은 유지된다.
 
 ---
 
 ## 근거 노트 (Evidence)
 
-- **LLM-001**: 백엔드는 BYOK API 키 저장(`/v1/apikey/*`)에서 `openai`/`anthropic`/`gemini`/`openrouter`
-  4개 provider를 allow-list로 두고 있고, 프론트엔드도 `enum LlmProvider`를
-  선언해 두었다. 그러나 실제로 호출 가능한 구현체는 `OpenAiGateway` 하나뿐이며,
-  "UI 연동 및 동적 프로바이더 전환 로직은 미구현"이라고 명시되어 있다. 근거:
-  [backend/docs/api/apikey.md](../backend/docs/api/apikey.md),
-  [frontend/docs/services/LlmService.md](../frontend/docs/services/LlmService.md).
-  스토리지/선언은 있으나 실동작은 단일 provider뿐이라 25%.
-  **정정 2026-08-01(FE/BE 분리)**: 이 25%는 전부 **BYOK 저장소(Backend) + 임시
-  클라이언트 구현(Frontend)**의 몫이다. 이 Requirement가 목표로 하는 **백엔드
-  LLM Gateway는 0%**다 — `OpenAiGateway`는 프론트엔드 클래스이며 백엔드
-  게이트웨이가 아니다. 25%를 "백엔드가 일부 구현됨"으로 읽지 않는다.
+- **LLM-001**(2026-09-14 갱신 — D-005 반영, 25% 유지): 이전 버전의 이 항목은
+  백엔드가 `openai`/`anthropic`/`gemini`/`openrouter` 4개 provider를 allow-list로
+  두고 프론트엔드가 `enum LlmProvider`를 선언한다고 기술했으나 이는 더 이상
+  사실이 아니다. 현재 상태:
+  - BYOK allow-list는 하드코딩이 아니라 `PROVIDER_REGISTRY`
+    (`lingon/src/gateway/llm/LlmGatewayService.ts:161`)에서 파생된
+    `SUPPORTED_PROVIDER_IDS`(같은 파일 188행)이며, `src/route/LingOnApiKey.ts:5`가
+    이를 import해 쓴다 — `openai`/`gemini` 2개만 존재한다.
+  - 프론트엔드의 `enum LlmProvider`(`letmeknow/lib/auth/domain/llm_provider.dart`)는
+    TASK-009에서 **삭제**되었다(해당 디렉터리 자체가 더 이상 없음). Provider
+    목록은 클라이언트에 하드코딩되지 않고 `GET /v1/actions/types` 응답에서
+    온다.
+  - `OpenAIProvider.ts`, `GeminiProvider.ts` 두 어댑터가 실재하며
+    `PROVIDER_REGISTRY`에 연결되어 있다(스토리지 선언뿐이던 이전 상태에서
+    진전).
+  근거: [backend/docs/api/apikey.md](../backend/docs/api/apikey.md),
+  [frontend/docs/services/LlmService.md](../frontend/docs/services/LlmService.md),
+  `lingon/src/gateway/llm/LlmGatewayService.ts:161,188`.
+  **25%를 그대로 유지한다** — 위 구현은 코드 수준에서 완결되었으나
+  `docs/status/release_state.md`가 명시하듯 실제 서버·실제 provider
+  자격증명을 통한 Integration Verification이 아직 이루어지지 않았다(현재까지
+  mocked transport로만 검증됨). 이 미검증 상태가 25%를 넘기지 못하게 하는
+  유일한 남은 제약이다 — "일부만 구현됨"이 아니라 "구현은 끝났고 검증만
+  남음"으로 읽는다.
+  **정정 2026-08-01(FE/BE 분리, 이력 보존)**: 이 25%는 원래 **BYOK
+  저장소(Backend) + 임시 클라이언트 구현(Frontend)**의 몫으로 기록되었다.
+  그 임시 클라이언트 구현(`OpenAiGateway`)은 TASK-009에서 삭제되고
+  `LingonLlmGateway`(백엔드 Action Layer 경유)로 대체되었으므로, 이 정정
+  문단이 가리키던 "임시 구현"은 더 이상 존재하지 않는다 — 위 2026-09-14 갱신
+  내용이 현재 상태를 대체한다.
 - **LLM-002 / LLM-003**: 프로바이더 간 라우팅이나 실패 시 자동 폴백 로직에 대한
   코드·문서 근거가 없다(클라이언트의 `LlmAuthException`/`LlmRateLimitException`
   등은 에러를 사용자에게 표시할 뿐 다른 provider로 자동 전환하지 않음). 근거:

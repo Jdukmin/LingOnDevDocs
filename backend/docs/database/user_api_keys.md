@@ -35,7 +35,7 @@ Stores user-supplied ("BYOK") API keys for LLM providers, encrypted at rest.
 | Column | Type | Notes |
 |---|---|---|
 | `user_id` | text NOT NULL | part of the composite primary key with `provider` |
-| `provider` | text NOT NULL | one of `openai`, `anthropic`, `gemini`, `openrouter` (enforced at the route layer, not the DB) |
+| `provider` | text NOT NULL | one of the registry-derived `SUPPORTED_PROVIDER_IDS` — currently `openai`, `gemini` (`lingon/src/gateway/llm/LlmGatewayService.ts:188`), enforced at the route layer, not the DB. Because enforcement lives at the route layer, this column may legitimately hold a row for a provider that is no longer advertised (written before Owner decision D-005, e.g. a stale `anthropic`/`openrouter` row); such rows remain readable via `GET /v1/apikey/status` and deletable via `DELETE /v1/apikey/:provider` (see [api/apikey.md](../api/apikey.md)) |
 | `encrypted_key` | text NOT NULL | AES-256-GCM ciphertext, base64 — see [src/db/encrypt.ts](../../../src/db/encrypt.ts). No separate `iv` column: the IV is packed into this value |
 | `updated_at` | timestamp NOT NULL DEFAULT NOW() | set to `NOW()` on insert/update. Note this is `timestamp` (no time zone) while `users`/`refresh_tokens`/`request_logs`/`raw_logs` use `timestamptz` — a known docs-internal inconsistency, see [README.md](README.md) |
 
