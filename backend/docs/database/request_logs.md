@@ -22,8 +22,13 @@ here — that belongs in [raw_logs](raw_logs.md).
 | `operation` | varchar(128), nullable | `req.ctx.operation` — `null` for non-gateway routes |
 | `status_code` | integer NOT NULL | `reply.statusCode` |
 | `latency_ms` | integer NOT NULL | `Date.now() - req.ctx.startedAtMs` |
-| `query_params` | jsonb NOT NULL | `req.query` — **route-level params only** (lat, lon, units, lang, q, limit, ...) |
+| `query_params` | jsonb NOT NULL | `req.query`, redacted by [`redactQueryParams`](../../../src/core/utils/Logger.ts) inside `AppLogger.saveRequestLog` — any of the 11 `REDACTED_QUERY_PARAMS` keys is stored as the literal string `[redacted]`; all other params (lat, lon, units, lang, q, limit, ...) are stored unchanged. See [Security](#security) |
 | `created_at` | timestamptz NOT NULL DEFAULT NOW() | auto |
+
+`req_id` is a unified correlation id: the same value is used as pino's
+`reqId` and as `raw_logs.reqId` (`req.ctx.requestId` is `req.id`, set by
+Fastify's `genReqId` in `app.ts`). Full treatment in
+[docs/ops/monitoring.md](../../../docs/ops/monitoring.md).
 
 > **DevDocs Update Required (2026-09-14, TASK-007)** — `provider` and
 > `operation` were not previously marked nullable in this table, though the
@@ -38,8 +43,35 @@ here — that belongs in [raw_logs](raw_logs.md).
 
 ## Security
 
-Headers, cookies, and API keys must never appear in `query_params` — only
-values that were already part of the route's own query string.
+Redaction happens in one place:
+[`AppLogger.saveRequestLog`](../../../src/core/utils/Logger.ts) calls
+`JSON.stringify(redactQueryParams(data.queryParams))` before the `INSERT`.
+The `onResponse` hook in
+[RequestLog.ts](../../../src/plugins/LingOnDataManage/RequestLog.ts) passes
+the whole `req.query` in as `queryParams` — it does no filtering itself. Every
+caller of `saveRequestLog` is forced through this one choke point, so a
+caller cannot bypass redaction by forgetting to filter query params before
+calling it.
+
+Any key present in `REDACTED_QUERY_PARAMS` — `code`, `access_token`,
+`id_token`, `token`, `state`, `appid`, `apikey`, `api_key`, `key`, `secret`,
+`password` (11 keys) — is stored as the literal string `[redacted]`. All
+other params are stored unchanged.
+
+**History**: `RequestLog.ts`'s header comment used to claim "only
+route-level query params are stored (lat, lon, units, lang, q, limit).
+Headers, cookies, and API keys are never included." That claim was the
+source of false confidence — the hook actually passed the entire `req.query`
+verbatim into `saveRequestLog`, so the column stored whatever the client
+sent. That captured a live LingOn JWT whenever a client passed
+`?access_token=`, and the Google OAuth authorization code on the OAuth
+callback route — a real credential leak into a persisted DB column. The
+guarantee described above is now real, but it is enforced by
+`saveRequestLog`, not by the hook — anyone relying on the hook alone should
+not assume filtering happens there.
+
+See also the SSOT logging policy:
+[logging_policy.md](../../../docs/policies/logging_policy.md).
 
 ## Failure policy
 
@@ -51,6 +83,18 @@ and swallowed. A `request_logs` write failure never affects the response
 
 # Change Log
 
+- **2026-09-14** — Corrected `query_params` documentation, which claimed the
+  `onResponse` hook only stored a safe fixed set of route-level params. In
+  fact the hook (`RequestLog.ts:40`) passes the whole `req.query` verbatim;
+  redaction is now enforced centrally by
+  [`AppLogger.saveRequestLog`](../../../src/core/utils/Logger.ts) via
+  `redactQueryParams`, which replaces any of the 11
+  `REDACTED_QUERY_PARAMS` keys with `[redacted]`. Prior to this, a live
+  LingOn JWT (`?access_token=`) or the Google OAuth authorization code
+  could be captured verbatim in this column. Added a cross-link to
+  [logging_policy.md](../../../docs/policies/logging_policy.md) and a note
+  on `req_id` as a unified correlation id (see
+  [docs/ops/monitoring.md](../../../docs/ops/monitoring.md)).
 - **2026-07-23** — DevDocs SSOT consolidation: corrected `user_id` note, which
   stated auth was "not implemented." JWT authentication has been implemented
   end-to-end since `V_0.0.8`/`V_0.0.16` — see

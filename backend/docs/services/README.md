@@ -47,6 +47,17 @@ It provides, in order of typical use:
      DNS, connection refused), with a `raw_logs` `provider_network_error` row
    - `sanitizeUrl()` — redacts `appid`/`apikey`/`api_key`/`key`/`token`/`secret`/`password`
      query params before any URL reaches a log line
+
+   This 7-param list is separate from and narrower than the project-wide
+   `REDACTED_QUERY_PARAMS` (11 entries) in `lingon/src/core/utils/Logger.ts:84`
+   (source repo, not mirrored in this docs-only repository) — the divergence
+   between the two lists is tracked as an open item in
+   [../../../docs/policies/logging_policy.md](../../../docs/policies/logging_policy.md)
+   (see "미결 항목", OPEN-3), not resolved here. The `Logger.ts` redaction
+   helpers (`REDACTED_QUERY_PARAMS`, `sanitizeRequestUrl`,
+   `redactQueryParams`, `projectErrorForLog`) are core utilities, not
+   gateway services, so they are documented in the logging policy rather
+   than in this services directory.
 5. `assertLatLon(lat, lon)` / `assertRequiredString(value, fieldName)` —
    shared input validators, both throwing `AppError('BAD_REQUEST', 400)`.
 
