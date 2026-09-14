@@ -4,6 +4,46 @@ Format: `## [x.y.z] - YYYY-MM-DD` followed by bullet points. Newest first.
 Governed by [../CLAUDE.md](../CLAUDE.md) — every `version/frontend.json`
 bump must have a matching entry here.
 
+## [0.1.3] - 2026-09-14
+
+- **Chat routed through the backend.** `ChatModule → LingonLlmGateway →
+  ApiClient → POST /v1/actions/execute`, inheriting Bearer JWT and
+  401→refresh→retry. `openai_gateway.dart` and its compile-time
+  `OPENAI_API_KEY` are **deleted** — the frontend ships as a static web bundle,
+  so any such key was publicly readable. `stream()` no longer yields one
+  fabricated chunk pretending to stream; it fails explicitly. CHAT-002 stays 0%
+  (TASK-009).
+- **BYOK credential UI.** `ApiKeyModule` + settings dialog from the sidebar
+  account section make the previously dead `lingon_api_key.dart` reachable: per
+  provider status, add/replace, remove, mapped feedback. The key is never
+  rendered after save, never stored on a field, never logged. Provider list is
+  backend-driven (`/v1/apikey/status` + `/v1/actions/types`); no enum
+  reintroduced (TASK-010).
+- **Credential-required chat flow.** `LLM_KEY_MISSING` was a dead-end sentence;
+  failures now carry a `ChatFailureKind` and render a notice with title, icon
+  and actions. Credential-required opens the BYOK dialog and, on return,
+  re-probes status rather than trusting a cached verdict, then resends the
+  retained message — no restart, no retyping. Rate limit, provider error,
+  unreachable backend and expired session each read differently (TASK-014).
+- **Rendered errors excluded from LLM context.** `modelVisibleMessages` filters
+  display-only entries, so a failure is shown to the user but never replayed to
+  the provider as its own prior assistant output. Regression test drives
+  success → failure → success (TASK-013).
+- **Error mapping completed.** Weather, brief and weather-icon modules now map
+  `error.code` to user messages, closing the `runGuarded`
+  `setErrorMessage(e.toString())` leak. Exactly one call site remains — the base
+  class. Also fixed a latent unhandled async error in `WeatherIconModule`'s
+  constructor (TASK-002, TASK-011).
+- **Release build fixed.** `compile_release.sh` never assigned
+  `FLUTTER_DEFINE_ARGS` yet expanded it under `set -u`, so the deploy had no
+  working build step. Adds a guard refusing to build if a secret-shaped define
+  or provider env var is present, and `SKIP_DEPLOY=1` for local validation.
+  `run_release.sh`'s truncated `.pe` TLS key path corrected (TASK-001, TASK-012).
+- **`ApiKeyStatus` no longer silently drops unknown providers** — map-backed
+  from the response's own keys (finding M4) (TASK-009).
+- Tests: 98 → **283**. `flutter analyze` clean. Release bundle contains no
+  key-shaped material.
+
 ## [0.1.1] - 2026-07-31
 
 - **AodColors v2 redesign — verified via real source.** User provided the

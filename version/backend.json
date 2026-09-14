@@ -1,10 +1,10 @@
 {
   "component": "backend",
-  "version": "0.1.0",
-  "last_updated": "2026-07-29",
+  "version": "0.1.1",
+  "last_updated": "2026-09-14",
   "changelog": "changelog/backend.md",
   "source_repo": "jdukmin/lingon",
-  "source_commit": "0e6928b",
-  "known_discrepancy": "jdukmin/lingon's own package.json still says \"version\": \"0.0.1\" as of commit 0e6928b — it has not been bumped to track this DevDocs-side baseline. This 0.1.0 value is the DevDocs SSOT's authoritative version per CLAUDE.md's Version 관리 rule; package.json should be updated to match in a future backend-repo pass (out of scope here — DevDocs makes no source-code changes).",
-  "note": "V_0.1.0 Baseline Release, confirmed real via BACKEND_VERIFICATION_REPORT.md + BACKEND_SCHEMA_VERIFICATION_REPORT.md (source repo root) — reconciled against jdukmin/lingon commit 0e6928b. Real commit history through V_0.0.17 plus the schema verification pass is what this baseline covers — see status/backend/V0.1.0.md."
+  "source_commit": "224a6e9",
+  "known_discrepancy": "jdukmin/lingon's own package.json still says \"version\": \"0.0.1\". This 0.1.1 value is the DevDocs SSOT's authoritative version per CLAUDE.md; package.json should be reconciled in a future backend-repo pass. Separately: node_modules/ is listed in .gitignore yet 2948 files remain tracked from before that rule existed, so dependency changes produce a very large diff. The 2026-09-14 commits deliberately exclude node_modules/ and commit only intentional paths.",
+  "note": "V_0.1.1: Patch bump — implementation changes and test additions only, no API/DB/ICD contract change. Covers baseline schema migration making 000-005 reproducible and idempotent (TASK-003), CORS origin allowlist replacing origin:true (TASK-004), the LLM Gateway implementing the already-frozen SYS-010 contract plus POST /v1/actions/execute and GET /v1/actions/types (TASK-005), the node:test harness (TASK-006), a dependency upgrade clearing npm audit 7->0 (TASK-008), and per-user BYOK credential isolation tests (TASK-015). Classified Patch, not Minor: system.json froze the AI Platform contract at 0.2.0 on 2026-08-01 and states the implementation fills that contract rather than changing it, so no Domain Contract moved. System version stays 0.2.0. Evidence: npm test 163 passing / 47 suites, tsc --noEmit and test:types and build all exit 0, npm audit 0 vulnerabilities, migrations verified on a real PostgreSQL 18.6 cluster. NOT verified: no live provider credential and no live database round-trip — integration verification remains outstanding. Prior baseline: V_0.1.0 (2026-07-29)."
 }
