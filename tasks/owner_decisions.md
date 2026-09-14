@@ -84,7 +84,25 @@ resolves to B, this drops to P4.
 
 ## D-003 — Production CORS origin allowlist
 
-**Status**: Open — **deployment gate only** (Owner 2026-09-14: does not block code completion) · **Opened**: 2026-09-14 · **Needed by**: deployment of TASK-004
+**Status**: ✅ **DECIDED 2026-09-14 by Owner — explicit allow-list only**
+
+> **Owner ruling**: explicit allow-list only. The canonical production
+> frontend origin is `https://www.ling-on.com`, **exact string match**.
+> `https://ling-on.com` (apex) is **redirect-only to `www` at the web-server
+> (Apache) level** — it is **NOT** added to the API allow-list. Staging
+> origins are added **only when a real staging frontend exists**; none exists
+> today. **Wildcard CORS is forbidden** — no `*`, no scheme/port/subdomain
+> inference. Consequence: `CORS_ALLOWED_ORIGINS` already defaults to
+> `https://www.ling-on.com` in code (`lingon/src/app.ts:33`), so the decided
+> value is the shipped default and **no env change is required** for the
+> canonical origin — but the backend process must be **restarted** for any
+> future change to take effect, and no deploy script performs that restart
+> today. Operational procedure and a worked example:
+> `docs/docs/ops/deployment_sop.md` §CORS.
+
+**Original analysis (retained):** Status was Open — **deployment gate only**
+(Owner 2026-09-14: does not block code completion) · **Opened**: 2026-09-14 ·
+**Needed by**: deployment of TASK-004
 
 **Why this needs the Owner**: the *mechanism* is not a decision and is being
 implemented autonomously in TASK-004 (env-driven allowlist replacing
@@ -99,15 +117,31 @@ host, or Android WebView origins must also be accepted is not derivable.
 time. This makes the code correct now and the value operational — so it does
 **not** block TASK-004.
 
-**Blocks**: nothing in code. Owner must set the env var before the next deploy
-or web requests from any other origin will start failing.
-**Does NOT block**: TASK-004 implementation and merge.
+**Blocks**: nothing — decided. Nothing further is blocked; the shipped default
+already matches the decided value, and any future change to it requires an
+env update plus a backend restart per `deployment_sop.md` §CORS.
+**Does NOT block**: TASK-004 implementation and merge (already complete).
 
 ---
 
 ## D-004 — Which serving strategy is production: Apache static, or `flutter run`?
 
-**Status**: Open — **deployment gate only** (Owner 2026-09-14: does not block code completion) · **Opened**: 2026-09-14 · **Needed by**: TASK-012
+**Status**: ✅ **DECIDED 2026-09-14 by Owner — Option A (Apache static)**
+
+> **Owner ruling**: Option A. The canonical production path is Flutter release
+> static build → versioned release directory
+> `/var/www/lingon/releases/<timestamp>` → `rsync` + permissions → Apache →
+> `current` symlink — the `letmeknow/compile_release.sh` line. `run_release.sh`
+> (`flutter run -d web-server` on :4443) is **Development Only** — it is not
+> deleted, it is marked as such (a `Development Only` header comment).
+> Consequence: TASK-012 is unblocked and closed (see
+> `docs/tasks/TASK-012-run-release-script-defects.md`); `deployment_sop.md` as
+> written is correct; no remediation task for "production served from a dev
+> server" is needed.
+
+**Original analysis (retained):** Status was Open — **deployment gate only**
+(Owner 2026-09-14: does not block code completion) · **Opened**: 2026-09-14 ·
+**Needed by**: TASK-012
 
 **Why this needs the Owner**: the repository contains two mutually exclusive
 deploy paths and nothing in it says which is live. This is infrastructure
@@ -135,5 +169,5 @@ Apache reload), and the broken TLS path in `run_release.sh` suggests it is not i
 active successful use. Proceeding on A unless the Owner says otherwise; the typo
 is fixed either way.
 
-**Blocks**: TASK-012 beyond the typo fix.
+**Blocks**: nothing — decided. TASK-012 is unblocked and closed.
 **Does NOT block**: anything else.

@@ -3,7 +3,10 @@
 Controlled unit of work for the LetMeKnow autonomous development system.
 **No substantial implementation happens without a task file here.**
 
-Entry point for context routing is `/Route.md` (repository root, outside this repo).
+Entry point for context routing is `docs/docs/route_index.md` — the canonical,
+version-controlled routing index. The former workspace-root `/Route.md` is now
+only an untracked pointer stub (the workspace root is not a git repo, so that
+file cannot be versioned or authoritative).
 
 ## Format
 
@@ -59,7 +62,7 @@ Keep the task smaller than the work it governs. Group by
 | [TASK-009](TASK-009-chat-backend-migration.md) | Frontend chat must route through backend | P1 | Autonomous | Validated |
 | [TASK-010](TASK-010-byok-settings-ui.md) | BYOK/Settings write paths are dead code | P2 | Owner Decision Dependent | Validated |
 | [TASK-011](TASK-011-runguarded-error-leak-class.md) | Remaining modules leak raw exception text via `runGuarded` | P2 | Autonomous | Validated |
-| [TASK-012](TASK-012-run-release-script-defects.md) | `run_release.sh` broken TLS key path and unclear role | P2 | Mixed | Partial (typo fixed; rest blocked on D-004) |
+| [TASK-012](TASK-012-run-release-script-defects.md) | `run_release.sh` broken TLS key path and unclear role | P2 | Mixed | Validated |
 | [TASK-013](TASK-013-chat-history-error-pollution.md) | Chat replays rendered error bubbles back to the model | P3 | Autonomous | Validated |
 | [TASK-014](TASK-014-chat-credential-user-flow.md) | Chat has no usable path for a user without a credential | P1 | Autonomous | Validated |
 | [TASK-015](TASK-015-per-user-key-isolation.md) | Prove per-user BYOK credential isolation | P0 | Autonomous | Validated |

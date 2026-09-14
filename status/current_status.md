@@ -48,8 +48,8 @@ Progress: 0%`로 명시).
 
 | 기능 | 상태 | 근거 |
 |---|---|---|
-| Weather 에러 메시지 매핑 | **Fix landed, UNCOMMITTED(2026-09-14, TASK-002)** | `weather_error_mapper.dart`/`brief_error_mapper.dart`가 작업 트리에 추가됨 — 아직 커밋되지 않아 "배포됨"이 아니다. 커밋 전까지 P0 유지 |
-| DB 마이그레이션 재현성 | **Fix landed, UNCOMMITTED(2026-09-14, TASK-003)** | `migrations/000_baseline_schema.sql`(베이스라인)가 작업 트리에 추가됨 — 아직 커밋되지 않아 "해결됨"이 아니다. 커밋 전까지 High 유지 |
+| Weather 에러 메시지 매핑 | **해결·커밋 완료(2026-09-14, TASK-002/011)** | `weather_error_mapper.dart`/`brief_error_mapper.dart` 커밋(letmeknow `502388f`, `95f7770`). `runGuarded`의 `e.toString()` 호출 지점은 base class 1곳만 남음 |
+| DB 마이그레이션 재현성 | **해결·커밋 완료(2026-09-14, TASK-003)** | `migrations/000_baseline_schema.sql` 커밋(lingon `39d0178`). 실제 PostgreSQL 18.6 클러스터에서 `000`→`005` 2회 연속 적용 성공(멱등). **단, 신규 환경 재현 테스트의 운영 실적용은 미검증** |
 | CORS 정책 | **Blocked(Medium)** | `origin: true` — 전체 Origin 반사, allow-list 없음 |
 | HTTPS/HSTS | **Blocked(Medium)** | 코드 레벨 강제 없음, 문서화되지 않은 리버스 프록시에 전적으로 의존 |
 | Settings/API Key 관리 UI | Not Started | Route/모델은 완성되었으나 호출하는 화면이 없음(Dead Code) |
@@ -116,16 +116,16 @@ Progress: 0%`로 명시).
 |---|---|---|
 | Flutter 툴체인 | `flutter doctor` | **CLEAN** — Flutter 3.41.2, Dart 3.11.0 설치 확인. 기존 "Flutter SDK 미설치" 서술은 전부 OBSOLETE |
 | Frontend 정적 분석 | `cd letmeknow && flutter analyze` | **"No issues found!"** |
-| Frontend 테스트 | `cd letmeknow && flutter test` | **134건 통과** — 커밋 `ad08414` 기준 98건 + 2026-09-14 신규 추가 36건(작업 트리에 UNCOMMITTED, `test/core/modules/`·`test/modules/brief/`·`test/modules/weather/`의 신규 테스트 파일 3개) |
+| Frontend 테스트 | `cd letmeknow && flutter test` | **283건 통과**(letmeknow `48bc665`) — 커밋 `ad08414` 기준 98건 + 2026-09-14 신규 185건. 모두 커밋 완료 |
 | Backend 타입체크 | `cd lingon && ./node_modules/.bin/tsc -p tsconfig.json --noEmit` | **clean**(전체 `npm install` 후) |
-| Backend 테스트 | — | **검증된 베이스라인 기준 0건**(커밋 `dd38b22`, `package.json`에 `test` 스크립트 없음). TASK-006이 `node --test` 하네스(`npm test`, `npm run test:types`)를 추가 중이나 이 역시 작업 트리에 UNCOMMITTED — 아직 통과 건수를 인용할 수 있는 상태가 아니며 커밋 전까지 이 공백은 열려 있는 것으로 간주 |
+| Backend 테스트 | `cd lingon && npm test` | **230건 통과 / 68 suites**(lingon `b5fad88`) — `node:test`+`tsx` 하네스 도입·커밋 완료(TASK-006). 이전 베이스라인 `dd38b22`에서는 0건이었다 |
 | 의존성 감사 | `cd lingon && npm audit` | **3 high, 2 moderate, 2 low** — high는 `find-my-way`(Fastify 자체 라우터), `fast-uri`, `brace-expansion`(TASK-008) |
 
 ### 신규 리스크(2026-09-14 발견)
 
 | Risk | 등급 | 내용 | 근거 |
 |---|---|---|---|
-| 릴리스 빌드 스크립트 파손(수정본 UNCOMMITTED) | High(현재 작업 트리 기준 해소, 커밋 전까지 실질 리스크) | `letmeknow/compile_release.sh`가 `set -euo pipefail` 하에서 정의되지 않은 `FLUTTER_DEFINE_ARGS`를 참조해 release 빌드가 중단되던 결함. 2026-09-14 TASK-001로 수정(`PROJECT_DIR`를 `BASH_SOURCE` 기반으로 변경, `assert_no_secret_defines()` 가드 추가, `SKIP_DEPLOY=1` 로컬 검증 옵션 추가) — 단, 이 수정 자체가 아직 커밋되지 않음 | `letmeknow/compile_release.sh`(TASK-001) |
+| 릴리스 빌드 스크립트 파손 | **해결·커밋 완료** | `letmeknow/compile_release.sh`가 `set -euo pipefail` 하에서 정의되지 않은 `FLUTTER_DEFINE_ARGS`를 참조해 release 빌드가 중단되던 결함. TASK-001로 수정(`PROJECT_DIR`를 `BASH_SOURCE` 기반으로 변경, `assert_no_secret_defines()` 가드 추가, `SKIP_DEPLOY=1` 로컬 검증 옵션) — letmeknow `adab5f0`에 커밋 | `letmeknow/compile_release.sh`(TASK-001) |
 | Web 배포 시 `--dart-define` 값이 공개 노출됨 | High(신규 발견, 문서화되지 않았던 구조적 리스크) | Frontend는 **Flutter Web을 Apache로 서빙**하는 구조다 — `compile_release.sh`가 `build/web/`을 빌드해 `/var/www/lingon/releases/<timestamp>/`로 rsync하고 Apache가 `current` 심볼릭 링크로 서빙(`letmeknow/run_release.sh`, `lingon/server_deploy.sh` 참고). 따라서 `--dart-define`으로 전달한 값은 배포된 JavaScript 안에 그대로 노출되어 누구나 읽을 수 있다 — 어떤 status/ops 문서도 이전에 이 사실을 명시하지 않았다. Secret을 이 경로로 주입하면 안 된다 | `letmeknow/compile_release.sh`, `letmeknow/run_release.sh`, `lingon/server_deploy.sh`(TASK-001 범위) |
 | 의존성 취약점(high 3건) | Medium~High | `npm audit` 결과 high 3건(`find-my-way`, `fast-uri`, `brace-expansion`) — `find-my-way`는 Fastify 자체 라우터라 우회가 어려움, 버전 업그레이드 검토 필요 | `npm audit`(TASK-008) |
 
@@ -143,8 +143,8 @@ Apache 심볼릭 링크 배포를 구현하고 있어 그 문서 쪽이 stale하
 | B. API Contract Stability | Excellent(95%) | 동일 §9 — 19개 API 전수 실서버 검증 |
 | C. Database Reliability | **Needs Work(65%)** | 마이그레이션 재현성 부족 |
 | D. Security Readiness | Fair(75%) | CORS/HTTPS 미확정, 그 외(암호화/redaction/쿠키)는 전부 Strong |
-| E. Production Deployment Readiness | **Needs Work(65%)** | 자동 테스트: **Frontend 134건 통과**(`cd letmeknow && flutter test`, 2026-09-14 실행 결과 — 98건은 커밋 `ad08414` 기준 기존 테스트, 36건은 2026-09-14 신규 추가분으로 아직 미커밋), **Backend: 검증된 베이스라인 기준 0건**(커밋 `dd38b22`, `package.json`에 `test` 스크립트 없음 — 실질적 공백). TASK-006이 `node --test` 하네스를 작업 트리에 추가 중이나 UNCOMMITTED이라 아직 이 공백이 닫힌 것으로 보지 않는다. 마이그레이션 이슈와 동일 원인 |
-| Frontend Release Readiness | **Not Ready** | Weather P0 결함이 blocking(Frontend Schema Verification Report §9) — 수정 코드는 작업 트리에 존재하나 미커밋(TASK-002) |
+| E. Production Deployment Readiness | **Improved / Live-unverified** | 자동 테스트: **Frontend 283건**(`flutter test`), **Backend 230건 / 68 suites**(`npm test`) — 양쪽 모두 커밋 완료. 마이그레이션 재현성(TASK-003)과 CORS allow-list(TASK-004)도 커밋 완료. 남은 공백은 **CI 파이프라인 부재**와 **실서버 통합 검증 미실행** |
+| Frontend Release Readiness | **Code Complete / Live-unverified** | Weather P0 결함 해소·커밋 완료(TASK-002). `flutter analyze` clean, `flutter test` **283 passing**. 남은 것은 실서버·실자격증명 통합 검증뿐 |
 
 **결론**: `V_0.1.0`은 "Baseline"이지 "Release Candidate"가 아니다 — 위 P0/High
 항목이 해소되기 전까지 `V_1.0.0`으로 진행하지 않는다.
@@ -161,11 +161,11 @@ Apache 심볼릭 링크 배포를 구현하고 있어 그 문서 쪽이 stale하
 
 | 컴포넌트 | 예정 Bump | 커버 범위 | 전제 조건 |
 |---|---|---|---|
-| Backend | `0.1.0` → `0.1.1`(Patch, PENDING) | `migrations/000_baseline_schema.sql`(베이스라인 스키마, TASK-003) + 마이그레이션 001/004/005에 추가된 조건부 가드(idempotent guard) | 위 변경이 실제로 커밋되어야 함 — 현재 작업 트리에 UNCOMMITTED |
-| Frontend | `0.1.2` → `0.1.3`(Patch, PENDING) | `compile_release.sh` 수정 + `assert_no_secret_defines()` 가드(TASK-001), `weather_error_mapper.dart` + `brief_error_mapper.dart`(TASK-002), 신규 테스트 36건 | 위 변경이 실제로 커밋되어야 함 — 현재 작업 트리에 UNCOMMITTED |
+| Backend | `0.1.0` → **`0.1.2`(Patch, 적용 완료)** | 베이스라인 마이그레이션·CORS allow-list·테스트 하네스·의존성·D-005 provider 정합화·로그 자격증명 유출 5건 수정 | lingon `b5fad88`에 커밋 완료 |
+| Frontend | `0.1.2` → **`0.1.3`(Patch, 적용 완료)** | 릴리스 빌드 수정+시크릿 가드, 에러 매퍼, 백엔드 경유 채팅, BYOK UI, 자격증명 플로우, 테스트 185건 추가 | letmeknow `48bc665`에 커밋 완료 |
 
 커밋되지 않은 작업에는 어느 쪽도 bump하지 않으며, 미출시(unreleased)
-uncommitted 작업에 대한 changelog 항목도 작성하지 않는다.
+uncommitted 작업에 대한 changelog 항목도 작성하지 않는다. **2026-09-14 기준 이 원칙은 충족되었다** — 구현이 먼저 커밋된 뒤 version/changelog가 갱신되었다(backend `0.1.2`, frontend `0.1.3`).
 
 ## 7. Beta Release 종합 보고서
 

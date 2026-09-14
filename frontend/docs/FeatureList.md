@@ -53,17 +53,16 @@
 
 ### 날씨
 
-> **✅ 정정 2026-09-14(TASK-002, 미커밋)**: 위 P0 결함(2026-07-29 기록)은
+> **✅ 정정 2026-09-14(TASK-002, letmeknow 커밋 `48bc665`)**: 위 P0 결함(2026-07-29 기록)은
 > 수정되었다. `letmeknow/lib/modules/weather/weather_error_mapper.dart`와
 > `letmeknow/lib/modules/brief/brief_error_mapper.dart`가 신설되어
 > `error.code`→한국어 사용자 메시지 매핑을 제공한다(존재 확인:
 > `ls letmeknow/lib/modules/weather/weather_error_mapper.dart
 > letmeknow/lib/modules/brief/brief_error_mapper.dart`, 2026-09-14).
 > Calendar의 `GoogleCalendarDataSource._codeToMessage`(V0.0.17)와 동일한
-> 패턴을 재사용했다. **이 수정은 `letmeknow` 작업 트리에 UNCOMMITTED 상태다**
-> (`git status --porcelain`에 `?? lib/modules/weather/weather_error_mapper.dart`,
-> `?? lib/modules/brief/brief_error_mapper.dart`로 표시됨) — 아직 릴리즈된
-> 것이 아니다. 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` Issue #1,
+> 패턴을 재사용했다. **이 수정은 `letmeknow`에 커밋되어 있다**(HEAD `48bc665`,
+> 작업 트리 clean). `error.code`→메시지 매핑 회귀 테스트는 `502388f`/`95f7770`에
+> 커밋되어 있다. 근거: `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` Issue #1,
 > `FRONTEND_VERSION_HISTORY_REPORT.md` Known Issue #1(원 결함 기록), 상세:
 > [status/current_status.md](../../status/current_status.md).
 
@@ -198,9 +197,9 @@
 
 - [ ] Deprecated 파일 삭제 및 영향 확인
 - [ ] `shared_preferences`로 SidebarModule 상태 영속화
-- [x] **[P0]** `WeatherModule` `error.code`→메시지 매핑 추가(Calendar 패턴 재사용) — **완료(2026-09-14, TASK-002, 미커밋)**: `lib/modules/weather/weather_error_mapper.dart`, `lib/modules/brief/brief_error_mapper.dart` 신설. 위 "날씨" 절 정정 노트 참고.
+- [x] **[P0]** `WeatherModule` `error.code`→메시지 매핑 추가(Calendar 패턴 재사용) — **완료(2026-09-14, TASK-002, letmeknow 커밋 `48bc665`)**: `lib/modules/weather/weather_error_mapper.dart`, `lib/modules/brief/brief_error_mapper.dart` 신설. 위 "날씨" 절 정정 노트 참고.
 - [ ] Release APK 서명 키 설정
 - [ ] iOS `GoogleService-Info.plist` 등록
 - [x] `flutter analyze` CI 통합 관련 실행 결과 — **정정 2026-09-14**: "Flutter SDK 미설치"는 더 이상 사실이 아니다. `flutter doctor`가 Flutter 3.41.2 / Dart 3.11.0으로 clean(`[✓] Flutter`, `[✓] Chrome`, `[✓] Visual Studio`, `[✓] Connected device`, `No issues found!`, 2026-09-14 실행). `flutter analyze` 결과 "No issues found! (ran in 1.8s)"(2026-09-14). CI 파이프라인 자체 통합 여부는 `docs/ops/deployment_sop.md` 참고(현재 CI는 미구성 — 로컬 실행만 확인됨). 근거는 여전히 `FRONTEND_SCHEMA_VERIFICATION_REPORT.md` §7 참고(과거 미실행 기록).
-- [~] `CalendarEvent`/`WeatherCurrentModel`/`UserModel`의 `fromJson` 회귀 테스트 추가 — **부분 진행(2026-09-14)**: `fromJson` 파싱 자체를 겨냥한 회귀 테스트는 아직 추가되지 않았다. 대신 TASK-002로 `error.code`→메시지 매핑 회귀 테스트 3개 파일이 신설되었다(모두 미커밋 — `git status --porcelain`에 `?? test/core/modules/`, `?? test/modules/`): `test/core/modules/weather_icon_error_mapping_test.dart`, `test/modules/brief/brief_error_mapping_test.dart`, `test/modules/weather/weather_error_mapping_test.dart`. 실행 결과(`flutter test`, 2026-09-14): **134 passing, 0 failing**(commit `ad08414` 기준 트래킹된 테스트 파일 98개 통과분 + 위 신규 미커밋 3개 파일에서 36개 통과분 = 134 — 신규 3개 파일만 단독 실행 시 `+36: All tests passed!`로 확인). 이 항목의 원래 범위(`fromJson` 파싱 테스트)는 여전히 미착수 상태이므로 체크를 완료로 바꾸지 않는다.
+- [~] `CalendarEvent`/`WeatherCurrentModel`/`UserModel`의 `fromJson` 회귀 테스트 추가 — **부분 진행(2026-09-14)**: `fromJson` 파싱 자체를 겨냥한 회귀 테스트는 아직 추가되지 않았다. 대신 TASK-002로 `error.code`→메시지 매핑 회귀 테스트 3개 파일이 신설되어 커밋되었다(`502388f`, `95f7770`): `test/core/modules/weather_icon_error_mapping_test.dart`, `test/modules/brief/brief_error_mapping_test.dart`, `test/modules/weather/weather_error_mapping_test.dart`. 2026-09-14 당시 실행 결과(`flutter test`): 134 passing, 0 failing(당시 기준 commit `ad08414`의 트래킹된 테스트 파일 98개 통과분 + 위 3개 파일에서 36개 통과분 = 134 — 3개 파일만 단독 실행 시 `+36: All tests passed!`로 확인, 과거 측정치로만 유지). 현재(letmeknow `48bc665`) 기준 `flutter test`는 **283 passing**이다. 이 항목의 원래 범위(`fromJson` 파싱 테스트)는 여전히 미착수 상태이므로 체크를 완료로 바꾸지 않는다.
 - [ ] Settings/BYOK API Key 쓰기 경로 UI 연결 여부 결정(구현 또는 post-V0.1.0 명시)

@@ -85,14 +85,23 @@ are release blockers, two of which were not previously recorded anywhere.
 
 None of the seven required an Owner decision to begin. **All seven are now cleared in code.**
 
-Two gates remain before this is a closed-alpha candidate, and neither is a code task:
-1. **Integration verification** — TASK-005 and TASK-009 are validated against mocked
-   transports only. No live server, no real provider credential, no real database
-   round-trip. Chat has never actually run end-to-end.
-2. **Commit** — everything below is uncommitted working tree.
+**Committed 2026-09-14** — `lingon@b5fad88`, `letmeknow@48bc665`. Versions were
+bumped only after the implementation was actually committed, per the precedent in
+`version/frontend.json`'s own `known_discrepancy`.
 
-**All of this work is uncommitted.** Nothing above is released until it is
-committed — which is why no `version/*.json` has been bumped (see §7).
+**One gate remains, and it is not a code task:**
+
+1. **Live integration verification** — TASK-005 and TASK-009 are validated against
+   mocked transports only. No live server, no real provider credential, no real
+   database round-trip. **Chat has never actually run end-to-end.** This cannot be
+   self-served; it needs a running backend, a real PostgreSQL, and a real
+   OpenAI/Gemini BYOK key.
+
+Also closed since the original assessment: five credential leaks into log sinks
+(live JWT and Google OAuth code into `request_logs`; `client_secret` +
+`refresh_token` + Bearer via raw `GaxiosError`; the OAuth `client_secret` via raw
+Boom error; raw `req.query`; unsanitized URL into `raw_logs`) — all found by a
+sweep of all 91 log call sites, all mutation-verified, all committed.
 
 **Human-only blockers** (unchanged, tracked in `required_human_resource.md`):
 Play/App Store registration, Google OAuth verification, Privacy Policy and Terms
@@ -124,26 +133,33 @@ version-constrained Flutter packages (P4).
 
 ## 6. Owner decisions outstanding
 
-D-001 (LLM credential policy: BYOK-only vs platform key) ·
-D-002 (ship BYOK/Settings UI in the alpha) ·
-D-003 (production CORS origin list) ·
-D-004 (which serving strategy is production: Apache static vs `flutter run`).
+**None.** D-001 through D-004 were all decided by the Owner on 2026-09-14:
 
-Full text, options, and consequences: `docs/tasks/owner_decisions.md`.
-None of them blocks the current work queue.
+- **D-001** — BYOK is the primary supported path for **LLM providers** during
+  Closed Alpha; platform-funded non-LLM credentials (e.g. OpenWeather) are
+  unaffected and remain valid.
+- **D-002** — ship the BYOK/Settings UI; TASK-010 unblocked.
+- **D-003** — explicit CORS allow-list only, exact match on
+  `https://www.ling-on.com`; wildcard forbidden; apex `https://ling-on.com` is
+  redirect-only to `www` at the web-server level, not an allow-list entry.
+- **D-004** — Apache static serving (`compile_release.sh` → releases dir →
+  `current` symlink) is production; `run_release.sh` is Development Only.
+
+Full text, options, and consequences: `docs/tasks/owner_decisions.md`. No
+Owner decision is outstanding as of this assessment.
 
 ## 7. Validation baseline — 2026-09-14, end of autonomous pass
 
 | Check | Result |
 |---|---|
 | `cd letmeknow && flutter analyze` | clean |
-| `cd letmeknow && flutter test` | **206 passing** (98 committed + 108 added today) |
+| `cd letmeknow && flutter test` | **283 passing** (98 at the prior baseline + 185 added 2026-09-14) |
 | `cd letmeknow && SKIP_DEPLOY=1 bash ./compile_release.sh` | exit 0 |
 | `grep -raoE "sk-[A-Za-z0-9_-]{20,}" letmeknow/build/web` | no matches |
 | `cd lingon && tsc -p tsconfig.json --noEmit` | exit 0 |
 | `cd lingon && npm run test:types` | exit 0 |
 | `cd lingon && npm run build` | exit 0 |
-| `cd lingon && npm test` | **147 passing / 42 suites** |
+| `cd lingon && npm test` | **230 passing / 68 suites** |
 | `cd lingon && npm audit` | **found 0 vulnerabilities** |
 | `migrations/000`→`005` on a fresh PostgreSQL 18.6 DB | applies twice, idempotent |
 
@@ -159,8 +175,10 @@ mappers, 36 tests).
 `usage_logs` exists but nothing writes it · `updated_at` is `timestamp` on three
 tables and `timestamptz` elsewhere · `lingon/CLAUDE.md` documents a
 `user_api_keys` shape the SSOT does not (5 divergences; backend-repo fix) ·
-backend deploy never starts or reloads a process despite PM2 being installed ·
-nothing prunes old `releases/*` · no shared success-envelope helper — the
+backend deploy never starts or reloads a process despite PM2 being installed
+(now documented as a named gap in `docs/docs/ops/deployment_sop.md`) ·
+nothing prunes old `releases/*` (also now documented as a named gap in
+`docs/docs/ops/deployment_sop.md`) · no shared success-envelope helper — the
 `{success,data,error}` literal is duplicated across all nine `src/route/*.ts` ·
 `lingon` tracks `node_modules/` in git (~2,948 files), so every dependency change
 produces an enormous diff.

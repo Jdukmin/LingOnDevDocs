@@ -31,21 +31,39 @@
 > 갱신에서 처음으로 `flutter doctor`/`flutter analyze`/`flutter test`/
 > `tsc --noEmit`/`npm audit`를 실제로 실행했다: Flutter 3.41.2/Dart 3.11.0
 > 정상 설치 확인, `flutter analyze` "No issues found!", `flutter test`
-> **134건 통과**(Frontend), Backend `tsc --noEmit` clean, **Backend
-> 자동 테스트는 검증된 베이스라인(커밋 `dd38b22`) 기준 0건**(당시
-> `package.json`에 `test` 스크립트 없음). TASK-006이 `node --test`
-> 하네스(`npm test`/`npm run test:types`)를 추가 중이나 작업 트리에
-> UNCOMMITTED 상태라 아직 통과 건수를 인용할 수 없다 — 커밋 전까지 이
-> 공백은 열려 있는 것으로 본다. 저장소별
-> 테스트 건수는 Frontend 134 / Backend 0(베이스라인 기준)으로 분리해 기록한다 — 기존
-> "자동 테스트 0건(양쪽 모두)" 서술은 절반만 맞았다. 새로 발견된 리스크
-> 3건도 이번 갱신에서 추가한다: 릴리스 빌드 스크립트 파손(TASK-001,
-> 수정본은 작업 트리에 있으나 미커밋), Flutter Web을 Apache로 서빙하는
-> 배포 구조에서 `--dart-define` 값이 공개 JS로 노출되는 문제(TASK-001
-> 범위), `npm audit` high 3건(TASK-008). 가장 최신·실행 근거 기반의
-> 릴리스 단계 기록은 [release_state.md](release_state.md)다(Stage:
-> Internal alpha) — 이 문서는 그 파일의 내용을 재서술하거나 상충하지
-> 않는다.
+> 134건 통과(Frontend, 이 실행 시점 기준 — 이후 TASK-002 등의 테스트가
+> 추가로 커밋되어 **현재 283건 통과**로 늘었다, 바로 아래 갱신 이력
+> 참고), Backend `tsc --noEmit` clean, Backend 자동 테스트는 당시
+> 검증된 베이스라인(커밋 `dd38b22`) 기준 0건(당시 `package.json`에
+> `test` 스크립트 없음) — TASK-006이 `node --test` 하네스(`npm test`/
+> `npm run test:types`)를 추가 중이었고, 이후 커밋되어 **현재
+> 230 passing / 68 suites**로 해소되었다(바로 아래 갱신 이력 참고).
+> 저장소별 테스트 건수는 이 실행 시점 기준으로 Frontend 134 / Backend
+> 0(베이스라인 기준)으로 분리해 기록했다 — 기존 "자동 테스트 0건(양쪽
+> 모두)" 서술은 절반만 맞았다. 새로 발견된 리스크 3건도 이번 갱신에서
+> 추가한다: 릴리스 빌드 스크립트 파손(TASK-001, 이후 커밋되어 해소됨),
+> Flutter Web을 Apache로 서빙하는 배포 구조에서 `--dart-define` 값이
+> 공개 JS로 노출되는 문제(TASK-001 범위, 가드 코드는 커밋되었으나 실제
+> 배포 경로 점검은 여전히 미수행), `npm audit` high 3건(TASK-008,
+> 이후 해소됨). 가장 최신·실행 근거 기반의 릴리스 단계 기록은
+> [release_state.md](release_state.md)다(Stage: Internal alpha) — 이
+> 문서는 그 파일의 내용을 재서술하거나 상충하지 않는다.
+>
+> **2026-09-14 갱신 이력(추가, 커밋 반영 정정 패스)**: 위 TASK-007
+> 패스 당시 UNCOMMITTED였던 TASK-001/002/003/004/006/008이 모두
+> 커밋되었다 — 이 문서는 그 커밋된 상태를 반영해 정정한다. 확인된
+> 사실: lingon HEAD `b5fad88`(작업 트리 clean, `npm test` →
+> **230 passing / 68 suites**, `tsc --noEmit`/`npm run test:types`/
+> `npm run build` 모두 exit 0, `npm audit` → **0 vulnerabilities**),
+> letmeknow HEAD `48bc665`(작업 트리는 무관한 생성 플러그인 파일 6개를
+> 제외하면 clean, `flutter analyze` "No issues found!", `flutter test`
+> → **283건 통과**). 남은 공백은 커밋 여부가 아니라 **CI 파이프라인에서의
+> 정기 실행 부재**(파이프라인 자체가 없음), **Privacy Policy/Terms
+> 법률 검토 미착수**, **실서버/실기기/실계정 통합 검증 미수행**(DB
+> 마이그레이션의 신규 환경 재현 테스트 실행, 프로덕션 서버/도메인/SSL
+> 확인, 태블릿 실기기 확인, Web 배포 경로 secret 노출 점검 포함),
+> **HTTPS/HSTS 리버스 프록시 설정 확정·문서화 미완료**다 — 이 문서
+> 전체가 이 사실을 반영해 정정되었다.
 
 ---
 
@@ -56,19 +74,23 @@ Dashboard(핵심 위젯), Calendar, Weather 5개 Phase가 실제 서버 실행(B
 또는 정적 코드 대조(Frontend, 2026-07-29 시점)로 검증되었다.
 **갱신(2026-09-14)**: Flutter SDK는 이미 설치되어 있으며(`flutter doctor`
 clean, 3.41.2/Dart 3.11.0), `flutter analyze`/`flutter test`를 실제로
-실행해 "No issues found!" / 134건 통과를 확인했다 — "Flutter SDK
+실행해 "No issues found!" / 283건 통과를 확인했다 — "Flutter SDK
 미설치" 서술은 이제 OBSOLETE다(§Remaining Development, Checklist 참고).
 이는 **"검증된 기준점"이지 "출시 가능한 Beta"가 아니다** —
-아래 세 가지가 그 차이를 만든다:
+아래가 그 차이를 만든다:
 
-1. **코드 결함 1건(P0)**: Frontend `WeatherModule`이 API 실패 시 사용자에게
-   원시 예외 문자열을 노출한다(Error Policy 직접 위반). **갱신(2026-09-14,
-   TASK-002)**: `weather_error_mapper.dart`/`brief_error_mapper.dart`가
-   작업 트리에 실제로 작성되었으나 아직 커밋되지 않았다 — 커밋 전까지는
-   여전히 P0 Blocker로 취급한다.
-2. **Operational 공백(High/Medium)**: Backend DB 마이그레이션이 7개 테이블 중
-   5개(`users` 기본 테이블 포함)를 재현하지 못하고, CORS는 전체 개방
-   상태이며, HTTPS 강제가 코드 레벨에 없다.
+1. **코드 결함 1건(P0) — 해결됨**: Frontend `WeatherModule`이 API 실패
+   시 사용자에게 원시 예외 문자열을 노출하던 결함(Error Policy 직접
+   위반)은 **TASK-002로 해결되었다**: `weather_error_mapper.dart`/
+   `brief_error_mapper.dart`와 에러 매핑 테스트 3종이 letmeknow에
+   커밋되었다(`502388f`, `95f7770`, HEAD `48bc665`). 코드 레벨 P0는
+   해소되었으나, 아래 2·3번 공백이 남아 여전히 "출시 가능한 Beta"는
+   아니다.
+2. **Operational 공백(High/Medium)**: Backend DB 베이스라인 마이그레이션
+   (`migrations/000_baseline_schema.sql`, TASK-003)은 작성·커밋되었으나
+   신규 환경에서의 실제 재현 테스트는 아직 수행되지 않았고, CORS는
+   TASK-004로 allow-list가 적용·커밋되었으나 운영 환경 실적용·실서버
+   확인은 미검증이며, HTTPS 강제는 여전히 코드 레벨에 없다.
 3. **AI가 대신할 수 없는 작업 다수**: Play/App Store 등록, Google OAuth
    Verification, Privacy Policy/Terms 법률 문서, 실서버·실기기·실계정
    검증 — [required_human_resource.md](required_human_resource.md)에 Critical
@@ -232,7 +254,7 @@ Phase 단위로 이미 추적 중이다:
 - **주요 기능**: 마이그레이션 정비, 보안 강화, 자동 테스트 도입, Privacy/Terms 법률 문서
 - **관련 Requirement**: 없음(체크리스트 관리, `docs/workflow.md`)
 - **Progress**: 25% — **Status**: In Progress
-- **완료 조건**: DB 마이그레이션 전체 재현(현재 7개 중 2개), CORS allow-list, HTTPS/HSTS 문서화, 자동 테스트 도입(현재 Frontend 134건/Backend 0건(검증된 베이스라인 기준) — Backend 테스트 러너는 TASK-006으로 작업 트리에 추가 중이나 UNCOMMITTED, 커밋·검증 전까지 공백으로 간주), Privacy Policy/Terms 법률 검토 — **Beta Release는 이 Phase 전체 완료를 요구하지 않는다**, §8 체크리스트가 Beta에 필요한 부분집합을 정의한다
+- **완료 조건**: DB 마이그레이션 전체 재현(베이스라인 작성·커밋은 완료 — TASK-003, `migrations/000_baseline_schema.sql`, lingon `b5fad88` — 신규 환경 재현 테스트 실행은 아직 남음), CORS allow-list(TASK-004로 적용·커밋 완료, 운영 환경 실적용 확인은 남음), HTTPS/HSTS 문서화, 자동 테스트 도입(Frontend 283건 통과/Backend 230 passing·68 suites 모두 커밋되어 도입 완료 — 남은 공백은 CI에서의 정기 실행 파이프라인 부재), Privacy Policy/Terms 법률 검토 — **Beta Release는 이 Phase 전체 완료를 요구하지 않는다**, §8 체크리스트가 Beta에 필요한 부분집합을 정의한다
 - **예상 Risk**: **High** — 이 Phase가 사실상 Beta Release Blocker의 본체([required_human_resource.md](required_human_resource.md) Critical 10건 대부분이 여기 귀속)
 
 ---
@@ -243,16 +265,16 @@ Claude가 코드/문서로 직접 수행 가능한 남은 작업(사람 전용 �
 
 | 우선순위 | 작업 | 담당 Phase | 근거 |
 |---|---|---|---|
-| P0(코드 작성 완료 2026-09-14, UNCOMMITTED) | `WeatherModule`에 `error.code`→사용자 메시지 매퍼 추가(Calendar/Auth와 동일 패턴) — `weather_error_mapper.dart`/`brief_error_mapper.dart`(TASK-002)로 작업 트리에 이미 작성됨, 남은 일은 커밋 | Phase 5 | Frontend Schema Verification Report Issue #1 |
-| **DONE(2026-09-14)** | Flutter SDK 설치 환경에서 `flutter analyze`/`test` 실행 — `flutter doctor` clean(3.41.2/Dart 3.11.0), `flutter analyze` "No issues found!", `flutter test` 134건 통과(기존 98건 + 신규 36건, 신규분은 작업 트리 UNCOMMITTED). `flutter build`(release build)는 `compile_release.sh`의 `FLUTTER_DEFINE_ARGS` 미정의 결함으로 이전엔 실패했으나 TASK-001로 수정(마찬가지로 UNCOMMITTED) | Phase 12 | Frontend Schema Verification Report §7 → TASK-007 실행 결과로 해소 |
+| **DONE(TASK-002, 커밋됨)** | `WeatherModule`에 `error.code`→사용자 메시지 매퍼 추가(Calendar/Auth와 동일 패턴) — `weather_error_mapper.dart`/`brief_error_mapper.dart`(TASK-002)가 letmeknow에 커밋됨(`502388f`/`95f7770`, HEAD `48bc665`) | Phase 5 | Frontend Schema Verification Report Issue #1 |
+| **DONE(2026-09-14)** | Flutter SDK 설치 환경에서 `flutter analyze`/`test` 실행 — `flutter doctor` clean(3.41.2/Dart 3.11.0), `flutter analyze` "No issues found!", `flutter test` 2026-09-14 실행 시점 134건 통과(기존 98건 + 신규 36건) → **현재 283건 통과**(letmeknow `48bc665`, TASK-002 에러 매핑 테스트 등 추가 반영). `flutter build`(release build)는 `compile_release.sh`의 `FLUTTER_DEFINE_ARGS` 미정의 결함으로 이전엔 실패했으나 TASK-001로 수정해 커밋됨 | Phase 12 | Frontend Schema Verification Report §7 → TASK-007 실행 결과로 해소 |
 | P1 | `frontend/docs/FeatureList.md`(Calendar 상태), `docs/docs/policies/error_policy.md`(401 인터셉터 상태) 문서 정정 | Phase 4, 2 | Finding D-1, D-2 |
-| High(초안 작성 완료 2026-09-14, UNCOMMITTED) | Backend DB 베이스라인 마이그레이션(`000_baseline_schema.sql`) 작성 — 7개 테이블 중 5개 미커버. TASK-003으로 작업 트리에 초안 작성됨, 남은 일은 검증·커밋 | Phase 12 | Backend Schema Verification Report |
-| Medium | CORS allow-list 확정 및 코드 적용 | Phase 12 | Backend Schema Verification Report Issue #2 |
+| High(작성·커밋 완료, 재현 테스트 남음) | Backend DB 베이스라인 마이그레이션(`migrations/000_baseline_schema.sql`, TASK-003)이 lingon `b5fad88`에 커밋됨 — 남은 일은 신규 환경에서의 실제 재현 테스트 실행(아직 수행되지 않음) | Phase 12 | Backend Schema Verification Report |
+| Medium(코드 적용 완료, 운영 확인 남음) | CORS allow-list 코드 적용(TASK-004, lingon `b5fad88`에 커밋됨) — 남은 일은 운영 환경 실적용·실서버 확인 | Phase 12 | Backend Schema Verification Report Issue #2 |
 | Medium | HTTPS/HSTS 리버스 프록시 설정 문서화(설정 자체는 사람이 수행, 문서화는 가능) | Phase 12 | Backend Schema Verification Report Issue #3 |
 | P2 | `LingonUsersRoute.patchMe`의 `city` 명시적 null-clear 미지원 수정 | Phase 4 | Frontend Verification/Schema Report(반복 확인) |
 | P2 | `LingonSettingsRoute`/`LingonApiKeyRoute` 쓰기 경로 UI 연결 여부 결정(구현 또는 명시적 Not-MVP 표기) | Phase 3 | Frontend Schema Verification Report Issue #6 |
 | Low | 루트 `ICD.md`(Frontend 저장소) 정리 — SSOT와 충돌하는 오래된 Weather 스키마 | Phase 5 | Finding D-4 |
-| Low(Backend만 잔존) | Backend 자동 테스트 도입 착수(테스트 러너부터, TASK-006) — **Frontend는 2026-09-14 기준 134건 통과로 이미 도입 완료**(`flutter test`), 남은 공백은 Backend(검증된 베이스라인 기준 0건)뿐. TASK-006이 `node --test` 하네스를 작업 트리에 추가 중이나 UNCOMMITTED — 커밋·검증 전까지 이 항목은 미해결로 유지 | Phase 12 | Backend: 베이스라인 커밋 `dd38b22` 기준 `package.json`에 `test` 스크립트 없음, 이후 TASK-006으로 추가된 스크립트는 작업 트리에 있으나 미커밋. Frontend: `cd letmeknow && flutter test` → 134 passing |
+| **RESOLVED** | Backend 자동 테스트 하네스 도입(TASK-006, `node:test`를 `tsx`로 실행, `npm test`/`npm run test:types`) — lingon `b5fad88`에 커밋됨, `npm test` → **230 passing / 68 suites**. Frontend도 `flutter test` → **283건 통과**로 이미 도입 완료. 남은 공백은 테스트 존재 여부가 아니라 **CI에서의 정기 실행 파이프라인 부재**(파이프라인 자체가 없음) | Phase 12 | Backend: lingon `b5fad88`, `npm test` 230 passing/68 suites. Frontend: letmeknow `48bc665`, `flutter test` → 283 passing |
 
 ---
 
@@ -290,18 +312,18 @@ Redirect URI/Credential, 태블릿 실기기 테스트만 선행하면 시작할
 
 | Risk | 등급 | 영향 | 완화 방법 |
 |---|---|---|---|
-| Weather 에러 메시지 노출 | **P0/Critical**(수정 코드 작성 완료 2026-09-14, UNCOMMITTED) | 사용자가 API 실패 시 원시 Dart 예외를 직접 봄 — 신뢰도 직결 | 코드 수정(Claude 가능, TASK-002로 작업 트리에 이미 작성됨) — 커밋 필요, 위 Remaining Development P0 |
-| DB 마이그레이션 재현 불가 | **High**(초안 작성 완료 2026-09-14, UNCOMMITTED) | 새 환경(스테이징/재해복구/신규개발자) 구성이 표준 절차로 불가능 | 베이스라인 마이그레이션 작성(TASK-003, 작업 트리에 있으나 미커밋) — 검증·커밋 필요 |
-| CORS 전체 개방 | Medium | 임의 Origin에서 API 호출 가능 | allow-list 전환 |
+| Weather 에러 메시지 노출 | **RESOLVED(TASK-002, 커밋됨)** | 사용자가 API 실패 시 원시 Dart 예외를 직접 보던 문제 — 신뢰도 직결 | 코드 수정 완료 및 커밋됨(letmeknow `48bc665`, `502388f`/`95f7770`) — 위 Remaining Development 참고 |
+| DB 마이그레이션 신규 환경 재현 미검증 | **Medium(작성·커밋 완료, 재현 테스트 미수행)** | 베이스라인 마이그레이션(TASK-003)은 작성·커밋되었으나(lingon `b5fad88`) 신규 환경(스테이징/재해복구/신규개발자)에서 실제로 재현되는지는 아직 실행 검증되지 않았다 | 신규 환경에서 마이그레이션 실행·검증(사람/운영) |
+| CORS allow-list 운영 적용 미검증 | Low~Medium | 코드는 TASK-004로 allow-list가 적용·커밋되었으나(lingon `b5fad88`) 운영 환경에서 실제 적용·동작 확인은 아직 안 됨 | 실서버에서 allow-list 동작 확인(사람) |
 | HTTPS 미강제 | Medium | 토큰이 평문 전송될 잠재 경로 존재(리버스 프록시 설정에 전적으로 의존) | 프록시 레벨 HTTPS/HSTS 확정(사람) |
-| 자동 테스트: Frontend 134건 / **Backend 0건(검증된 베이스라인 기준)** | Backend는 High(장기), Frontend는 완화됨(2026-09-14) | Backend는 이미 한 번(V0.0.17) 발생한 계약 드리프트 회귀가 재발해도 CI가 못 잡음(베이스라인 커밋 `dd38b22` 기준 테스트 러너 없음; TASK-006이 `node --test` 하네스를 작업 트리에 추가 중이나 UNCOMMITTED이라 아직 이 리스크를 닫지 못함). Frontend는 `flutter test` 134건 통과로 최소한의 회귀 방지망 확보(`cd letmeknow && flutter test`, 2026-09-14) | Backend: 테스트 러너 도입·커밋(TASK-006). Frontend: 이미 도입됨, 유지·확장 |
+| 자동 테스트: Frontend **283건 통과** / Backend **230 passing(68 suites)** — 양쪽 모두 커밋됨 | Low(CI 정기 실행 부재만 남음) | 테스트 하네스 자체는 양쪽 다 도입·커밋되어 있어(TASK-006, lingon `b5fad88`) 계약 드리프트 회귀를 로컬/수동 실행으로는 잡을 수 있다. 남은 리스크는 이 테스트들이 **CI에서 정기적으로 자동 실행되지 않는다**는 것 — 파이프라인 자체가 없어 회귀가 병합 전에 잡히지 않을 수 있음 | CI 파이프라인 구성(사람/운영) |
 | Google OAuth Verification 미착수 | Critical(공개 배포 시) | `calendar.readonly` 민감 스코프 — 테스트 사용자 목록을 벗어나면 로그인 자체가 막힘 | 사람이 Google 심사 신청(§5) |
 | Redirect 흐름 실계정 미검증 | Medium | 동의 화면 UX가 자동화 환경에서 검증 불가 — 프로덕션에서 첫 발견 위험 | 사람이 1회 수동 확인 |
 | Privacy Policy/Terms 부재 | Critical(공개 배포 시) | Play/App Store 제출 불가, 법적 노출 | 사람이 법률 검토 진행(§5) |
 | Backend/Frontend 버전 파일 SSOT와 불일치 | Low | `package.json`(0.0.1), `pubspec.yaml`(1.0.0+1)이 DevDocs 기준(0.1.0)과 다름 — 혼선 가능 | 각 소스 저장소에서 후속 커밋으로 정합 |
-| 릴리스 빌드 스크립트 파손(신규 발견, 2026-09-14) | **High(TASK-001)** | `letmeknow/compile_release.sh`가 `set -euo pipefail` 하에서 정의되지 않은 `FLUTTER_DEFINE_ARGS`를 참조해 release 빌드가 중단됨 — 배포 자체가 불가능했던 결함. 수정본이 작업 트리에 있으나 UNCOMMITTED | `PROJECT_DIR`를 `BASH_SOURCE` 기반으로 변경, `assert_no_secret_defines()` 가드 추가, `SKIP_DEPLOY=1` 로컬 검증 옵션 추가 후 커밋(TASK-001) |
-| Web 배포 시 `--dart-define` 값이 공개 노출됨(신규 발견, 2026-09-14) | **High(TASK-001/deploy)** | Frontend는 Flutter Web을 빌드해 Apache가 서빙하는 구조(`compile_release.sh` → `build/web/` → rsync → `/var/www/lingon/releases/<timestamp>/` → `current` 심볼릭 링크, `letmeknow/run_release.sh`/`lingon/server_deploy.sh` 참고) — `--dart-define`으로 전달한 값은 배포된 JavaScript 번들 안에 그대로 남아 누구나 읽을 수 있다. 어떤 status/ops 문서도 이 사실을 이전에 명시하지 않았다 | Secret을 `--dart-define`으로 주입하지 않는다 — 서버 사이드 프록시/게이트웨이로 전환(TASK-001 범위) |
-| 의존성 취약점(신규 발견, 2026-09-14) | **Medium~High(TASK-008)** | `npm audit`(lingon) 결과 **3 high, 2 moderate, 2 low** — high 3건은 `find-my-way`(Fastify 자체 라우터), `fast-uri`, `brace-expansion` | 버전 업그레이드 검토 및 적용(TASK-008) |
+| 릴리스 빌드 스크립트 파손(RESOLVED, TASK-001) | **해결됨** | `letmeknow/compile_release.sh`가 `set -euo pipefail` 하에서 정의되지 않은 `FLUTTER_DEFINE_ARGS`를 참조해 release 빌드가 중단되던 결함 — 배포 자체가 불가능했다. 수정본이 커밋됨(letmeknow `48bc665`) | 완료: `PROJECT_DIR`를 `BASH_SOURCE` 기반으로 변경, `assert_no_secret_defines()` 가드 추가, `SKIP_DEPLOY=1` 로컬 검증 옵션 추가(TASK-001) |
+| Web 배포 시 `--dart-define` 값이 공개 노출됨(TASK-001 범위) | **Medium~High(가드 코드 커밋됨, 실제 점검 미수행)** | Frontend는 Flutter Web을 빌드해 Apache가 서빙하는 구조(`compile_release.sh` → `build/web/` → rsync → `/var/www/lingon/releases/<timestamp>/` → `current` 심볼릭 링크, `letmeknow/run_release.sh`/`lingon/server_deploy.sh` 참고) — `--dart-define`으로 전달한 값은 배포된 JavaScript 번들 안에 그대로 남아 누구나 읽을 수 있다. TASK-001로 `assert_no_secret_defines()` 가드가 추가되어 커밋되었으나(letmeknow `48bc665`), 실제 배포 경로에서의 secret 노출 여부 점검은 아직 수행되지 않았다 | Secret을 `--dart-define`으로 주입하지 않는다 — 서버 사이드 프록시/게이트웨이로 전환, 실제 배포 경로 점검(사람) |
+| 의존성 취약점(RESOLVED, TASK-008) | **해결됨** | `npm audit`(lingon)의 이전 결과는 3 high, 2 moderate, 2 low(high 3건은 `find-my-way`(Fastify 자체 라우터), `fast-uri`, `brace-expansion`)였으나, TASK-008 적용 후 lingon `b5fad88`에서 `npm audit` → **0 vulnerabilities** | 완료: 버전 업그레이드 적용·커밋(TASK-008) |
 
 ---
 
@@ -315,28 +337,31 @@ Frontend(`FRONTEND_VERIFICATION_REPORT.md`, `FRONTEND_SCHEMA_VERIFICATION_REPORT
 
 | Priority | Blocker | 출처 | 담당 |
 |---|---|---|---|
-| **P0**(수정 코드 작성 완료 2026-09-14, UNCOMMITTED) | Weather 에러 메시지 노출(`WeatherModule`에 `error.code`→메시지 매핑 없음, 원시 예외 노출) — `weather_error_mapper.dart`/`brief_error_mapper.dart`(TASK-002)가 작업 트리에 있으나 아직 커밋되지 않아 Blocker 유지 | Frontend Schema Verification Report Issue #1, Frontend Version History Report Known Issue #1 | 코드(Claude 가능) — 커밋 필요 |
+| **RESOLVED(TASK-002)** | Weather 에러 메시지 노출(`WeatherModule`에 `error.code`→메시지 매핑 없음, 원시 예외 노출) — `weather_error_mapper.dart`/`brief_error_mapper.dart`(TASK-002)가 letmeknow에 커밋됨(`48bc665`, `502388f`/`95f7770`) | Frontend Schema Verification Report Issue #1, Frontend Version History Report Known Issue #1 | 코드(완료) |
 | **P0** | 프로덕션 서버·도메인·SSL 가동 상태 미확인(코드 기본값 `https://www.ling-on.com`은 설정되어 있으나 실제 가동 여부는 저장소 밖) | required_human_resource.md Cloud | 사람 |
 | **P0** | 태블릿 실기기 테스트 0건 — 제품의 실제 타겟 폼팩터("AOD Tablet")가 한 번도 실물로 검증되지 않음 | required_human_resource.md QA | 사람 |
-| **P0**(초안 작성 완료 2026-09-14, UNCOMMITTED) | Backend DB 마이그레이션 재현 불가(7개 테이블 중 5개 `CREATE TABLE` 없음) — 신규 환경을 표준 절차로 구성 불가. `migrations/000_baseline_schema.sql`(TASK-003)이 작업 트리에 작성되었으나 아직 커밋·검증되지 않아 Blocker 유지 | Backend Schema Verification Report Issue #1(High) | 코드(Claude 가능, 사람이 적용) — 커밋·검증 필요 |
-| **P0(신규, 2026-09-14)** | 릴리스 빌드 스크립트 파손 — `compile_release.sh`가 미정의 `FLUTTER_DEFINE_ARGS` 참조로 `set -euo pipefail` 하에서 중단됨. 수정본 작업 트리 존재, UNCOMMITTED | 직접 실행·코드 읽기로 확인(TASK-001) | 코드(Claude 가능) — 커밋 필요 |
-| **P0(신규, 2026-09-14)** | Web 배포 시 `--dart-define` 값이 공개 JS 번들에 그대로 노출(Apache가 `build/web/`을 서빙) | `compile_release.sh`/`run_release.sh`/`server_deploy.sh` 직접 확인(TASK-001/deploy) | 코드+운영(Claude+사람) |
-| **P2(신규, 2026-09-14)** | 의존성 취약점 — `npm audit` high 3건(`find-my-way`, `fast-uri`, `brace-expansion`) | `npm audit` 실행 결과(TASK-008) | 코드(Claude 가능) |
+| **P0**(작성·커밋 완료, 재현 테스트 미수행) | Backend DB 마이그레이션 신규 환경 재현 테스트 미수행 — `migrations/000_baseline_schema.sql`(TASK-003)이 lingon `b5fad88`에 커밋되어 있으나, 신규 환경에서 실제로 전체 스키마를 재현하는지는 아직 실행 검증되지 않았다 | Backend Schema Verification Report Issue #1(High) | 코드(완료) — 신규 환경 재현 테스트 실행 필요(사람/운영) |
+| **RESOLVED(TASK-001)** | 릴리스 빌드 스크립트 파손 — `compile_release.sh`가 미정의 `FLUTTER_DEFINE_ARGS` 참조로 `set -euo pipefail` 하에서 중단되던 결함. 수정본 커밋됨(letmeknow `48bc665`) | 직접 실행·코드 읽기로 확인(TASK-001) | 코드(완료) |
+| **P0** | Web 배포 시 `--dart-define` 값이 공개 JS 번들에 그대로 노출될 위험(Apache가 `build/web/`을 서빙) — TASK-001로 가드 코드는 커밋되었으나 실제 배포 경로의 secret 노출 점검은 미수행 | `compile_release.sh`/`run_release.sh`/`server_deploy.sh` 직접 확인(TASK-001/deploy) | 코드(완료)+운영 점검(사람, 미수행) |
+| **RESOLVED(TASK-008)** | 의존성 취약점 — 이전 `npm audit` high 3건(`find-my-way`, `fast-uri`, `brace-expansion`)이 있었으나 TASK-008 적용 후 lingon `b5fad88`에서 `npm audit` → 0 vulnerabilities | `npm audit` 실행 결과(TASK-008) | 코드(완료) |
 | **P1** | Privacy Policy·Terms of Service 실제 법률 문서 부재 — **공개** 배포(Store 심사) 시에만 필수, 내부 테스트 트랙은 유예 가능 | required_human_resource.md Legal | 사람 |
 | **P1** | Google OAuth Verification(`calendar.readonly` 민감 스코프) 미착수 — 테스트 사용자 목록을 벗어난 **공개** 배포 시에만 기술적으로 막힘 | required_human_resource.md OAuth | 사람 |
 | **P1** | Google Play Console / Apple Developer 계정·앱 등록 미완료 — **공개** 배포 시에만 필수 | required_human_resource.md Release | 사람 |
-| **P1** | CORS 전체 개방(`origin: true`) — allow-list 미적용 | Backend Schema Verification Report Issue #2(Medium) | 코드(Claude 가능) |
+| **P1**(코드 적용·커밋 완료, 운영 확인 남음) | CORS allow-list가 TASK-004로 코드에 적용되어 커밋됨(lingon `b5fad88`) — 남은 것은 운영 환경에서의 실제 적용·동작 확인(미검증) | Backend Schema Verification Report Issue #2(Medium) | 코드(완료), 운영 확인(사람, 미수행) |
 | **P1** | HTTPS/HSTS 코드 레벨 미강제 — 리버스 프록시 설정에 전적으로 의존 | Backend Schema Verification Report Issue #3(Medium) | 사람(프록시 설정) |
-| **P2** | 자동 테스트: **Frontend 134건 통과**(`cd letmeknow && flutter test`, 2026-09-14), **Backend 0건**(검증된 베이스라인 커밋 `dd38b22` 기준 테스트 러너 없음; TASK-006이 `node --test` 하네스를 작업 트리에 추가 중이나 UNCOMMITTED이므로 아직 해결로 인정하지 않음) — Backend 쪽은 계약 드리프트 회귀(V0.0.17 사례)를 CI가 잡지 못하는 실질적 공백으로 남음 | 양쪽 Verification/Schema Report 공통, 2026-09-14 실행 결과(TASK-007) | Backend: 코드(Claude 가능, TASK-006 — 커밋·검증 대기). Frontend: 완료, 유지 과제만 남음 |
+| **P2** | 자동 테스트: **Frontend 283건 통과**, **Backend 230 passing/68 suites** — 양쪽 모두 커밋됨(lingon `b5fad88`, letmeknow `48bc665`). 테스트 하네스 자체의 공백은 해소되었고, 남은 공백은 **CI에서의 정기 자동 실행 파이프라인 부재**(계약 드리프트 회귀를 병합 전에 잡을 CI가 없음) | 양쪽 Verification/Schema Report 공통 | CI 파이프라인 구성(사람/운영) |
 | **P2** | Redirect OAuth 흐름의 실계정 동의 화면 미검증(자동화 환경 한계) | Backend/Frontend Verification Report 공통 권고 | 사람(1회 수동 확인) |
 | **P2** | Backend/Frontend 소스 저장소의 `package.json`(0.0.1)/`pubspec.yaml`(1.0.0+1)이 DevDocs 기준 버전(0.1.0)과 불일치 | `version/backend.json`/`version/frontend.json`의 `known_discrepancy` | 각 소스 저장소(코드) |
 
 **내부 테스트 트랙**(제한된 사용자, Store 공개 심사 불필요) 기준으로는
-**P0 6건이 실질적 Blocker**다(원래 4건 + 2026-09-14 신규 발견 2건: 릴리스
-빌드 스크립트 파손, Web 배포 시 secret 노출) — P1 항목(Privacy/Terms,
-OAuth Verification, Store 등록, CORS, HTTPS)은 공개 전환 시점까지 유예
-가능하나, CORS/HTTPS는 내부 테스트라도 실제 사용자 데이터가 오간다면
-조기 해결을 권장한다.
+**P0 4건이 실질적으로 남아있는 Blocker**다 — 프로덕션 서버/도메인/SSL
+확인, 태블릿 실기기 테스트, DB 마이그레이션 신규 환경 재현 테스트, Web
+배포 시 secret 노출 점검. 원래 P0로 분류되었던 Weather 에러 메시지
+노출(TASK-002)과 릴리스 빌드 스크립트 파손(TASK-001)은 커밋되어
+**해소되었다**. P1 항목(Privacy/Terms, OAuth Verification, Store 등록,
+CORS, HTTPS)은 공개 전환 시점까지 유예 가능하나, CORS/HTTPS는 내부
+테스트라도 실제 사용자 데이터가 오간다면 조기 해결을 권장한다(CORS는
+TASK-004로 코드 적용·커밋은 이미 완료, 운영 확인만 남음).
 
 가장 최신·실행 근거 기반의 릴리스 단계 기록은
 [release_state.md](release_state.md)다(Stage: **Internal alpha** — 이
@@ -351,25 +376,25 @@ OAuth Verification, Store 등록, CORS, HTTPS)은 공개 전환 시점까지 유
 
 ```
 --- P0 (내부 테스트 트랙 포함, 전부 필수) ---
-[ ] P0 Weather 에러 메시지 매핑 수정(코드) — 매퍼(`weather_error_mapper.dart`/`brief_error_mapper.dart`, TASK-002)는 작업 트리에 작성 완료, UNCOMMITTED — 커밋 남음
+[x] P0 Weather 에러 메시지 매핑 수정(코드) — 완료(TASK-002, `weather_error_mapper.dart`/`brief_error_mapper.dart`가 letmeknow에 커밋됨: `502388f`/`95f7770`, HEAD `48bc665`)
 [ ] P0 프로덕션 서버 가동 확인 + 도메인(www.ling-on.com) 연결 확인 + SSL 인증서 확인
 [ ] P0 태블릿 실기기 1대 이상에서 전체 대시보드 동작 확인
-[ ] P0 DB 베이스라인 마이그레이션 작성 및 신규 환경 재현 테스트 — 초안(`migrations/000_baseline_schema.sql`, TASK-003)은 작업 트리에 있으나 UNCOMMITTED, 재현 테스트·커밋 남음
-[ ] P0(신규, 2026-09-14) 릴리스 빌드 스크립트 수정 커밋(`compile_release.sh`의 `FLUTTER_DEFINE_ARGS` 미정의 결함, TASK-001) — 수정본은 작업 트리에 있으나 아직 미커밋
-[ ] P0(신규, 2026-09-14) Web 배포(`--dart-define` → Apache 서빙 JS 번들)로 secret이 노출되지 않도록 배포 경로 점검(TASK-001 범위)
+[ ] P0 DB 베이스라인 마이그레이션 작성 및 신규 환경 재현 테스트 — 작성·커밋은 완료(`migrations/000_baseline_schema.sql`, TASK-003, lingon `b5fad88`), 남은 것은 실제 신규 환경 재현 테스트 실행
+[x] P0(신규, 2026-09-14) 릴리스 빌드 스크립트 수정 커밋(`compile_release.sh`의 `FLUTTER_DEFINE_ARGS` 미정의 결함, TASK-001) — 커밋 완료(letmeknow `48bc665`)
+[ ] P0(신규, 2026-09-14) Web 배포(`--dart-define` → Apache 서빙 JS 번들)로 secret이 노출되지 않도록 배포 경로 점검(TASK-001 범위) — 가드 코드(`assert_no_secret_defines()`)는 커밋됨, 실제 배포 경로 점검은 미수행
 --- P1 (공개 배포 시 필수, 내부 테스트 트랙은 유예 가능 — CORS/HTTPS 제외) ---
 [ ] P1 Privacy Policy 법률 검토 및 게시
 [ ] P1 Terms of Service 법률 검토 및 게시
 [ ] P1 Google OAuth Verification 신청 및 통과
 [ ] P1 Google Play Console / Apple Developer 계정·앱 등록
-[ ] P1 CORS allow-list 적용(현재 전체 개방) — 내부 테스트도 조기 권장
+[ ] P1 CORS allow-list 적용(TASK-004로 코드 적용·커밋 완료 — lingon `b5fad88`; 남은 것은 운영 환경 실적용·실서버 확인, 아직 미검증) — 내부 테스트도 조기 권장
 [ ] P1 HTTPS/HSTS 리버스 프록시 설정 확정 및 문서화 — 내부 테스트도 조기 권장
 --- P2 (권장, 미해결 시에도 Beta 착수는 가능) ---
-[x] P2 Flutter SDK 환경에서 flutter analyze/test 1회 실행 및 결과 기록 — 완료 2026-09-14: `flutter doctor` clean(3.41.2/Dart 3.11.0), `flutter analyze` "No issues found!", `flutter test` 134건 통과(TASK-007). `flutter build`(release)는 TASK-001 수정 후 로컬 검증 대상(수정 자체는 UNCOMMITTED)
+[x] P2 Flutter SDK 환경에서 flutter analyze/test 1회 실행 및 결과 기록 — 완료 2026-09-14: `flutter doctor` clean(3.41.2/Dart 3.11.0), `flutter analyze` "No issues found!", `flutter test` 2026-09-14 실행 시점 134건 통과(TASK-007) → **현재 283건 통과**(letmeknow `48bc665`). `flutter build`(release)는 TASK-001 수정이 커밋되어(letmeknow `48bc665`) 로컬 검증 가능
 [ ] P2 사람 1회 수동 확인 — 실계정 Google 로그인 → Calendar 연결 → 이벤트 렌더링
 [ ] P2 사람 1회 수동 확인 — Redirect OAuth 흐름 실계정 동의 화면
 [ ] P2 GOOGLE_CALLBACK_URL / GOOGLE_CALENDAR_CALLBACK_URL 프로덕션 값 등록 확인
-[ ] P2(신규, 2026-09-14) `npm audit` high 3건(`find-my-way`/`fast-uri`/`brace-expansion`) 해소 또는 명시적 accepted-risk 기록(TASK-008)
+[x] P2(신규, 2026-09-14) `npm audit` high 3건(`find-my-way`/`fast-uri`/`brace-expansion`) 해소 — 완료: lingon `b5fad88`에서 `npm audit` → 0 vulnerabilities(TASK-008)
 [ ] P2 에러 트래킹(Sentry) 계정 개설 및 연동
 [ ] P2 Alert 채널·에스컬레이션 정책 수립
 [ ] 앱 아이콘·스크린샷·스토어 이미지 확정
@@ -379,16 +404,19 @@ OAuth Verification, Store 등록, CORS, HTTPS)은 공개 전환 시점까지 유
 
 # Recommended Next Steps
 
-1. **(즉시, Claude 가능)** `WeatherModule` P0 수정 — 이 저장소 밖(Frontend
-   소스 저장소)에서 진행. Calendar의 `_codeToMessage` 패턴을 그대로 재사용
-   가능(Frontend Version History Report V0.0.16 참고).
+1. **(완료, TASK-002)** `WeatherModule` P0 수정 — Calendar의
+   `_codeToMessage` 패턴을 재사용해 `weather_error_mapper.dart`/
+   `brief_error_mapper.dart`로 구현, letmeknow에 커밋됨(`502388f`/
+   `95f7770`, HEAD `48bc665`). 남은 실행 항목 없음.
 2. **(즉시, Claude 가능)** `frontend/docs/FeatureList.md`/`docs/docs/policies/error_policy.md`의
    Finding D-1/D-2 오기 정정 — 코드가 이미 앞서 있는 상태를 문서에 반영.
 3. **(1주 내, 사람)** 서버/도메인/SSL 상태 확인 — 이미 코드 기본값에 도메인이
    박혀 있어 이 확인만으로 여러 Blocker가 동시에 해소될 가능성이 높음.
 4. **(1주 내, 사람)** 태블릿 실기기 1대 확보 후 전체 대시보드 수동 검증.
-5. **(2주 내, Claude+사람 협업)** Backend DB 베이스라인 마이그레이션 작성
-   (Claude가 스키마 문서 기준 SQL 초안 작성 가능, 사람이 실제 DB에 적용·검증).
+5. **(작성·커밋 완료, 사람 검증 필요)** Backend DB 베이스라인 마이그레이션
+   — SQL 작성·커밋 완료(`migrations/000_baseline_schema.sql`, TASK-003,
+   lingon `b5fad88`), 남은 것은 사람이 신규 환경에서 실제 적용·재현
+   테스트를 수행하는 것.
 6. **(공개 배포 결정 시, 사람)** Privacy Policy/Terms 법률 검토 착수 —
    가장 리드타임이 긴 항목이므로 다른 작업과 병행 시작 권장.
 7. **(V_0.1.2 착수 조건)** 위 Beta Release Checklist가 모두 체크된 이후에만
