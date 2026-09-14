@@ -57,12 +57,30 @@ URL fragment/Authorization 헤더로 오가는 설계상 HTTPS는 사실상 필�
 전제인데도 정책 문서가 없다 — **출시 전 필수 확인 항목**([../workflow.md](../workflow.md)
 출시 전 체크리스트에 추가 필요).
 
+프로덕션 프런트엔드의 TLS 종료(termination)는 Owner 결정 D-004에 따라
+Apache가 맡는다([../ops/deployment_sop.md](../ops/deployment_sop.md)
+"Production 표준 경로 — D-004" 참고) — 다만 이것은 "정적 파일을 어디서
+서빙하는가"만 확정한 것이고, 백엔드 TLS/리버스 프록시 설정 자체는 여전히
+사람이 소유하고 미검증인 영역이다 —
+[../../status/required_human_resource.md](../../status/required_human_resource.md)
+참고. 이 절의 "미문서화 — 확인 필요" 상태는 그대로 유지한다.
+
 ## CORS
 
-**부분 미문서화.** `@fastify/cors`가 플러그인으로 등록되어 있음은 확인됨
-(`DevelopmentGuide.md` Fastify structure 다이어그램의 "sensible / cors /
-under-pressure"), 그러나 허용 Origin 목록/자격증명(credentials) 설정은
-어떤 문서에도 없다 — **코드 확인 필요.**
+**D-003 DECIDED (Owner, 2026-09-14).** `@fastify/cors`는 env 기반 정확
+문자열(exact-match) allow-list로 동작한다 — `CORS_ALLOWED_ORIGINS`
+(comma-separated), 기본값 `https://www.ling-on.com`, **wildcard(`*`)
+금지**(넣어도 실제 `Origin` 헤더와 일치하지 않아 모든 cross-origin
+요청을 차단할 뿐, 열어주지 않는다). `https://ling-on.com`(apex, `www`
+없음)은 API allow-list에 넣지 않고 Apache 레벨에서 `www`로 redirect만
+한다. `Origin` 헤더가 없는 요청(Android 클라이언트, 서버-서버 호출)은
+항상 허용되고, allow-list에 없는 Origin은 `Access-Control-Allow-Origin`
+헤더가 생략될 뿐 에러(500)로 나타나지 않는다. `@fastify/cors` 등록
+옵션에 `credentials`는 명시되어 있지 않다(`lingon/src/app.ts`의
+`cors` 등록 블록에 `credentials` 키 없음 — 즉 라이브러리 기본값인
+`Access-Control-Allow-Credentials` 미전송 상태). 운영 상세·설정 예시·
+코드 인용은 [../ops/deployment_sop.md](../ops/deployment_sop.md) "CORS"
+절 권위 문서 — 여기서는 정책만 기록하고 중복 서술하지 않는다.
 
 ## Cookie
 
@@ -99,3 +117,4 @@ under-pressure"), 그러나 허용 Origin 목록/자격증명(credentials) 설�
 # Change Log
 
 - **2026-07-22** — 최초 작성. Docs Revision(SSOT 정리) 작업의 일부. HTTPS/CORS/Cookie 속성은 확인 필요 항목으로 명시.
+- **2026-09-14** — CORS 절을 Owner 결정 D-003으로 확정·재작성("코드 확인 필요" 제거) — env 기반 exact-match allow-list, 기본값 `https://www.ling-on.com`, wildcard 금지, apex redirect-only, no-Origin passthrough, `credentials` 미설정을 기록하고 상세는 [../ops/deployment_sop.md](../ops/deployment_sop.md)로 위임. HTTPS 절에 D-004 기반 Apache TLS termination 한 줄을 추가(전체 상태는 "미문서화 — 확인 필요"로 유지, 해소하지 않음).
