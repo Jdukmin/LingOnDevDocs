@@ -36,6 +36,7 @@ requires.
 
 | Task | Read |
 |---|---|
+| **작업 시작 — 어디를 봐야 하는지 모를 때** | `docs/route_index.md` — AI 컨텍스트 라우팅 인덱스(서브시스템 담당/신뢰할 SSOT/열어야 할 소스/읽지 말아야 할 것). 문서가 아니라 라우팅 맵이다 |
 | API 계약 확인/변경 | `backend/docs/api/`, `docs/icd/action_layer_api.md`, `docs/icd/api_comparison.md` |
 | Database | `backend/docs/database/` |
 | Authentication / OAuth | `backend/docs/api/auth.md`, `backend/docs/plugins/google-oauth.md`, `backend/docs/plugins/policy.md`, `docs/policies/security_policy.md` |
@@ -152,6 +153,7 @@ Scope 예: `api`, `domain`, `workflow`, `policy`, `changelog`.
 
 ## 관련 문서
 
+- [docs/route_index.md](docs/route_index.md) — AI 컨텍스트 라우팅 인덱스(모든 작업의 진입점)
 - [docs/workflow.md](docs/workflow.md) — 전체 개발 SOP(Step 0~6, Phase 0~10)
 - [requirements/domain_icd/README.md](requirements/domain_icd/README.md) — Domain ICD 목록
 - [docs/icd/README.md](docs/icd/README.md) — API/Action ICD

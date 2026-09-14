@@ -266,7 +266,7 @@ Phase 순서와 선행조건은 [docs/icd/prompt_playbook.md](icd/prompt_playboo
 | Google Verification | Not Started | `calendar.readonly` 스코프는 프로덕션 단계에서 Google 보안 심사 대상 — [policies/privacy_policy.md](policies/privacy_policy.md) |
 | OAuth Scope 검토 | Not Started | Home Assistant/NAS 추가 시 가정 내부망 접근까지 포함되어 민감도 상승 |
 | Secret 관리 | Partial | AES-256-GCM 암호화는 있음(`MASTER_ENCRYPTION_KEY`) — KMS/rotation 정책 없음. 상세: [policies/security_policy.md](policies/security_policy.md) |
-| HTTPS / CORS / Cookie 속성 | 확인 필요 | 문서화 자체가 없음 — [policies/security_policy.md](policies/security_policy.md) "확인 필요" 항목 |
+| HTTPS / CORS / Cookie 속성 | Partial | CORS는 문서화됨(env 기반 exact-match allowlist, wildcard 금지) — [ops/deployment_sop.md](ops/deployment_sop.md), [policies/security_policy.md](policies/security_policy.md). HTTPS 강제, Cookie `Secure`/`SameSite` 속성은 여전히 확인 필요 |
 
 세부 정책: [policies/error_policy.md](policies/error_policy.md), [policies/logging_policy.md](policies/logging_policy.md), [policies/security_policy.md](policies/security_policy.md), [policies/privacy_policy.md](policies/privacy_policy.md)
 
@@ -322,6 +322,7 @@ Verification에서 발견, 같은 날 정정 완료):
 
 ## 관련 문서
 
+- [route_index.md](route_index.md) — AI 컨텍스트 라우팅 인덱스(이 작업을 어느 서브시스템이 담당하는지, 어느 SSOT를 신뢰할지, 어느 소스를 열어야 하는지, 무엇을 읽지 말아야 하는지)
 - [icd/prompt_playbook.md](icd/prompt_playbook.md) — Front/Back 분리 프롬프트 운영 세부 규칙(필수 동반 문서 매트릭스 등)
 - [development_rules.md](development_rules.md) — 제품 우선순위 원칙
 - [../requirements/README.md](../requirements/README.md) — Requirement Status/Progress 규칙
@@ -338,3 +339,4 @@ Verification에서 발견, 같은 날 정정 완료):
   운영 구조 포함).
 - **2026-07-22** — Docs Revision(SSOT 정리)에서 출시 전 체크리스트/AI 조직
   운영 구조에 신규 정책 문서(`docs/policies/`)·Ops SOP(`docs/ops/`) 링크 추가.
+- **2026-09-14** — route_index.md 링크 추가, Security 체크리스트 CORS 행 정정.
